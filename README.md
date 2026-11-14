@@ -1,7 +1,6 @@
 # The Barovian Archive
 
-A player-facing wiki for our Curse of Strahd campaign, served with GitHub Pages:
-https://kvang0200.github.io/COSDNDGame2024/
+A player-facing wiki for our Curse of Strahd campaign.
 
 **Player-safe only.** Everything in this repo is public. Never add DM secrets, 🔒 content,
 unmet NPCs, or quests the party hasn't started.
