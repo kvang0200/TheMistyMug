@@ -25,6 +25,11 @@ No build step. Edit a file, commit, and Pages republishes in a minute or two.
 show up right away. If you change anything else (CSS, `app.js`, `sound.js`, images, fonts), also
 change `VERSION` at the top of `sw.js` (today's date is fine) so devices drop their old copies.
 
+**Security policy:** `index.html` has a Content-Security-Policy tag that only lets the site run
+its own scripts, styles and fonts. Portrait images can still come from any `https://` address.
+If you ever add something from another site (a script, a font, an embed), it will be blocked
+until you add that site to the policy.
+
 **Map files:** if you edit the map art, export both sizes: `barovia-map.webp` at 2000×1364 and
 `barovia-map-1000.webp` at 1000×682. The small one shows first; the big one loads when someone zooms in.
 
