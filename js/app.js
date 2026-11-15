@@ -78,7 +78,7 @@ function placeholder(n){
 }
 function portrait(n){ return n.img ? `<img src="${esc(n.img)}" alt="Portrait of ${esc(n.name)}" loading="lazy">` : placeholder(n); }
 const SIDE_LABEL={ally:"Ally",unsure:"Uncertain",foe:"Foe"};
-function sidePill(n){ if(n.fate==="dead") return `<span class="pill fallen">Fallen</span>`; return `<span class="pill ${n.side}">${SIDE_LABEL[n.side]}</span>`; }
+function sidePill(n){ if(n.fate==="dead") return `<span class="pill fallen">Fallen</span>`; return `<span class="pill ${esc(n.side)}">${esc(SIDE_LABEL[n.side]||"")}</span>`; }
 const npcById=Object.fromEntries(DATA.npcs.map(n=>[n.id,n]));
 /* "New" = first appeared in the most recent session (or flagged new:true in DATA) */
 function isNew(x){ if(!x||x.pc) return false; if(x.new===true) return true; const s=x.met!==undefined?x.met:x.s; return String(s)===String(DATA.lastSession); }
@@ -232,14 +232,14 @@ $("#homeFlavor").textContent=DATA.flavor;
 const shortName=n=>{ const w=n.name.split(" "); return /^(Sir|Lady|Father|Madam|The|Headmistress)$/.test(w[0])?n.name:w[0]; };
 const HOME_ALLIES=["ireena","lancelot","sirloin","arabelle","scarlet","ezmerelda","kasimir"];
 function pcard(n,i){ const t=TIER[tierOf(n)]; return `
-  <button class="pcard ${n.pc?"hero":""}" data-flip="${n.pc?"pc":"npc"}:${n.id}" aria-label="Open ${esc(n.name)}">
+  <button class="pcard ${n.pc?"hero":""}" data-flip="${n.pc?"pc":"npc"}:${esc(n.id)}" aria-label="Open ${esc(n.name)}">
     <div class="flip">
       <div class="face front"><div class="art">${portrait(n)}</div><div class="plate"><div class="nm">${esc(shortName(n))}</div></div></div>
       <div class="face back">${tarokkaBack("h"+i,{label:n.pc?"HERO":"ALLY",violet:!n.pc})}</div>
     </div>
     <div class="sub">${esc(n.pc?n.cl.replace(/ \d+$/,""):n.epi||"")}</div>
   </button>`; }
-$("#homeLoc").innerHTML=`<span>Currently in <b>Vallaki</b> — the Blue Water Inn, after Session ${DATA.lastSession}</span>`;
+$("#homeLoc").innerHTML=`<span>Currently in <b>Vallaki</b> — the Blue Water Inn, after Session ${esc(DATA.lastSession)}</span>`;
 $("#homeParty").innerHTML=PCS.map(pcard).join(""); dealIn($("#homeParty"));
 $("#homeAllies").innerHTML=HOME_ALLIES.map(id=>npcById[id]).filter(Boolean).map((n,i)=>pcard(n,i+10)).join(""); dealIn($("#homeAllies"));
 /* What's new strip on Home */
@@ -248,7 +248,7 @@ $("#homeAllies").innerHTML=HOME_ALLIES.map(id=>npcById[id]).filter(Boolean).map(
   const box=$("#homeNew"); if(!box||(!nn.length&&!pp.length)) return;
   const chips=[...nn.map(n=>`<button class="newchip" data-k="npc" data-id="${esc(n.id)}">${esc(n.name)}</button>`),
                ...pp.map(p=>`<button class="newchip loc" data-k="place" data-id="${esc(p.n)}">${esc(p.n)}</button>`)].join("");
-  box.innerHTML=`<div class="newhead">New in Session ${DATA.lastSession}</div><div class="newchips">${chips}</div>`;
+  box.innerHTML=`<div class="newhead">New in Session ${esc(DATA.lastSession)}</div><div class="newchips">${chips}</div>`;
   box.hidden=false;
   box.addEventListener("click",e=>{ const b=e.target.closest(".newchip"); if(!b) return; Sound.chime&&Sound.chime(); b.dataset.k==="npc"?openNpc(b.dataset.id):openPlace(b.dataset.id); });
 })();
@@ -282,7 +282,7 @@ $("#timeline").innerHTML=[...DATA.sessions].reverse().map((s,i)=>`
   <div class="entry ${i===0?"open":""}">
     <button class="head" aria-expanded="${i===0}"><span class="num">Session ${esc(s.n)}</span><span class="ttl">${esc(s.t)}</span><span class="chev">${ICONS.chev}</span></button>
     <div class="body"><div><p>${esc(s.s)}</p>
-    ${s.who&&s.who.length?`<div class="faces">${s.who.filter(id=>npcById[id]).map(id=>`<button class="chip" data-npc="${id}">${esc(npcById[id].name)}</button>`).join("")}</div>`:""}
+    ${s.who&&s.who.length?`<div class="faces">${s.who.filter(id=>npcById[id]).map(id=>`<button class="chip" data-npc="${esc(id)}">${esc(npcById[id].name)}</button>`).join("")}</div>`:""}
     </div></div>
   </div>`).join("");
 dealIn($("#timeline"));
@@ -296,7 +296,7 @@ let soulFilter="all";
 $("#soulFilters").innerHTML=SOUL_FILTERS.map(([k,l])=>`<button data-f="${k}" class="${k==="all"?"on":""}">${l}</button>`).join("");
 function soulClass(n){ return n.fate==="dead"?"fallen":n.side; }
 function soulTile(n,i){ const t=TIER[tierOf(n)]; return `
-  <button class="soul ${n.pc?"hero":soulClass(n)}" ${n.pc?`data-pc="${n.id}"`:`data-npc="${n.id}"`} aria-label="Summon ${esc(n.name)}">
+  <button class="soul ${n.pc?"hero":esc(soulClass(n))}" ${n.pc?`data-pc="${esc(n.id)}"`:`data-npc="${esc(n.id)}"`} aria-label="Summon ${esc(n.name)}">
     ${isNew(n)?'<span class="newtag">New</span>':""}<div class="frame"><div class="inner">${portrait(n)}${n.fate==="dead"?'<div class="cross">✝ fallen ✝</div>':""}</div></div>
     <div class="name">${esc(n.name)}</div>${n.epi?`<div class="epi">${esc(n.pc?n.sp+" "+n.cl.replace(/ \d+$/,""):n.epi)}</div>`:""}
   </button>`; }
@@ -347,14 +347,14 @@ function tarokkaBack(i,o={}){
          :`<g transform="translate(27 57) scale(.46)"><path d="m50 4 11 30h32L67 53l10 33-27-20-27 20 10-33L7 34h32Z" stroke-width="1.8"/></g>`}
     </g>
     ${v?"":`<circle cx="50" cy="80" r="4.2" fill="#c4483c" stroke="#f3d993" stroke-width=".6"/>`}
-    ${o.name?`<path d="M14 112h72l-5 7 5 7H14l5-7Z" fill="#7a1f1a" stroke="#d9b874" stroke-width=".7"/><text x="50" y="121.6" text-anchor="middle" font-family="Cinzel, serif" font-weight="600" font-size="${o.name.length>7?6.2:7.2}" letter-spacing="1.6" fill="#f3e6c4">${o.name}</text>`:""}
+    ${o.name?`<path d="M14 112h72l-5 7 5 7H14l5-7Z" fill="#7a1f1a" stroke="#d9b874" stroke-width=".7"/><text x="50" y="121.6" text-anchor="middle" font-family="Cinzel, serif" font-weight="600" font-size="${o.name.length>7?6.2:7.2}" letter-spacing="1.6" fill="#f3e6c4">${esc(o.name)}</text>`:""}
   </svg>`;
 }
 $("#deck").innerHTML=DATA.tarokka.map((c,i)=>`
   <button class="card" aria-label="Reveal fortune: ${esc(c.n)}">
     <div class="flip">
       <div class="face back">${tarokkaBack(i)}<div class="hint">tap to reveal</div></div>
-      <div class="face front"><div class="suit">Tarokka · ${i+1} of 5</div><h4>${esc(c.n)}</h4><p>${esc(c.p)}</p><div class="st"><span class="pill ${c.st}">${c.st==="done"?"Fulfilled":"Unresolved"}</span></div></div>
+      <div class="face front"><div class="suit">Tarokka · ${i+1} of 5</div><h4>${esc(c.n)}</h4><p>${esc(c.p)}</p><div class="st"><span class="pill ${esc(c.st)}">${c.st==="done"?"Fulfilled":"Unresolved"}</span></div></div>
     </div>
   </button>`).join("");
 dealIn($("#deck"));
@@ -373,7 +373,7 @@ function renderQuests(){
   const box=$("#quests");
   const list=DATA.quests.filter(q=>questFilter==="all"||q.st===questFilter);
   box.innerHTML=list.length?list.map((q,i)=>{ const r=((hash(q.n)%7)-3)*.9; const pin=q.t==="Side"?"#4f7d6f":q.t==="Main"?"#b8963f":"#8c2a26";
-    return `<div class="note ${q.st}"><span class="pin" style="--pin:${pin}"></span><div class="npaper" style="--r:${r}deg"><div class="type">${esc(q.t==="Vallaki"?"Vallaki":q.t+" Quest")}</div><h4>${esc(q.n)}</h4><p>${esc(q.p)}</p>${q.st==="done"?'<span class="stamp">Done</span>':""}</div></div>`; }).join("")
+    return `<div class="note ${esc(q.st)}"><span class="pin" style="--pin:${pin}"></span><div class="npaper" style="--r:${r}deg"><div class="type">${esc(q.t==="Vallaki"?"Vallaki":q.t+" Quest")}</div><h4>${esc(q.n)}</h4><p>${esc(q.p)}</p>${q.st==="done"?'<span class="stamp">Done</span>':""}</div></div>`; }).join("")
     :`<div class="empty">No notices pinned here.</div>`;
   dealIn(box); if(current==="fortunes") observeReveals();
 }
@@ -392,17 +392,17 @@ ornament();
 const rowBar=(k,v,max)=>`<div class="l-stat fx"><span class="k">${k}</span><span class="bar"><i style="--v:${Math.max(6,Math.min(100,Math.round((+v||0)/max*100)))}%"></i></span><span class="v">${esc(v??"—")}</span></div>`;
 const rowText=(k,v,w)=>`<div class="l-stat text fx"><span class="k">${k}</span><span class="v${w?" wbw":""}">${esc(v)}</span></div>`;
 const inkRule=()=>`<svg class="l-rule fx" viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true"><path d="M0 10 C60 2 90 18 150 10 S240 2 300 10" fill="none" stroke="rgba(90,56,32,.55)" stroke-width="1" vector-effect="non-scaling-stroke"/><path d="M146 10l4-4 4 4-4 4z" fill="rgba(110,28,20,.75)"/></svg>`;
-const nameLetters=t=>{ let i=0; return esc(t).split(/(\s+)/).map(w=>/^\s+$/.test(w)?" ":`<span style="white-space:nowrap;display:inline-block">${[...w].map(c=>`<span class="ch" style="--i:${i++}">${c}</span>`).join("")}</span>`).join(""); };
+const nameLetters=t=>{ let i=0; return String(t).split(/(\s+)/).map(w=>/^\s+$/.test(w)?" ":`<span style="white-space:nowrap;display:inline-block">${[...w].map(c=>`<span class="ch" style="--i:${i++}">${esc(c)}</span>`).join("")}</span>`).join(""); };
 function infoHTML(n,t){
   const L=[];
-  L.push(`<div class="l-dateline fx">From the Archive of Barovia · Session ${DATA.lastSession}</div>`);
+  L.push(`<div class="l-dateline fx">From the Archive of Barovia · Session ${esc(DATA.lastSession)}</div>`);
   L.push(`<div class="l-head">
       <div class="l-portrait fx"><div>${portrait(n)}</div></div>
       <div>
         <div class="l-stars fx" aria-hidden="true">◆</div>
         <h2 class="l-name" id="gName" aria-label="${esc(n.name)}">${nameLetters(n.name)}</h2>
         ${n.epi?`<div class="l-epi wbw">${esc(n.epi)}</div>`:""}
-        <div class="l-tags fx">${n.pc?`<span class="l-tag">Player Character</span><span class="l-tag">Level ${DATA.level}</span>`:`<span class="l-tag ${n.fate==="dead"?"fallen":n.side}">${n.fate==="dead"?"Fallen":SIDE_LABEL[n.side]}</span>`}</div>
+        <div class="l-tags fx">${n.pc?`<span class="l-tag">Player Character</span><span class="l-tag">Level ${esc(DATA.level)}</span>`:`<span class="l-tag ${n.fate==="dead"?"fallen":esc(n.side)}">${n.fate==="dead"?"Fallen":esc(SIDE_LABEL[n.side]||"")}</span>`}</div>
       </div>
     </div>`);
   L.push(inkRule());
@@ -492,12 +492,12 @@ function buildMap(){
   stage.insertAdjacentHTML("beforeend",`
     <svg class="trail" viewBox="0 0 ${MAP_W} ${MAP_H}" aria-hidden="true">
       <defs><mask id="trailMask" maskUnits="userSpaceOnUse" x="0" y="0" width="${MAP_W}" height="${MAP_H}">
-        <path d="${TRAIL_MAIN}" pathLength="1"/><path d="${TRAIL_SIDE}" pathLength="1"/><path d="${TRAIL_LAKE}" pathLength="1"/>
+        <path d="${esc(TRAIL_MAIN)}" pathLength="1"/><path d="${esc(TRAIL_SIDE)}" pathLength="1"/><path d="${esc(TRAIL_LAKE)}" pathLength="1"/>
       </mask></defs>
-      <g mask="url(#trailMask)">${[TRAIL_MAIN,TRAIL_SIDE,TRAIL_LAKE].map(d=>`<path class="shadow" d="${d}"/><path class="ink" d="${d}"/>`).join("")}</g>
+      <g mask="url(#trailMask)">${[TRAIL_MAIN,TRAIL_SIDE,TRAIL_LAKE].map(d=>`<path class="shadow" d="${esc(d)}"/><path class="ink" d="${esc(d)}"/>`).join("")}</g>
     </svg>
     <div class="here" style="left:842px;top:462px"><i></i><i></i><b>You are here</b></div>
-    ${PINS.map((p,i)=>`<button class="pin ${p.town?"town":""} ${p.side?"side-"+p.side:""}" style="left:${p.x}px;top:${p.y}px;--pd:${i*90}ms" data-place="${esc(p.key)}" aria-label="${esc(p.label||p.key)}"><span class="pi">${MARK(p.town?"#8c1f17":"#6e4a1e")}<span class="lb">${esc(p.label||p.key)}</span></span></button>`).join("")}`);
+    ${PINS.map((p,i)=>`<button class="pin ${p.town?"town":""} ${p.side?"side-"+esc(p.side):""}" style="left:${+p.x||0}px;top:${+p.y||0}px;--pd:${i*90}ms" data-place="${esc(p.key)}" aria-label="${esc(p.label||p.key)}"><span class="pi">${MARK(p.town?"#8c1f17":"#6e4a1e")}<span class="lb">${esc(p.label||p.key)}</span></span></button>`).join("")}`);
 }
 const mapState={s:1,x:0,y:0,min:.2,max:2.2};
 function applyMap(){
