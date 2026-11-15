@@ -1,6 +1,8 @@
 /* =====================================================================
    CAMPAIGN DATA  (player-visible only — rebuilt after each session)
-   To add a portrait: set img to a data: URI (or a file path if hosted).
+   To add a portrait: set img to a file path in img/ or a full https image URL.
+   In a session summary, wrap words in [[double brackets]] to black them out
+   until a player taps "Reveal the details" (works on the latest session).
    ===================================================================== */
 const DATA = {
   lastSession: 18,
@@ -32,7 +34,7 @@ const DATA = {
     {n:"15", t:"Outskirts of Vallaki", s:"Lancelot was revealed as a blink dog. The party met Jason Jr., who described the struggle for Alpha between Kiril and the Captain. At the cabin they found Ezmerelda, Kasimir, and the children, and killed Kiril. Barlow was bitten.", who:["lancelot","jason","ezmerelda","kasimir","kiril","captain"]},
     {n:"16", t:"Wizard of Wines", s:"Barlow received wolfsbane from Kasimir for his lycanthropy, and Kasimir left a raven familiar, Sir Loin. Lala got the Ring of Animal Influence and Namroc the Candleflame Longbow. At the winery the party beat the Shadow Druids, freed Darwin, and purified the wine.", who:["kasimir","sirloin","darwin"]},
     {n:"17", t:"Watcher House", s:"After a bar brawl, the party escaped Izek's guards and reached Wachterhaus. Fiona inducted them into the Silver tier of her society and asked Alir to learn what happened to her maid at the Baron's mansion. They found Stella's journal and Fiona's grimoire and put down the Wachter father.", who:["izek","fiona","stella","wachterfather","aaron","ireena"]},
-    {n:"18", t:"The Secret", s:"The party robbed Vallaki's black market, a disguised abortion clinic run by Fiona's cult. Barlow knocked out Vinny the seller, the party looted the backroom, and Alir stuffed Vinny into a bag of holding, where he died, before they broke through a wall to the town hall. At the Blue Water Inn, Victor explained that he and Stella had tried to escape Barovia using their parents' notes. Alir found the experiments were flawed, and Victor copied the journal and paid an uncut diamond. Arabelle revealed she sees the dead and took Stella's notebook to try to reach her. Ezmerelda and Arabelle left to scout the Reformation Center.", who:["vinny","cultists","victor","arabelle","ezmerelda"]}
+    {n:"18", t:"The Secret", s:"The party robbed Vallaki's black market, a disguised [[abortion clinic]] run by [[Fiona's cult]]. Barlow knocked out [[Vinny the seller]], the party looted the backroom, and Alir stuffed Vinny into a [[bag of holding]], where he died, before they broke through a wall to the town hall. At the Blue Water Inn, Victor explained that he and Stella had tried to escape Barovia using their parents' notes. Alir found the experiments were flawed, and Victor copied the journal and paid an uncut diamond. Arabelle revealed she sees the dead and took Stella's notebook to try to reach her. Ezmerelda and Arabelle left to scout the Reformation Center.", who:["vinny","cultists","victor","arabelle","ezmerelda"]}
   ],
 
   // side: ally | unsure | foe ; fate: alive | dead | unknown

@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Barovian Archive</title>
-<meta name="description" content="A player reference for our Curse of Strahd campaign: the party, allies, sessions, locations and quests.">
+<meta name="description" content="A player reference for our Curse of Strahd campaign: the party, NPCs, sessions, locations and quests.">
 <meta name="robots" content="noindex, nofollow">
 <!-- Security policy: only this site's own scripts, styles, fonts and code may load. Portrait images may come from any https site. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; style-src-elem 'self'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; media-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
-<meta name="theme-color" content="#140e0d">
+<meta name="theme-color" content="#0b0909">
 <meta property="og:title" content="The Barovian Archive">
-<meta property="og:description" content="Our Curse of Strahd campaign, kept for the players: allies, sessions, locations and quests.">
+<meta property="og:description" content="Our Curse of Strahd campaign, kept for the players.">
 <meta property="og:type" content="website">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Barovia">
@@ -19,164 +19,92 @@
 <link rel="icon" type="image/png" sizes="192x192" href="img/icon-192.png">
 <link rel="apple-touch-icon" href="img/icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="preload" href="fonts/cinzel-decorative-700.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/cinzel.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/bodoni-moda.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs>
-    <symbol id="corner" viewBox="0 0 40 40"><g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M3 30V12Q3 3 12 3h18"/><path d="M3 22c6 0 9-4 7-8s1-7 4.5-5.5 2 6-1.5 5"/><path d="M22 3c0 6-4 9-8 7s-7 1-5.5 4.5 6 2 5-1.5"/><path d="M8 8l3-3 3 3-3 3z" fill="currentColor"/><circle cx="3" cy="34" r="1.4" fill="currentColor"/><circle cx="34" cy="3" r="1.4" fill="currentColor"/></g></symbol>
-  </defs>
-</svg>
-<canvas id="fog" aria-hidden="true"></canvas>
-<div class="paper"></div>
-<div class="vignette"></div>
-<div id="fx"></div>
-<div class="mist-part" id="mistPart"><i></i><i></i></div>
+<a class="sr" href="#main">Skip to content</a>
+<div class="grain" aria-hidden="true"></div>
+<div class="cut" id="cut" aria-hidden="true"></div>
 
-<div id="gate" role="dialog" aria-label="Enter the archive">
-  <div class="eyes" aria-hidden="true"><span class="eye"></span><span class="eye"></span></div>
-  <h1>Barovia</h1>
-  <div class="sub">The Archive of Those Who Entered the Mists</div>
-  <button class="btn-enter" id="enterBtn">Enter Barovia</button>
-  <button class="btn-quiet-enter" id="enterQuiet">enter in silence</button>
-  <div class="warn">Best with sound on. You can mute or calm the effects at any time.</div>
+<!-- intro: plays on the first visit of each browser session -->
+<div class="intro gone" id="intro" aria-hidden="true">
+  <div class="lines">
+    <span>Session <span id="introN"></span><span class="bar" style="animation-delay:.2s"></span></span>
+    <span class="big">The Barovian Archive<span class="bar" style="animation-delay:.35s"></span></span>
+    <span>For the players<span class="bar" style="animation-delay:.5s"></span></span>
+  </div>
+  <div class="pass"></div>
 </div>
 
-<div class="shell">
-  <aside id="rail" aria-label="Sections">
-    <div class="brand" data-go="home"><span class="mono">B</span><span class="full">Barovia</span></div>
-    <div class="tagline">the party's archive</div>
-    <nav class="rail-nav" id="railNav"></nav>
-    <div class="rail-foot">
-      <button class="icon-btn btn-sound" aria-pressed="false" aria-label="Sound"></button>
-      <button class="icon-btn btn-quiet" aria-pressed="false" aria-label="Quiet mode"></button>
-      <div class="upd">Session <span class="lastSess"></span></div>
-    </div>
-  </aside>
-
-  <div class="col">
-    <header id="hdr">
-      <div class="row1">
-        <div class="brand" data-go="home">Barovia</div>
-        <div id="searchWrap">
-          <div class="search">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-            <input id="q" type="search" placeholder="Search names, locations, quests…" autocomplete="off" aria-label="Search the archive">
-            <div id="results" role="listbox"></div>
-          </div>
-        </div>
-        <button class="icon-btn hdr-only-phone" id="searchBtn" aria-label="Search"></button>
-        <button class="icon-btn hdr-only-phone btn-sound" aria-pressed="false" aria-label="Sound"></button>
-        <button class="icon-btn hdr-only-phone btn-quiet" aria-pressed="false" aria-label="Quiet mode"></button>
+<header class="hdr" id="hdr">
+  <div class="wrap">
+    <a class="brand" href="#home">The Barovian Archive</a>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href="#home">Home<i></i></a>
+      <a href="#sessions">Sessions<i></i></a>
+      <a href="#npcs">NPCs<i></i></a>
+      <a href="#locations">Locations<i></i></a>
+      <a href="#quests">Quests<i></i></a>
+    </nav>
+    <div class="tools">
+      <div class="search">
+        <label class="sr" for="q">Search the archive</label>
+        <input id="q" type="search" placeholder="Search names, places, quests" autocomplete="off">
+        <div class="results" id="results" role="listbox" aria-label="Search results"></div>
       </div>
-      <nav class="tabs" id="tabs" aria-label="Sections"></nav>
-    </header>
-
-    <main id="main">
-      <section class="view" id="v-home">
-        <div class="hero">
-          <div class="kicker">Where we stand</div>
-          <h2 class="gild">The Mists Still Hold</h2>
-          <p class="flavor words" id="homeFlavor"></p>
-        </div>
-        <h3 class="section-title">The Party</h3>
-        <div class="where-tag" id="homeLoc"></div>
-        <div class="pcards party" id="homeParty"></div>
-        <h3 class="section-title">Allies</h3>
-        <div class="pcards allies" id="homeAllies"></div>
-        <div class="newstrip" id="homeNew" hidden></div>
-        <h3 class="section-title">The Last Entry</h3>
-        <div class="parchment ornate" id="latest">
-          <h3 id="latestTitle"></h3>
-          <div class="meta" id="latestMeta"></div>
-          <div class="ink" id="latestInk"></div>
-          <div class="seal">S</div>
-        </div>
-      </section>
-
-      <section class="view" id="v-chronicle">
-        <div class="hero">
-          <div class="kicker">Sessions</div>
-          <h2 class="gild">What Has Come to Pass</h2>
-          <p class="flavor words">Every night in Barovia is written somewhere. These are ours, newest first. Tap an entry to unroll it.</p>
-        </div>
-        <div class="timeline" id="timeline"></div>
-      </section>
-
-      <section class="view" id="v-souls">
-        <div class="hero">
-          <div class="kicker">Souls of Barovia</div>
-          <h2 class="gild">Faces in the Mist</h2>
-          <p class="flavor words">Everyone we have met, as far as we understand them. Trust is a luxury here, and some faces lie.</p>
-        </div>
-        <div class="filters" id="soulFilters"></div>
-        <div class="souls" id="souls"></div>
-      </section>
-
-      <section class="view" id="v-places">
-        <div class="hero">
-          <div class="kicker">Locations</div>
-          <h2 class="gild">Locations We Have Walked</h2>
-          <p class="flavor words">The road only ever leads deeper in. Here is everywhere our boots have touched.</p>
-        </div>
-        <div class="places-wrap">
-          <div class="mv-toggle" id="mvToggle" role="tablist"><button class="on" data-mv="map">Map</button><button data-mv="list">List</button></div>
-          <div id="mapView">
-            <div class="mapbox" id="mapbox" tabindex="0" aria-label="Map of Barovia. Drag to pan, pinch or scroll to zoom.">
-              <div class="stage" id="stage"><img id="mapImg" decoding="async" alt="Map of Barovia" draggable="false"><div class="fog"></div><div class="fog-drift"></div></div>
-              <div class="map-ctrl"><button id="zIn" aria-label="Zoom in">+</button><button id="zOut" aria-label="Zoom out">−</button><button id="zReset" aria-label="Reset view"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9V4h5M20 15v5h-5M4 4l6 6M20 20l-6-6"/></svg></button></div>
-              <div class="map-legend"><span><span class="dash"></span>Our trail</span><span>Unexplored lands lie in the mist</span></div>
-              <div class="map-credit">Map: free fan resource shared on Reddit</div>
-            </div>
-            <div class="map-hint">Drag to explore, pinch or scroll to zoom. Tap a pin to read about it.</div>
-          </div>
-          <div id="listView">
-            <div class="filters" id="placeFilters"></div>
-            <div class="places" id="places"></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="view" id="v-fortunes">
-        <div class="hero">
-          <div class="kicker">Quests</div>
-          <h2 class="gild">Quests &amp; Fortunes</h2>
-          <p class="flavor words">Madam Eva laid the cards and said the only way out is to kill the devil. Turn each card to read what she foretold.</p>
-        </div>
-        <div class="deck" id="deck"></div>
-        <h3 class="section-title">Personal Fortunes</h3>
-        <div class="deck" id="visions"></div>
-        <h3 class="section-title">Quests</h3>
-        <div class="filters" id="questFilters"></div>
-        <div class="board"><div class="sign">Quest Board</div><div class="notes" id="quests"></div></div>
-      </section>
-
-
-      <div class="footer-sig">Kept by the Dungeon Master. Updated after Session <span class="lastSess"></span>.</div>
-    </main>
-  </div>
-</div>
-
-<button class="icon-btn" id="toTop" aria-label="Back to top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 19V6M6 11l6-6 6 6"/></svg></button>
-
-<div id="gacha" role="dialog" aria-modal="true" aria-labelledby="gName">
-  <div class="l-dim"></div><div class="l-candle"></div>
-  <div class="l-wrap" id="gWrap">
-    <div class="flipcard" id="flipcard">
-      <article class="cface front" id="sheet"><div class="pg"></div>
-        <svg class="cn tl"><use href="#corner"/></svg><svg class="cn tr"><use href="#corner"/></svg><svg class="cn br"><use href="#corner"/></svg><svg class="cn bl"><use href="#corner"/></svg>
-        <div class="l-content" id="gInfo"></div><div class="glint"></div>
-      </article>
-      <div class="cface back" id="cback"></div>
+      <button class="icon-btn" id="searchBtn" type="button" aria-label="Search" aria-expanded="false"></button>
+      <button class="icon-btn" id="soundBtn" type="button" aria-label="Sound effects" aria-pressed="false"></button>
     </div>
   </div>
-  <button class="icon-btn l-close" id="gClose" aria-label="Close" style="background:rgba(40,26,20,.8)"></button>
-  <div class="l-skip">tap to skip</div>
-</div>
-<script src="js/data.js" defer></script>
-<script src="js/sound.js" defer></script>
-<script src="js/app.js" defer></script>
+</header>
+
+<main id="main">
+  <section class="view" id="v-home" aria-label="Home"></section>
+  <section class="view" id="v-sessions" aria-label="Sessions"></section>
+  <section class="view" id="v-npcs" aria-label="NPCs"></section>
+  <section class="view" id="v-locations" aria-label="Locations">
+    <div class="mist" style="top:120px" aria-hidden="true"></div>
+    <div class="section">
+      <div class="wrap">
+        <div class="head in">
+          <div><span class="kick">Locations</span><h2>Where we've <i>been</i></h2></div>
+          <div class="mv filters" id="mv" role="group" aria-label="Show as">
+            <button type="button" data-mv="map" aria-pressed="true">Map</button>
+            <button type="button" data-mv="list" aria-pressed="false">List</button>
+          </div>
+        </div>
+        <div class="map" id="mapWrap">
+          <div class="mapbox" id="mapbox" tabindex="0" aria-label="Map of Barovia. Drag to pan, pinch or scroll to zoom.">
+            <div class="stage" id="stage"><img id="mapImg" decoding="async" alt="Map of Barovia" draggable="false"><div class="fog"></div><div class="fog-drift"></div></div>
+            <div class="map-ctrl">
+              <button id="zIn" type="button" aria-label="Zoom in">+</button>
+              <button id="zOut" type="button" aria-label="Zoom out">−</button>
+              <button id="zReset" type="button" aria-label="Reset view"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+            </div>
+          </div>
+          <div class="map-foot"><span><span class="dash"></span>Our trail</span><span>Unexplored lands lie in the mist · Tap a pin to read about it</span><span>Map: free fan resource shared on Reddit</span></div>
+        </div>
+        <div class="loc-list" id="locList" hidden></div>
+      </div>
+    </div>
+  </section>
+  <section class="view" id="v-quests" aria-label="Quests"></section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <span class="end">End of the archive<i>.</i></span>
+    <span class="label muted" id="footNote"></span>
+  </div>
+</footer>
+
+<div class="modal" id="modal" aria-hidden="true"></div>
+<button class="icon-btn totop" id="toTop" type="button" aria-label="Back to top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 19V6M6 11l6-6 6 6"/></svg></button>
+
+<script src="js/data.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>

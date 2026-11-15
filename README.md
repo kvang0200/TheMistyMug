@@ -1,6 +1,7 @@
 # The Barovian Archive
 
-A player-facing wiki for our Curse of Strahd campaign.
+A player-facing wiki for our Curse of Strahd campaign, styled as the party's dossier on
+Barovia: editorial noir look, Persona-style motion, wax seals and stamps.
 
 **Player-safe only.** Everything in this repo is public. Never add DM secrets, 🔒 content,
 unmet NPCs, or quests the party hasn't started.
@@ -10,13 +11,30 @@ unmet NPCs, or quests the party hasn't started.
 | Path | What it is | Changes after a session? |
 |---|---|---|
 | `js/data.js` | All campaign content: sessions, NPCs, places, Tarokka, fortunes, quests, party, plus map pins and the travel trail | **Yes** (usually the only file) |
-| `index.html` | Page skeleton: gate, header, tab sections, pop-up markup | Rarely |
-| `css/style.css` | All styling and animation | Rarely |
-| `js/app.js` | Tabs, cards, pop-ups, search, map, effects | Rarely |
-| `js/sound.js` | Synthesized click/card effects plus an occasional distant howl or bell (Web Audio, no sound files) | Rarely |
+| `index.html` | Page skeleton: intro, header, the five tabs, the map | Rarely |
+| `css/style.css` | All styling and animation. **The three site colors are at the top** | Rarely |
+| `js/app.js` | Builds every tab and pop-up from `data.js`; seals, stamps, search, map | Rarely |
+| `js/sound.js` | Sound effects made in the browser: wax cracking, paper turning, stamps, slashes (no sound files) | Rarely |
 | `sw.js` | Offline cache (service worker) | Bump `VERSION` when anything except `data.js` changes |
-| `fonts/` | Self-hosted Cinzel, Cinzel Decorative (700) and Cormorant Garamond, subset to Latin; OFL licences included | No |
-| `img/` | Map (`barovia-map.webp` 2000px + `barovia-map-1000.webp` preview), fog layers, grain/ink textures, app icons, portraits | When adding art or fog changes |
+| `fonts/` | Self-hosted Bodoni Moda, Inter and IBM Plex Mono, subset to Latin; OFL licences included | No |
+| `img/` | Map (`barovia-map.webp` 2000px + `barovia-map-1000.webp` preview), fog layers, grain texture, app icons, portraits | When adding art or fog changes |
+
+## How the page works
+
+- **Tabs:** Home, Sessions, NPCs, Locations (interactive map + list), Quests.
+- **Colors:** primary (ink black), secondary (parchment beige) and accent (blood red) are
+  `--p`, `--s` and `--a` at the top of `css/style.css`. Change those three to restyle everything.
+- **Wax seals:** the latest session is always open; every older session is sealed until a
+  player breaks it. The Tarokka cards are sealed too. Each device remembers which seals it has
+  broken, so a player on a new device sees them sealed again.
+- **Classified covers:** each player's personal fortune (from `visions`) sits under a
+  CLASSIFIED cover until it is tapped.
+- **Stamps** come from fields you already fill in: NPC `side` / `fate` (ALLY, UNCERTAIN, HOSTILE,
+  DECEASED, MISSING), place `s` (VISITED · SESSION 11 or NOT VISITED) and quest `st` (COMPLETED).
+- **Redactions:** in the latest session's summary, wrap words in `[[double brackets]]` to black
+  them out until a player taps "Reveal the details".
+- **Sound** is off until a player turns it on with the speaker button.
+- **Motion** is turned off automatically for anyone whose device asks for reduced motion.
 
 No build step. Edit a file, commit, and Pages republishes in a minute or two.
 
@@ -40,6 +58,7 @@ until you add that site to the policy.
    - Add the session to `sessions` (summary written from what happened, not prep notes).
    - Add or update NPCs (`met` = session first met; `side` = ally / unsure / foe; `fate`).
      Anything whose `met` or `s` equals `lastSession` gets a **New** badge automatically.
+   - Optional: wrap a few words of the new summary in `[[ ]]` to redact them.
    - Add places (`s` = session first visited) and update quests (`st` = ongoing / done).
    - Map: add a pin to `PINS` and extend `TRAIL_MAIN` / `TRAIL_SIDE` for new travel.
 2. If the party explored new ground, re-cut the holes in `img/fog.webp` and `img/fog2.webp`
@@ -54,4 +73,4 @@ in `img/` or a full image URL. Only use art we have permission to use, and credi
 ## Credits
 
 - Map: free fan resource shared on Reddit.
-- Fonts: Cinzel, Cinzel Decorative, Cormorant Garamond (SIL Open Font License; self-hosted in `fonts/`).
+- Fonts: Bodoni Moda, Inter, IBM Plex Mono (SIL Open Font License; self-hosted in `fonts/`).
