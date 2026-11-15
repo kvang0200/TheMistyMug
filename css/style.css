@@ -195,8 +195,8 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 @keyframes shard{0%,30%{transform:translate(0,0) rotate(0);opacity:0}38%{opacity:1}100%{transform:translate(var(--x),var(--y)) rotate(var(--r));opacity:0}}
 @keyframes wobble{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg) scale(1.06)}75%{transform:rotate(5deg) scale(1.04)}}
 .wax{position:relative;display:block;width:var(--w,78px);height:var(--w,78px);flex:0 0 auto}
-.wax .disc{position:absolute;inset:0;border-radius:48% 52% 50% 46%;background:radial-gradient(circle at 34% 28%,color-mix(in srgb,var(--a) 62%,var(--s)) 0%,var(--a) 42%,color-mix(in srgb,var(--a) 72%,var(--p)) 100%);color:var(--s);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 5px color-mix(in srgb,var(--p) 18%,transparent),inset 0 0 0 7px color-mix(in srgb,var(--s) 22%,transparent),0 6px 14px rgba(0,0,0,.4);font-family:var(--serif);font-weight:700;font-size:calc(var(--w,78px)*.36)}
-.wax .disc svg{width:50%;height:auto}
+.wax .disc{position:absolute;inset:0;display:block}
+.wax .disc svg{display:block;width:100%;height:100%;overflow:visible}
 .wax .l,.wax .r,.wax .crackline,.wax .shard{display:none}
 .wax .l{clip-path:polygon(0 0,53% 0,44% 22%,58% 41%,45% 60%,55% 79%,47% 100%,0 100%)}
 .wax .r{clip-path:polygon(53% 0,100% 0,100% 100%,47% 100%,55% 79%,45% 60%,58% 41%,44% 22%)}
@@ -490,8 +490,6 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 .classified.resealing .tape{animation:stampIn .5s cubic-bezier(.2,.9,.3,1) .45s both}
 
 /* ---- players on Home link to their fortune on the Quests tab ---- */
-.player:not(.fortune) .parch{min-height:0}
-.fortune-link{margin-top:18px;align-self:flex-start}
 .fortune-note{margin:24px 0 40px;max-width:560px;font-family:var(--serif);font-style:italic;font-size:18px;line-height:1.5;color:var(--muted)}
-#tarokka,#fortunes,[id^="fortune-"]{scroll-margin-top:90px}
+#tarokka,#fortunes,#loose,[id^="fortune-"]{scroll-margin-top:90px}
 @media (prefers-reduced-motion:reduce){.flip.rewax .wax .whole,.classified.resealing .cover,.classified.resealing .tape{animation:none}}

@@ -60,8 +60,17 @@ const isOpen=k=>!!SEALS[k];
 function remember(k){ SEALS[k]=1; store.set("bv-seals",JSON.stringify(SEALS)); }
 function forget(k){ delete SEALS[k]; store.set("bv-seals",JSON.stringify(SEALS)); }
 const resealBtn=what=>`<button type="button" class="reseal" data-reseal aria-label="Seal ${esc(what)} again"><span>Reseal</span><i aria-hidden="true"></i></button>`;
-function wax(emblem,w=78){
-  return `<span class="wax" style="--w:${w}px" aria-hidden="true"><span class="disc whole">${emblem}</span><span class="disc l">${emblem}</span><span class="disc r">${emblem}</span><svg class="crackline" viewBox="0 0 100 100"><polyline pathLength="1" points="53,-4 44,22 58,41 45,60 55,79 47,104" fill="none" stroke="var(--p)" stroke-width="3" stroke-linejoin="round"/></svg><span class="shard" style="left:46%;top:30%;width:9px;height:7px;clip-path:polygon(0 0,100% 30%,40% 100%);--x:-38px;--y:-26px;--r:-140deg"></span><span class="shard" style="left:52%;top:55%;width:7px;height:9px;clip-path:polygon(0 20%,100% 0,70% 100%);--x:40px;--y:-18px;--r:160deg"></span><span class="shard" style="left:48%;top:78%;width:6px;height:6px;clip-path:polygon(50% 0,100% 100%,0 80%);--x:10px;--y:44px;--r:90deg"></span></span>`;
+const BLOB="M24 2C30 2 33 6 38 7C44 8 46 13 45 19C44 25 47 28 44 34C41 40 36 41 31 44C26 47 21 46 16 44C10 42 6 39 4 33C2 27 5 23 4 17C3 11 8 7 13 6C18 5 20 2 24 2Z";
+const EMBLEM={
+  key:'<circle cx="24" cy="21.5" r="3.6" fill="rgba(22,17,14,.72)"/><path d="M22.4 24.5H25.6L26.8 33H21.2Z" fill="rgba(22,17,14,.72)"/>',
+  eye:'<path d="M14.5 24C17.5 19.6 30.5 19.6 33.5 24C30.5 28.4 17.5 28.4 14.5 24Z" fill="none" stroke="rgba(22,17,14,.75)" stroke-width="1.6"/><circle cx="24" cy="24" r="2.6" fill="rgba(22,17,14,.75)"/>'
+};
+function sealArt(kind){
+  return `<svg viewBox="0 0 48 48"><path d="${BLOB}" transform="translate(.8 1.6)" fill="rgba(0,0,0,.38)"/><path d="${BLOB}" fill="var(--a)"/><path d="${BLOB}" fill="none" stroke="rgba(0,0,0,.28)" stroke-width="1"/><ellipse cx="17" cy="14" rx="9" ry="5.5" fill="#fff" opacity=".13"/><circle cx="24" cy="24" r="14" fill="rgba(0,0,0,.08)" stroke="color-mix(in srgb,var(--s) 50%,transparent)" stroke-width="1.2"/>${EMBLEM[kind]||EMBLEM.key}</svg>`;
+}
+function wax(kind="key",w=78){
+  const art=sealArt(kind);
+  return `<span class="wax" style="--w:${w}px" aria-hidden="true"><span class="disc whole">${art}</span><span class="disc l">${art}</span><span class="disc r">${art}</span><svg class="crackline" viewBox="0 0 100 100"><polyline pathLength="1" points="53,-4 44,22 58,41 45,60 55,79 47,104" fill="none" stroke="var(--p)" stroke-width="3" stroke-linejoin="round"/></svg><span class="shard" style="left:46%;top:30%;width:9px;height:7px;clip-path:polygon(0 0,100% 30%,40% 100%);--x:-38px;--y:-26px;--r:-140deg"></span><span class="shard" style="left:52%;top:55%;width:7px;height:9px;clip-path:polygon(0 20%,100% 0,70% 100%);--x:40px;--y:-18px;--r:160deg"></span><span class="shard" style="left:48%;top:78%;width:6px;height:6px;clip-path:polygon(50% 0,100% 100%,0 80%);--x:10px;--y:44px;--r:90deg"></span></span>`;
 }
 function flipCard({key,cls="",i=0,front,back,frontParch=true,id="",still=false}){
   const open=isOpen(key);
@@ -147,7 +156,7 @@ const FX=(()=>{
 function sessionCard(s,i,still=false){
   const people=(s.who||[]).filter(id=>npcById[id]);
   return flipCard({key:"s"+s.n,i,id:"s-"+slug(s.n),cls:"sess",still,
-    front:`<button type="button" class="sealed-btn" data-crack aria-label="Break the seal on Session ${esc(s.n)}: ${esc(s.t)}"><span class="label" style="color:var(--ink-muted)">Session ${esc(s.n)}</span><span class="t" style="font-family:var(--serif);font-style:italic;font-size:26px;line-height:1.1">${esc(s.t)}</span>${wax(`<span>${esc(s.n)}</span>`)}<span class="label">Break the seal</span></button>`,
+    front:`<button type="button" class="sealed-btn" data-crack aria-label="Break the seal on Session ${esc(s.n)}: ${esc(s.t)}"><span class="label" style="color:var(--ink-muted)">Session ${esc(s.n)}</span><span class="t" style="font-family:var(--serif);font-style:italic;font-size:26px;line-height:1.1">${esc(s.t)}</span>${wax("key",84)}<span class="label">Break the seal</span></button>`,
     back:`<div class="sess-back"><span class="label dot">Session ${esc(s.n)}</span><span class="t">${esc(s.t)}</span><p>${esc(plain(s.s))}</p>${people.length?`<div class="chips">${people.map(id=>`<button type="button" class="chip" data-npc="${esc(id)}">${esc(npcById[id].name)}</button>`).join("")}</div>`:""}</div>`});
 }
 function latestBlock(){
@@ -182,10 +191,10 @@ function playerCard(p){
     <button type="button" class="open-sheet" data-pc="${esc(p.id)}" aria-label="Open ${esc(p.n)}'s character sheet"><span class="who name" style="display:inline-block">${esc(p.n)}</span></button>
     <span class="cls">${esc(p.sp)} · ${esc(p.cl.replace(/ \d+$/,""))}</span>
     <dl class="stats">${stats}</dl>
-    ${v?`<a class="link fortune-link" href="#quests" data-fortune="${esc(p.id)}">Personal fortune →</a>`:""}
+    ${v?classified("f-"+slug(p.n),p.n,`<span class="label dot">Personal fortune</span><p>${esc(v.p)}</p><span class="label" style="margin-top:auto;color:var(--ink-muted)">From Madam Eva · Session 5</span>`):""}
   </article></div>`;
 }
-/* personal fortunes live on the Quests tab, one classified file per player */
+/* the same fortunes again on the Quests tab; opening one opens both */
 function fortuneCard(p){
   const v=visionFor(p.n); if(!v) return "";
   return `<div class="card player fortune in" id="fortune-${esc(p.id)}" style="--tilt:${tilt(p.i+1)}deg"><div class="shade"></div><article class="parch">
@@ -198,7 +207,7 @@ function fortuneCard(p){
 function tarotCard(c,i){
   const done=c.st==="done";
   return flipCard({key:"t"+i,i,cls:"tarot",frontParch:false,
-    front:`<button type="button" class="sealed-btn" data-crack aria-label="Break the seal on Tarokka card ${ROMAN[i]}"><span class="roman">${ROMAN[i]}</span>${wax(ICON.eye,84)}<span class="label">Break the seal</span></button>`,
+    front:`<button type="button" class="sealed-btn" data-crack aria-label="Break the seal on Tarokka card ${ROMAN[i]}"><span class="roman">${ROMAN[i]}</span>${wax("eye",90)}<span class="label">Break the seal</span></button>`,
     back:`<span class="label">Card ${ROMAN[i]}</span><span class="t">${esc(c.n)}</span><p>${esc(c.p)}</p>${done?`<span class="stamp red"${isOpen("t"+i)?"":" data-later hidden"}>FULFILLED</span>`:""}`});
 }
 function renderHome(){
@@ -254,15 +263,8 @@ function renderHome(){
   </div></section>
 
   <section class="section"><div class="mist" style="top:0" aria-hidden="true"></div><div class="wrap" style="position:relative">
-    ${head("02 — The players",`The <i>players</i>`,`<p>Tap a name for the character sheet. Personal fortunes and the Tarokka reading are on the <a class="link" href="#quests" data-fortune="">Quests</a> tab.</p>`)}
+    ${head("02 — The players",`Personal <i>fortunes</i>`,`<p>Madam Eva gave each player a personal fortune in Session 5. Each fortune is classified until its player opens it. Tap a name for the full character sheet.</p>`)}
     <div class="grid g-240">${PCS.map(playerCard).join("")}</div>
-  </div></section>
-
-  <section class="section light"><div class="wrap">
-    ${head("03 — Loose ends",`Unfinished <i>business</i>`,`<a class="link" href="#quests">All quests →</a>`)}
-    <div class="board"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline class="string" pathLength="1" points="12,18 38,30 64,16 88,32 74,74 46,66 20,78 38,30" fill="none" stroke="var(--a)" stroke-width="1.4" vector-effect="non-scaling-stroke"/></svg>
-      <ol class="grid g-240">${D.threads.map((t,i)=>`<li class="note sway in" style="--tilt:${[-2,1.5,-1,2,-1.5,1,-2.5][i%7]}deg"><span class="label">Loose end ${i+1}</span><p>${esc(t)}</p></li>`).join("")}</ol>
-    </div>
   </div></section>`;
 }
 
@@ -329,6 +331,13 @@ const Q_FILTERS=[["ongoing","Ongoing"],["done","Completed"],["all","All"]];
 let questFilter="ongoing";
 function renderQuests(){
   $("#v-quests").innerHTML=`<div id="questList"></div>
+  <section class="section light"><div class="wrap">
+    <div class="subhead in" id="loose" style="margin-top:0"><h3>Loose <i>ends</i></h3></div>
+    <p class="fortune-note" style="color:var(--ink-muted)">Things the party left unresolved. Some may turn into quests.</p>
+    <div class="board"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline class="string" pathLength="1" points="12,18 38,30 64,16 88,32 74,74 46,66 20,78 38,30" fill="none" stroke="var(--a)" stroke-width="1.4" vector-effect="non-scaling-stroke"/></svg>
+      <ol class="grid g-240">${D.threads.map((t,i)=>`<li class="note sway in" style="--tilt:${[-2,1.5,-1,2,-1.5,1,-2.5][i%7]}deg"><span class="label">Loose end ${i+1}</span><p>${esc(t)}</p></li>`).join("")}</ol>
+    </div>
+  </div></section>
   <section class="section" id="tarokka"><div class="mist red" style="top:0" aria-hidden="true"></div><div class="wrap" style="position:relative">
     ${head("The reading",`The Tarokka <i>reading</i>`,`<p>Madam Eva's reading from Session 5. Break a seal to turn a card, and tap Reseal to turn it back.</p>`)}
     <div class="grid g-210">${D.tarokka.map(tarotCard).join("")}</div>
@@ -344,7 +353,7 @@ function renderQuestList(){
   $("#questList").innerHTML=`
   <section class="section light"><div class="wrap">
     ${head("Quests",`${questFilter==="done"?"Completed":"Ongoing"} <i>quests</i>`,`<div class="filters" role="group" aria-label="Show">${Q_FILTERS.map(([k,l])=>`<button type="button" data-qf="${k}" aria-pressed="${k===questFilter}">${l}</button>`).join("")}</div>`)}
-    <p class="label" style="margin:-28px 0 40px;color:var(--ink-muted)">${on.length} ongoing · ${done.length} completed · <a class="link" href="#quests" data-fortune="tarokka">Tarokka reading ↓</a> · <a class="link" href="#quests" data-fortune="">Personal fortunes ↓</a></p>
+    <p class="label" style="margin:-28px 0 40px;color:var(--ink-muted)">${on.length} ongoing · ${done.length} completed · <a class="link" href="#quests" data-fortune="loose">Loose ends ↓</a> · <a class="link" href="#quests" data-fortune="tarokka">Tarokka reading ↓</a> · <a class="link" href="#quests" data-fortune="">Personal fortunes ↓</a></p>
     ${showOn?`<ol class="grid g-240" style="margin:0;padding:0;gap:40px 28px">${on.map((q,i)=>`<li class="note sway in" style="--tilt:${[-2,1.5,-1,2,-1.5,1,-2.5][i%7]}deg"><span class="label">Ongoing · ${esc(q.t)}</span><p style="font-size:22px;line-height:1.15">${esc(q.n)}</p><p style="font-size:16px;color:color-mix(in srgb,var(--s) 82%,transparent)">${esc(q.p)}</p></li>`).join("")||`<p class="empty">Nothing ongoing.</p>`}</ol>`:""}
     ${showOn&&showDone?`<div class="subhead in"><h3>Completed <i>quests</i></h3></div>`:""}
     ${showDone?`<div class="grid g-210" style="margin-top:${showOn?40:0}px">${done.map((q,i)=>`<div class="card quest sway in" style="--tilt:${tilt(i+3)}deg"><div class="shade"></div><article class="parch"><span class="label" style="color:var(--ink-muted)">${esc(q.t)} quest</span><span class="t">${esc(q.n)}</span><p>${esc(q.p)}</p><span class="stamp red stamp-view" aria-hidden="true">COMPLETED</span></article></div>`).join("")}</div>`:""}
@@ -479,7 +488,7 @@ function resealCover(box){
 /* jump to the Tarokka reading or a player's fortune on the Quests tab */
 function jumpTo(id){
   closeSheet();
-  go("quests",()=>{ const el=document.getElementById(id); if(!el) return; el.scrollIntoView({behavior:reduced?"auto":"smooth",block:id==="tarokka"||id==="fortunes"?"start":"center"}); });
+  go("quests",()=>{ const el=document.getElementById(id); if(!el) return; el.scrollIntoView({behavior:reduced?"auto":"smooth",block:id==="tarokka"||id==="fortunes"||id==="loose"?"start":"center"}); });
 }
 function gotoSession(n){
   closeSheet();
@@ -492,7 +501,7 @@ document.addEventListener("click",e=>{
   const crack=t.closest("[data-crack]"); if(crack){ crackSeal(crack.closest("[data-seal]")); return; }
   const tear=t.closest("[data-tear]"); if(tear){ tearCover(tear.closest(".classified")); return; }
   const rs=t.closest("[data-reseal]"); if(rs){ const box=rs.closest("[data-seal]"); if(box.classList.contains("classified")) resealCover(box); else resealCard(box); return; }
-  const fl=t.closest("[data-fortune]"); if(fl){ e.preventDefault(); jumpTo(fl.dataset.fortune==="tarokka"?"tarokka":fl.dataset.fortune?"fortune-"+fl.dataset.fortune:"fortunes"); return; }
+  const fl=t.closest("[data-fortune]"); if(fl){ e.preventDefault(); const f=fl.dataset.fortune; jumpTo(f==="tarokka"||f==="loose"?f:f?"fortune-"+f:"fortunes"); return; }
   const dec=t.closest("[data-declass]");
   if(dec){ const p=dec.closest(".latest").querySelector(".summary"); const on=p.classList.toggle("declassified"); dec.setAttribute("aria-pressed",String(on)); dec.querySelector("span").textContent=on?"Hide the details":"Reveal the details"; Sound.slash(); return; }
   const npc=t.closest("[data-npc]"); if(npc){ e.preventDefault(); if(modal.classList.contains("on")) closeSheet(); openNpc(npc.dataset.npc); return; }

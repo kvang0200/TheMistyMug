@@ -29,7 +29,8 @@ unmet NPCs, or quests the party hasn't started.
   Reseal button that turns it back over. Each device remembers which seals it has broken, so a
   player on a new device sees them sealed again.
 - **Classified covers:** each player's personal fortune (from `visions`) sits under a
-  CLASSIFIED cover on the Quests tab until it is tapped, and can be resealed the same way.
+  CLASSIFIED cover on its player's Home card and on the Quests tab (opening one opens both) until it is tapped, and can be resealed the same way.
+- **Loose ends** (`threads` in `data.js`) are pinned on the Quests tab, under the quest list.
 - **Stamps** come from fields you already fill in: NPC `side` / `fate` (ALLY, UNCERTAIN, HOSTILE,
   DECEASED, MISSING), place `s` (VISITED · SESSION 11 or NOT VISITED) and quest `st` (COMPLETED).
 - **Redactions:** in the latest session's summary, wrap words in `[[double brackets]]` to black
