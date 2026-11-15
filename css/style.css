@@ -561,10 +561,15 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 
 /* Home title card: fills the screen, holds still while it settles, then the
    rest of the page slides up over it and it sinks into the dark */
-.cover.sstage{min-height:calc(100vh - var(--hdr,66px));min-height:calc(100svh - var(--hdr,66px));padding-bottom:clamp(40px,6vh,80px);background:var(--p)}
+.cover.sstage{min-height:calc(100vh - var(--hdr,66px));min-height:calc(100svh - var(--hdr,66px));padding-bottom:0;display:flex;flex-direction:column;background:var(--p)}
+.cover.sstage>.tally{margin-top:auto}
+.cover.sstage>.wrap{padding-bottom:clamp(24px,4vh,56px)}
 /* the title card is sized to fit one screen */
-.cover .mast{font-size:clamp(66px,min(19vw,24vh),256px)}
-.cover .headline{font-size:clamp(40px,min(7vw,9.5vh),104px)}
+.cover .mast{font-size:clamp(56px,min(19vw,17vh),256px)}
+.cover .headline{font-size:clamp(36px,min(7vw,7.5vh),104px)}
+.cover.sstage .tally .wrap{padding-top:clamp(16px,2.6vh,36px);padding-bottom:clamp(16px,2.6vh,36px)}
+.cover.sstage .tally .n{font-size:clamp(36px,5.5vh,56px)}
+.cover .villain .card>.parch{padding:20px 22px 22px}
 .cover-row{margin-top:clamp(24px,4vh,64px)}
 .scene.on .mast{translate:0 calc(var(--pt,0) * -24px + var(--pu,0) * 120px);scale:calc(1 + var(--pt,0) * .06);opacity:calc(1 - var(--pu,0) * .7)}
 .scene.on .metaline{opacity:calc(1 - var(--pt,0) * 1.2)}
@@ -573,36 +578,50 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 .scene.on>.cover.sstage::after{content:"";position:absolute;inset:0;background:#000;opacity:calc(var(--pu,0) * .7);pointer-events:none;z-index:5}
 .after-pin{position:relative;z-index:2;background:var(--p);box-shadow:0 -30px 70px rgba(0,0,0,.6)}
 
-/* Quests: the Tarokka cards are dealt onto the table one at a time */
-.scene.on[data-pin="deal"]>.sstage{padding:8px 0}
-.scene.on .fan>.flip{--k:clamp(0,var(--pt,0) * 5.2 - var(--i) + 1,1);translate:0 calc((1 - var(--k)) * 70vh);opacity:clamp(0,var(--k) * 3,1);scale:1}
 
 /* Home players: the cards slide across the screen while the section is pinned */
 .ptrack-wrap{position:relative}
 .ptrack{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:36px 28px;align-items:start}
 .scene.on .ptrack{display:flex;gap:30px;width:max-content;translate:calc(var(--tx,0px) * -1) 0;padding:30px 0 10px}
-.scene.on .ptrack>.pslot{width:auto}
+.scene.on .ptrack>.pslot{flex:0 0 auto;width:300px}
 .scene.on[data-pin="track"]>.sstage{padding-bottom:12px}
 .scene.on[data-pin="track"] .head{margin-bottom:12px}
-
-/* player card with a portrait tucked behind it; hover slides the portrait out
-   and the cards beside it shift to make room */
-.pslot{display:flex;align-items:flex-start;cursor:pointer}
-.pslot>.card{flex:1 1 auto;min-width:0;position:relative;z-index:2}
-.scene.on .pslot>.card{flex:0 0 auto;width:300px}
-.pphoto{flex:0 0 auto;width:30px;height:300px;margin:34px 0 0 -8px;position:relative;z-index:1;overflow:hidden;transition:width .65s cubic-bezier(.22,1,.36,1)}
-.pphoto-in{position:absolute;right:0;top:6px;width:190px;height:270px;padding:10px 10px 34px;background:var(--s);box-shadow:0 18px 30px rgba(0,0,0,.45);rotate:var(--r,2deg);transition:rotate .65s cubic-bezier(.22,1,.36,1),translate .65s cubic-bezier(.22,1,.36,1);translate:-8px 0}
-.pphoto-in .sil{position:absolute;left:10px;right:10px;top:10px;bottom:34px}
-.pphoto-in .cap{position:absolute;left:0;right:0;bottom:9px;text-align:center;font-family:var(--serif);font-style:italic;font-size:17px;color:var(--p)}
-.pphoto-in .tape{position:absolute;left:50%;top:-8px;width:64px;height:20px;margin-left:-32px;background:color-mix(in srgb,var(--s) 70%,#fff);opacity:.75;rotate:-4deg;z-index:2}
-.pslot:hover .pphoto,.pslot:focus-within .pphoto{width:214px}
-.pslot:hover .pphoto-in,.pslot:focus-within .pphoto-in{rotate:calc(var(--r,2deg) * -.6);translate:0 0}
-.pslot:hover .card>.parch{translate:0 -6px}
-@media (hover:none){ .pphoto{width:44px} }
 
 /* sticky bars: filters stay under the header while the list scrolls */
 .stickybar{position:sticky;top:var(--hdr,66px);z-index:20;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 18px;margin:-26px 0 34px;padding:12px 0;background:color-mix(in srgb,var(--p) 90%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
 .light .stickybar{background:color-mix(in srgb,var(--s) 92%,transparent);border-bottom-color:var(--ink-rule)}
 .stickyhead{position:sticky;top:var(--hdr,66px);z-index:20;background:color-mix(in srgb,var(--s) 94%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);padding-top:16px}
-@media (max-width:700px){ .pphoto{height:240px} .pphoto-in{width:150px;height:210px} .pslot:hover .pphoto,.pslot:focus-within .pphoto{width:170px} }
 @media (max-width:700px){ .scene.on .villain{translate:0 calc(var(--pu,0) * 30px)} .scene.on .cover-copy{translate:0 calc(var(--pu,0) * 40px)} }
+
+/* ---- player portrait: tucked behind the card, its back peeking over the top
+   edge; on hover it flips over and lands in front of the card, below the name ---- */
+.pslot{position:relative;padding-top:38px;cursor:pointer}
+.pslot>.card{position:relative;z-index:2}
+.pphoto{position:absolute;left:20px;right:20px;top:148px;bottom:20px;z-index:1;perspective:1400px;pointer-events:none;transition:z-index 0s .3s}
+.pp-in{position:absolute;inset:0;transform-style:preserve-3d;transform:translate(28%,-80%) scale(.44) rotate(var(--r,7deg)) rotateY(180deg);transition:transform .75s cubic-bezier(.3,1.25,.5,1)}
+.pp-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 18px 34px rgba(0,0,0,.5)}
+.pp-front{background:var(--s);padding:12px 12px 44px}
+.pp-front .sil{position:absolute;left:12px;right:12px;top:12px;bottom:44px}
+.pp-front .cap{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-family:var(--serif);font-style:italic;font-size:20px;color:var(--p)}
+.pp-front .tape{position:absolute;left:50%;top:-10px;width:70px;height:22px;margin-left:-35px;background:color-mix(in srgb,var(--s) 70%,#fff);opacity:.8;rotate:-4deg;z-index:2}
+.pp-back{transform:rotateY(180deg);background:repeating-linear-gradient(45deg,color-mix(in srgb,var(--s) 92%,var(--p)) 0 8px,var(--s) 8px 16px);border:8px solid var(--s);display:flex;align-items:flex-start;justify-content:center;padding-top:22px}
+.pp-back .seal-dot{width:34px;height:34px;margin:0}
+.pslot:hover .pphoto,.pslot:focus-within .pphoto{z-index:3}
+.pslot:hover .pp-in,.pslot:focus-within .pp-in{transform:translate(0,0) scale(1) rotate(-1.5deg) rotateY(0deg)}
+.pslot:hover .card>.parch{translate:0 -4px}
+
+
+/* ---- dealt cards: they fly in from a deck above the table, one after another ---- */
+@keyframes dealIn{0%{opacity:0;translate:var(--dx,0) var(--dy,-200px);rotate:var(--dr,-10deg);scale:.82}12%{opacity:1}70%{scale:1.03}100%{opacity:1;translate:0 0;rotate:0deg;scale:1}}
+.deal.undealt>*{opacity:0}
+.deal.dealt>*{animation:dealIn .8s cubic-bezier(.2,.85,.25,1) var(--dd,0s) both}
+.deal>.flip{z-index:calc(10 - var(--i,0))}
+
+/* personal fortunes as sealed cards */
+.fcard .face.front,.fcard .back{min-height:430px}
+.fcard .sealed-btn{justify-content:space-between;padding:30px 18px}
+.fcard .for{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:color-mix(in srgb,var(--s) 70%,transparent)}
+.fcard .fname{font-family:var(--serif);font-size:28px;line-height:1.05;text-align:center}
+.fcard .back{padding:26px 22px 22px;display:flex;flex-direction:column;gap:12px}
+.fcard .back p{margin:0;font-family:var(--serif);font-style:italic;font-size:15px;line-height:1.5}
+.fcard .back .t{font-family:var(--serif);font-size:24px;line-height:1.05}

@@ -195,7 +195,7 @@ const SX=(()=>{
     let L=type==="cover"?vh*.55:type==="deal"?vh*1.1:0, O=type==="cover"?vh:0, track=null;
     if(type==="track"){
       track=stage.querySelector(".ptrack");
-      if(!track.matches(":hover")||p._L==null) p._L=Math.max(0,track.scrollWidth-track.parentElement.clientWidth)+190;
+      if(!track.matches(":hover")||p._L==null) p._L=Math.max(0,track.scrollWidth-track.parentElement.clientWidth)+40;
       L=p._L;
     }
     return {p,active,type,stage,track,sh,stick,L,O,top:p.getBoundingClientRect().top};
@@ -231,6 +231,29 @@ const SX=(()=>{
   if(wide.addEventListener) wide.addEventListener("change",kick);
   if(!reduced){ rootEl.classList.add("sx"); addEventListener("scroll",kick,{passive:true}); }
   return {scan,kick};
+})();
+/* DEAL: the Tarokka and fortune cards are dealt from a deck above the table
+   the first time their row comes into view (again each time Quests opens) */
+const Deal=(()=>{
+  let io=null;
+  function run(g){
+    const gr=g.getBoundingClientRect(), x0=gr.left+gr.width/2, y0=gr.top-160;
+    [...g.children].forEach((c,i)=>{
+      const r=c.getBoundingClientRect();
+      c.style.setProperty("--dx",Math.round(x0-(r.left+r.width/2))+"px");
+      c.style.setProperty("--dy",Math.round(y0-(r.top+r.height/2))+"px");
+      c.style.setProperty("--dr",((i%2?1:-1)*(8+i*2))+"deg");
+      c.style.setProperty("--dd",(i*.17).toFixed(2)+"s");
+      setTimeout(()=>Sound.tick(),i*170+430);
+    });
+    g.classList.remove("undealt"); g.classList.add("dealt");
+  }
+  function prep(){
+    if(reduced) return;
+    if(!io) io=new IntersectionObserver(list=>list.forEach(x=>{ if(x.isIntersecting){ io.unobserve(x.target); run(x.target); } }),{threshold:.2});
+    $$(".view.on .deal").forEach(g=>{ g.classList.remove("dealt"); g.classList.add("undealt"); io.observe(g); });
+  }
+  return {prep};
 })();
 /* numbers in the campaign strip count up the first time they come into view */
 function countUp(scope){
@@ -279,7 +302,7 @@ function latestBlock(){
 function playerCard(p){
   const v=visionFor(p.n);
   const stats=[["AC",p.ac],["HP",p.hp],["PER",p.pp],["DC",p.dc]].map(([k,x])=>`<div><dt>${k}</dt><dd>${esc(x==null?"—":x)}</dd></div>`).join("");
-  /* the portrait is tucked behind the card; hovering slides it out and the cards beside it make room */
+  /* the portrait is tucked behind the card, its back peeking over the top; hovering flips it over in front of the card, below the name */
   return `<div class="pslot in" data-pcard="${esc(p.id)}">
   <div class="card player sway" style="--tilt:${tilt(p.i+1)}deg"><div class="shade"></div><article class="parch">
     <span class="topline"><span class="label" style="color:var(--ink-muted)">Level ${esc(D.level)}</span><span class="open-hint" aria-hidden="true">Open file ${ICON.arrow}</span></span>
@@ -290,18 +313,16 @@ function playerCard(p){
     ${p.d?`<p class="pc-note">${esc(p.d)}</p>`:""}
     <span class="pc-foot">${v?`<span class="label"><i class="seal-dot" aria-hidden="true"></i>Sealed fortune inside</span>`:""}</span>
   </article></div>
-  <div class="pphoto" aria-hidden="true"><div class="pphoto-in" style="--r:${[2.5,-2,3,-2.5,2][p.i%5]}deg"><span class="tape"></span>${sil({...p,name:p.n})}<span class="cap">${esc(p.n.split(" ")[0])}</span></div></div>
+  <div class="pphoto" aria-hidden="true"><div class="pp-in" style="--r:${[7,-6,8,-7,6][p.i%5]}deg"><div class="pp-face pp-back"><i class="seal-dot"></i></div><div class="pp-face pp-front"><span class="tape"></span>${sil({...p,name:p.n})}<span class="cap">${esc(p.n)}</span></div></div></div>
 </div>`;
 }
 /* the same fortunes again on the Quests tab; opening one opens both */
-function fortuneCard(p,i){
+function fortuneCard(p){
   const v=visionFor(p.n); if(!v) return "";
-  return `<div class="card player fortune in" id="fortune-${esc(p.id)}" style="--tilt:${tilt(p.i+1)}deg"><div class="shade"></div><article class="parch">
-    <span class="label" style="color:var(--ink-muted)">Personal fortune</span>
-    <button type="button" class="open-sheet" data-pc="${esc(p.id)}" aria-label="Open ${esc(p.n)}'s file"><span class="who name" style="display:inline-block">${esc(p.n)}</span></button>
-    <span class="cls">${esc(p.sp)} · ${esc(p.cl.replace(/ \d+$/,""))}</span>
-    ${sealBox("f-"+slug(p.n),p.n,fortuneText(v))}
-  </article></div>`;
+  const first=p.n.split(" ")[0];
+  return flipCard({key:"f-"+slug(p.n),i:p.i,cls:"tarot fcard",frontParch:false,still:true,id:"fortune-"+p.id,
+    front:`<button type="button" class="sealed-btn" data-crack aria-label="Break the seal on ${esc(first)}'s personal fortune"><span class="for">For ${esc(first)} only</span><span class="fname">${esc(p.n)}</span>${wax("key",84)}<span class="label">Break the seal</span></button>`,
+    back:`<span class="label">Personal fortune</span><span class="t">${esc(p.n)}</span><p>${esc(v.p)}</p><span class="label" style="color:var(--ink-muted)">From Madam Eva · Session 5</span>`});
 }
 function tarotCard(c,i){
   const done=c.st==="done";
@@ -345,18 +366,20 @@ function renderHome(){
         </div>
       </div>`:""}
     </div>
-  </div></section></div>
-
-  <div class="after-pin">
-  <section class="tally" aria-label="The campaign at a glance"><div class="wrap">
+  </div>
+  <div class="tally" role="group" aria-label="The campaign at a glance"><div class="wrap">
     <div class="t snap" ${d(1.0)}><span class="n">${esc(LAST)}</span><span class="l">SESSIONS\nPLAYED</span></div>
     <div class="t snap" ${d(1.08)}><span class="n">${esc(D.party.length)}</span><span class="l">PLAYERS\nAT LEVEL ${esc(D.level)}</span></div>
     <div class="t snap" ${d(1.16)}><span class="n">${esc(ongoing)}</span><span class="l">ONGOING\nQUESTS</span></div>
     <div class="t snap" ${d(1.24)}><span class="n">${fulfilled}/${D.tarokka.length}</span><span class="l">TAROKKA CARDS\nFULFILLED</span></div>
-  </div></section>
+  </div></div>
+  </section></div>
+
+  <div class="after-pin">
+
 
   <section class="section players-sec" id="players"><div class="mist" style="top:0" aria-hidden="true"></div><div class="wrap" style="position:relative">
-    <div class="scene" data-pin="track"><div class="sstage">${head("01 — The party",`The <i>players</i>`,`<p>Hover a player to pull out their portrait, and tap to open their file. Each personal fortune is sealed inside it.</p>`)}<div class="ptrack-wrap"><div class="ptrack">${PCS.map(playerCard).join("")}</div></div></div></div>
+    <div class="scene" data-pin="track"><div class="sstage">${head("01 — The party",`The <i>players</i>`,`<p>Hover a player to flip their portrait over, and tap to open their file. Each personal fortune is sealed inside it.</p>`)}<div class="ptrack-wrap"><div class="ptrack">${PCS.map(playerCard).join("")}</div></div></div></div>
   </div></section>
 
   <section class="section light" id="latest"><div class="wrap">
@@ -435,14 +458,12 @@ let questFilter="ongoing";
 function renderQuests(){
   $("#v-quests").innerHTML=`
   <section class="section" id="tarokka"><div class="mist red" style="top:0" aria-hidden="true"></div><div class="wrap" style="position:relative">
-    <div class="scene" data-pin="deal"><div class="sstage">
     ${head("Quests · The reading",`The Tarokka <i>reading</i>`,`<p>Madam Eva's reading from Session 5. Break a seal to turn a card, and tap Reseal to turn it back.</p>`)}
     <p class="jumps"><a class="link" href="#quests" data-fortune="">Personal fortunes ↓</a><a class="link" href="#quests" data-fortune="list">Quests ↓</a><a class="link" href="#quests" data-fortune="loose">Loose ends ↓</a></p>
-    <div class="grid g-210 fan">${D.tarokka.map(tarotCard).join("")}</div>
-    </div></div>
+    <div class="grid g-210 deal${reduced?"":" undealt"}">${D.tarokka.map(tarotCard).join("")}</div>
     <div class="subhead in" id="fortunes"><h3>Personal <i>fortunes</i></h3></div>
     <p class="fortune-note">Madam Eva gave each player a personal fortune in Session 5. Each one stays under wax until its player breaks the seal.</p>
-    <div class="grid g-240">${PCS.map(fortuneCard).join("")}</div>
+    <div class="grid g-240 deal${reduced?"":" undealt"}">${PCS.map(fortuneCard).join("")}</div>
   </div></section>
   <div id="questList"></div>
   <section class="section light"><div class="wrap">
@@ -551,6 +572,13 @@ addEventListener("keydown",e=>{
    CLICKS: seals, covers, chips, filters
    ===================================================================== */
 const twins=el=>$$(`[data-seal="${CSS.escape(el.dataset.seal)}"]`).filter(x=>x!==el);
+function syncTwins(el,open){
+  twins(el).forEach(x=>{
+    x.classList.remove("rewax");
+    if(x.classList.contains("sealbox")) paintBox(x,open,true);
+    else { x.classList.toggle("is-open",open); x.classList.toggle("instant",open); faces(x,open); stampLater(x,open,false); }
+  });
+}
 function faces(card,open){ const f=card.querySelector(".face.front"), b=card.querySelector(".face.back"); if(f) f.inert=open; if(b) b.inert=!open; }
 function stampLater(card,show,animate){
   const later=card.querySelector("[data-later]"); if(!later) return;
@@ -564,14 +592,14 @@ function crackSeal(card){
   Sound.crack(); setTimeout(()=>Sound.flip(),reduced?0:620);
   if(card.querySelector("[data-later]")){ stampLater(card,true,true); if(!reduced) setTimeout(()=>Sound.stamp(),1500); }
   if(w) FX.sealBreak(w,card.querySelector(".inner"),card.querySelector(".shade"));
-  twins(card).forEach(x=>{ x.classList.add("is-open","instant"); faces(x,true); stampLater(x,true,false); });
+  syncTwins(card,true);
 }
 function resealCard(card){
   if(!card||!card.classList.contains("is-open")) return;
   forget(card.dataset.seal);
   card.classList.remove("is-open","instant"); card.classList.add("rewax"); faces(card,false); stampLater(card,false,false);
   const btn=card.querySelector("[data-crack]"); if(btn) btn.focus({preventScroll:true});
-  twins(card).forEach(x=>{ x.classList.remove("is-open","instant","rewax"); faces(x,false); stampLater(x,false,false); });
+  syncTwins(card,false);
   const land=reduced?0:720;
   setTimeout(()=>{ Sound.reseal(); const w=card.querySelector(".wax"); if(w) FX.rewax(w); },land);
   setTimeout(()=>card.classList.remove("rewax"),1600);
@@ -588,11 +616,11 @@ function breakBox(box){
   const w=box.querySelector(".wax");
   box.classList.remove("rewax"); paintBox(box,true,false); remember(box.dataset.seal);
   Sound.crack(); if(w) FX.sealBreak(w,null,box.querySelector(".seal-body"));
-  twins(box).forEach(x=>{ x.classList.remove("rewax"); paintBox(x,true,true); });
+  syncTwins(box,true);
 }
 function resealBox(box){
   forget(box.dataset.seal); paintBox(box,false,false); box.classList.add("rewax");
-  twins(box).forEach(x=>{ x.classList.remove("rewax"); paintBox(x,false,false); });
+  syncTwins(box,false);
   setTimeout(()=>{ Sound.reseal(); const w=box.querySelector(".wax"); if(w) FX.rewax(w); },reduced?0:720);
   setTimeout(()=>box.classList.remove("rewax"),1600);
 }
@@ -645,7 +673,7 @@ function show(v,fx=true,after){
     scrollTo({top:0,behavior:"auto"});
     if(v==="locations"&&mapMode==="map") enterMap();
   }
-  requestAnimationFrame(()=>SX.scan());
+  requestAnimationFrame(()=>{ SX.scan(); if(changed) Deal.prep(); });
   if(after) requestAnimationFrame(()=>requestAnimationFrame(after));
 }
 addEventListener("hashchange",()=>{ const a=pendingAfter; pendingAfter=null; show(location.hash.slice(1)||"home",true,a); });
