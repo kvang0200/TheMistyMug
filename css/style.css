@@ -477,7 +477,7 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
      --sxe  how far it has entered the screen (0 to 1, eased)
      --sxp  how far it has travelled through the screen (0 to 1)
      --sxq  how much of it has been read past the 75% line (0 to 1)
-   and two onto the page: --sy (first screen scrolled, 0 to 1) and
+   and two onto the page: --hdr (header height) and
    --sp (whole page, 0 to 1). Without them everything simply shows.
    ===================================================================== */
 .hdr::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:var(--a);transform-origin:left;transform:scaleX(var(--sp,0));box-shadow:0 0 12px var(--a)}
@@ -501,11 +501,6 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 .stamp-view{--s2:clamp(0,(var(--sxe,1) - .55) * 2.4,1);opacity:var(--s2);scale:calc(2.4 - 1.4 * var(--s2))}
 
 
-/* title card: BAROVIA sinks and fades, the copy and Strahd's card rise at different speeds */
-.mast{translate:0 calc(var(--sy,0) * 170px);opacity:calc(1 - var(--sy,0) * .85)}
-.cover-copy{translate:0 calc(var(--sy,0) * -60px)}
-.villain{translate:0 calc(var(--sy,0) * -170px)}
-.metaline{opacity:calc(1 - var(--sy,0) * 1.6)}
 
 /* Sessions: a red thread runs down the page as you read */
 .thread-host{position:relative}
@@ -517,17 +512,9 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 #locList .grid>.in:nth-child(odd){translate:calc((1 - var(--sxe,1)) * -90px) 0}
 #locList .grid>.in:nth-child(even){translate:calc((1 - var(--sxe,1)) * 90px) 0}
 
-/* Quests: the Tarokka cards start stacked together and slide apart across the table */
-@media (min-width:1240px){
-  .fan>.flip.in{translate:calc((2 - var(--i)) * (1 - var(--sxe,1)) * 104%) calc((1 - var(--sxe,1)) * 60px);opacity:1;scale:1}
-  .fan>.flip:nth-child(1),.fan>.flip:nth-child(5){z-index:1}
-  .fan>.flip:nth-child(2),.fan>.flip:nth-child(4){z-index:2}
-  .fan>.flip:nth-child(3){z-index:3}
-}
 
 @media (max-width:700px){
   .grid>.in:nth-child(n){--rise:50px}
-  .villain{translate:0 calc(var(--sy,0) * -30px)}
   .thread-host::before{display:none}
 }
 
@@ -561,15 +548,61 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 @keyframes waxGone{to{width:0;margin-right:-16px;opacity:0}}
 .sealbox.is-open .seal-row .wax{animation:shake .3s ease-in-out both,waxGone .35s ease .9s forwards}
 
-/* ---- sections hand off to each other ----
-   Each section pins once its bottom reaches the bottom of the screen, and the
-   next one slides up over it while the pinned one dims and settles back.
-   js/app.js (SX) sets --stick and --out; only on when motion is allowed. */
-#questList{display:contents}
-html.sx .panel{position:sticky;top:var(--stick,0px);isolation:isolate}
-html.sx .panel+.panel,html.sx #questList>.panel,html.sx #tarokka~.panel{box-shadow:0 -28px 60px rgba(0,0,0,.5)}
-html.sx .panel::after{content:"";position:absolute;inset:0;background:#000;opacity:calc(var(--out,0) * .6);pointer-events:none;z-index:60;will-change:opacity}
-html.sx .panel:not(.light):not(.tally){background:var(--p)}
 /* descriptions on NPC cards and in pop-ups */
 .npc-desc{margin:14px 0 0;font-family:var(--serif);font-size:15.5px;line-height:1.5}
 .sheet .lede{margin:14px 0 0;max-width:620px;font-family:var(--serif);font-size:19px;line-height:1.5}
+
+/* =====================================================================
+   PINNED SCENES (see PINS in js/app.js)
+   The wrapper is made tall; its .sstage sticks while you scroll through it.
+   ===================================================================== */
+.scene{position:relative}
+.scene.on>.sstage{position:sticky;top:var(--stick,0px)}
+
+/* Home title card: fills the screen, holds still while it settles, then the
+   rest of the page slides up over it and it sinks into the dark */
+.cover.sstage{min-height:calc(100vh - var(--hdr,66px));min-height:calc(100svh - var(--hdr,66px));padding-bottom:clamp(40px,6vh,80px);background:var(--p)}
+/* the title card is sized to fit one screen */
+.cover .mast{font-size:clamp(66px,min(19vw,24vh),256px)}
+.cover .headline{font-size:clamp(40px,min(7vw,9.5vh),104px)}
+.cover-row{margin-top:clamp(24px,4vh,64px)}
+.scene.on .mast{translate:0 calc(var(--pt,0) * -24px + var(--pu,0) * 120px);scale:calc(1 + var(--pt,0) * .06);opacity:calc(1 - var(--pu,0) * .7)}
+.scene.on .metaline{opacity:calc(1 - var(--pt,0) * 1.2)}
+.scene.on .cover-copy{translate:0 calc(var(--pt,0) * -36px + var(--pu,0) * 60px)}
+.scene.on .villain{translate:0 calc(var(--pt,0) * -80px + var(--pu,0) * 40px)}
+.scene.on>.cover.sstage::after{content:"";position:absolute;inset:0;background:#000;opacity:calc(var(--pu,0) * .7);pointer-events:none;z-index:5}
+.after-pin{position:relative;z-index:2;background:var(--p);box-shadow:0 -30px 70px rgba(0,0,0,.6)}
+
+/* Quests: the Tarokka cards are dealt onto the table one at a time */
+.scene.on[data-pin="deal"]>.sstage{padding:8px 0}
+.scene.on .fan>.flip{--k:clamp(0,var(--pt,0) * 5.2 - var(--i) + 1,1);translate:0 calc((1 - var(--k)) * 70vh);opacity:clamp(0,var(--k) * 3,1);scale:1}
+
+/* Home players: the cards slide across the screen while the section is pinned */
+.ptrack-wrap{position:relative}
+.ptrack{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:36px 28px;align-items:start}
+.scene.on .ptrack{display:flex;gap:30px;width:max-content;translate:calc(var(--tx,0px) * -1) 0;padding:30px 0 10px}
+.scene.on .ptrack>.pslot{width:auto}
+.scene.on[data-pin="track"]>.sstage{padding-bottom:12px}
+.scene.on[data-pin="track"] .head{margin-bottom:12px}
+
+/* player card with a portrait tucked behind it; hover slides the portrait out
+   and the cards beside it shift to make room */
+.pslot{display:flex;align-items:flex-start;cursor:pointer}
+.pslot>.card{flex:1 1 auto;min-width:0;position:relative;z-index:2}
+.scene.on .pslot>.card{flex:0 0 auto;width:300px}
+.pphoto{flex:0 0 auto;width:30px;height:300px;margin:34px 0 0 -8px;position:relative;z-index:1;overflow:hidden;transition:width .65s cubic-bezier(.22,1,.36,1)}
+.pphoto-in{position:absolute;right:0;top:6px;width:190px;height:270px;padding:10px 10px 34px;background:var(--s);box-shadow:0 18px 30px rgba(0,0,0,.45);rotate:var(--r,2deg);transition:rotate .65s cubic-bezier(.22,1,.36,1),translate .65s cubic-bezier(.22,1,.36,1);translate:-8px 0}
+.pphoto-in .sil{position:absolute;left:10px;right:10px;top:10px;bottom:34px}
+.pphoto-in .cap{position:absolute;left:0;right:0;bottom:9px;text-align:center;font-family:var(--serif);font-style:italic;font-size:17px;color:var(--p)}
+.pphoto-in .tape{position:absolute;left:50%;top:-8px;width:64px;height:20px;margin-left:-32px;background:color-mix(in srgb,var(--s) 70%,#fff);opacity:.75;rotate:-4deg;z-index:2}
+.pslot:hover .pphoto,.pslot:focus-within .pphoto{width:214px}
+.pslot:hover .pphoto-in,.pslot:focus-within .pphoto-in{rotate:calc(var(--r,2deg) * -.6);translate:0 0}
+.pslot:hover .card>.parch{translate:0 -6px}
+@media (hover:none){ .pphoto{width:44px} }
+
+/* sticky bars: filters stay under the header while the list scrolls */
+.stickybar{position:sticky;top:var(--hdr,66px);z-index:20;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 18px;margin:-26px 0 34px;padding:12px 0;background:color-mix(in srgb,var(--p) 90%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.light .stickybar{background:color-mix(in srgb,var(--s) 92%,transparent);border-bottom-color:var(--ink-rule)}
+.stickyhead{position:sticky;top:var(--hdr,66px);z-index:20;background:color-mix(in srgb,var(--s) 94%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);padding-top:16px}
+@media (max-width:700px){ .pphoto{height:240px} .pphoto-in{width:150px;height:210px} .pslot:hover .pphoto,.pslot:focus-within .pphoto{width:170px} }
+@media (max-width:700px){ .scene.on .villain{translate:0 calc(var(--pu,0) * 30px)} .scene.on .cover-copy{translate:0 calc(var(--pu,0) * 40px)} }
