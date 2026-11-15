@@ -50,8 +50,9 @@ function tierOf(n){ if(n.pc) return "hero"; if(n.fate==="dead") return "fallen";
 
 /* ---------- painterly placeholder portrait ---------- */
 function hash(s){let h=7;for(const c of s)h=(h*31+c.charCodeAt(0))|0;return Math.abs(h)}
+let portraitSeq=0;  /* every portrait gets its own gradient ids; a repeated id would point at a copy in a hidden view */
 function placeholder(n){
-  const h=hash(n.id), t=TIER[tierOf(n)], rc=t.rc, id="p"+h;
+  const h=hash(n.id), t=TIER[tierOf(n)], rc=t.rc, id="p"+h+"_"+(portraitSeq++);
   const eye={ally:"#c7ecdf",unsure:"#ffd07a",foe:"#ff4b38",hero:"#ffe6a8"}[n.side]||"#ffd07a";
   const shoulders=["M8 133 Q16 98 50 91 Q84 98 92 133Z","M4 133 Q14 94 50 89 Q86 94 96 133Z","M12 133 Q20 100 50 94 Q80 100 88 133Z"][h%3];
   const headR=14+(h%4);
@@ -62,9 +63,11 @@ function placeholder(n){
     : `<g class="eyes-glow" style="animation-delay:${(h%40)/10}s"><ellipse cx="44" cy="63" rx="2.6" ry="1.3" fill="${eye}"/><ellipse cx="56" cy="63" rx="2.6" ry="1.3" fill="${eye}"/><ellipse cx="44" cy="63" rx="7" ry="3.8" fill="${eye}" opacity=".2"/><ellipse cx="56" cy="63" rx="7" ry="3.8" fill="${eye}" opacity=".2"/></g>`;
   return `<svg viewBox="0 0 100 133" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs><radialGradient id="${id}g" cx="50%" cy="36%" r="72%"><stop offset="0" stop-color="rgb(${rc})" stop-opacity=".55"/><stop offset=".45" stop-color="#3a2a20"/><stop offset="1" stop-color="#120c0b"/></radialGradient>
-    <radialGradient id="${id}c" cx="50%" cy="30%" r="45%"><stop offset="0" stop-color="#ffbf73" stop-opacity=".25"/><stop offset="1" stop-color="#ffbf73" stop-opacity="0"/></radialGradient></defs>
+    <radialGradient id="${id}c" cx="50%" cy="30%" r="45%"><stop offset="0" stop-color="#ffbf73" stop-opacity=".25"/><stop offset="1" stop-color="#ffbf73" stop-opacity="0"/></radialGradient>
+    <radialGradient id="${id}a"><stop offset="0" stop-color="#8c2a26" stop-opacity=".35"/><stop offset=".35" stop-color="#8c2a26" stop-opacity=".32"/><stop offset=".6" stop-color="#8c2a26" stop-opacity=".17"/><stop offset=".82" stop-color="#8c2a26" stop-opacity=".05"/><stop offset="1" stop-color="#8c2a26" stop-opacity="0"/></radialGradient>
+    <radialGradient id="${id}b"><stop offset="0" stop-color="rgb(${rc})" stop-opacity=".35"/><stop offset=".4" stop-color="rgb(${rc})" stop-opacity=".32"/><stop offset=".62" stop-color="rgb(${rc})" stop-opacity=".17"/><stop offset=".83" stop-color="rgb(${rc})" stop-opacity=".05"/><stop offset="1" stop-color="rgb(${rc})" stop-opacity="0"/></radialGradient></defs>
     <rect width="100" height="133" fill="url(#${id}g)"/><rect width="100" height="133" fill="url(#${id}c)"/>
-    <g filter="url(#soft)" opacity=".35"><circle cx="${18+h%30}" cy="${20+h%25}" r="20" fill="#8c2a26"/><circle cx="${72+h%18}" cy="${96+h%20}" r="24" fill="rgb(${rc})"/></g>
+    <circle cx="${18+h%30}" cy="${20+h%25}" r="34" fill="url(#${id}a)"/><circle cx="${72+h%18}" cy="${96+h%20}" r="40" fill="url(#${id}b)"/>
     <g stroke="rgba(${rc},.45)" stroke-width=".7">
       <path d="${shoulders}" fill="#0d0907"/>
       <rect x="44" y="74" width="12" height="20" fill="#0d0907" stroke="none"/>
@@ -105,7 +108,7 @@ function burst(x,y,opts={}){
 }
 function inkRipple(x,y,size=160){
   if(quiet) return;
-  const e=document.createElement("i"); e.className="ink"; e.style.left=(x-size/2)+"px"; e.style.top=(y-size/2)+"px"; e.style.width=e.style.height=size+"px"; fxLayer.appendChild(e);
+  const e=document.createElement("i"), d=size*1.25; e.className="ink"; e.style.left=(x-d/2)+"px"; e.style.top=(y-d/2)+"px"; e.style.width=e.style.height=d+"px"; fxLayer.appendChild(e);
   e.animate([{transform:"scale(.1) rotate(0deg)",opacity:.95},{transform:"scale(1.6) rotate(25deg)",opacity:0}],{duration:900,easing:"cubic-bezier(.2,.8,.2,1)"}).onfinish=()=>e.remove();
 }
 document.addEventListener("pointerdown",e=>{
@@ -188,12 +191,11 @@ function show(v, fx=true){
   placeMarkers();
   if(fx && !first && !quiet){ Sound.whoosh(); swap(); }
   else swap();
-  Sound.mood(v);
 }
 addEventListener("hashchange",()=>show(location.hash.slice(1)));
 
 /* compact header + back-to-top */
-let lastY=0, lockUntil=0;
+let lastY=0, lockUntil=0; const toTop=$("#toTop");
 /* pause decorative loops while scrolling: frees the phone to just scroll */
 let scrollT=null;
 addEventListener("scroll",()=>{ if(!scrollT) document.body.classList.add("scrolling"); clearTimeout(scrollT); scrollT=setTimeout(()=>{ document.body.classList.remove("scrolling"); scrollT=null; },160); },{passive:true});
@@ -204,10 +206,10 @@ addEventListener("scroll",()=>{
     if(!c && y>110 && d>6){ document.body.classList.add("compact"); lockUntil=performance.now()+550; }
     else if(c && (d<-14 || y<60)){ document.body.classList.remove("compact"); lockUntil=performance.now()+550; }
   }
-  $("#toTop").classList.toggle("on",y>700);
+  toTop.classList.toggle("on",y>700);
   lastY=y;
 },{passive:true});
-$("#toTop").addEventListener("click",()=>{ window.scrollTo({top:0,behavior:quiet?"auto":"smooth"}); Sound.whoosh(); });
+toTop.addEventListener("click",()=>{ window.scrollTo({top:0,behavior:quiet?"auto":"smooth"}); Sound.whoosh(); });
 
 /* swipe between sections */
 let sx=0, sy=0, st=0, swipeOK=false;
@@ -504,9 +506,18 @@ function applyMap(){
   st.y = sh<=H ? (H-sh)/2 : Math.min(0,Math.max(H-sh,st.y));
   if(mapRAF) return;
   mapRAF=requestAnimationFrame(()=>{ mapRAF=0; const stg=$("#stage"); stg.style.transform=`translate(${mapState.x}px,${mapState.y}px) scale(${mapState.s})`;
-    const inv=(1/mapState.s).toFixed(3); if(inv!==lastInv){ lastInv=inv; stg.style.setProperty("--inv",inv); } });
+    const inv=(1/mapState.s).toFixed(3); if(inv!==lastInv){ lastInv=inv; stg.style.setProperty("--inv",inv); }
+    if(!mapFull && mapState.s*(devicePixelRatio||1)>.55) loadMapFull(); });
 }
 let mapRAF=0, lastInv="";
+const MAP_SMALL="img/barovia-map-1000.webp", MAP_FULL="img/barovia-map.webp";
+let mapFull=false;
+function loadMapFull(){
+  if(mapFull) return; mapFull=true;
+  const im=new Image(); im.src=MAP_FULL;
+  const swap=()=>{ $("#mapImg").src=MAP_FULL; };
+  im.decode ? im.decode().then(swap,swap) : (im.onload=swap);
+}
 function zoomAt(f,cx,cy){
   const st=mapState, ns=Math.min(st.max,Math.max(st.min,st.s*f));
   st.x=cx-(cx-st.x)*(ns/st.s); st.y=cy-(cy-st.y)*(ns/st.s); st.s=ns; applyMap();
@@ -552,7 +563,7 @@ function initMapInput(){
 }
 let mapReady=false;
 function enterMap(){
-  if(!mapReady){ buildMap(); initMapInput(); mapReady=true; }
+  if(!mapReady){ const img=$("#mapImg"); if(!img.getAttribute("src")) img.src=MAP_SMALL; buildMap(); initMapInput(); mapReady=true; }
   requestAnimationFrame(()=>{ resetMap(); const w=$(".places-wrap");
     if(!w.classList.contains("drawn")){ $$(".pin").forEach(p=>p.classList.add("drop")); setTimeout(()=>w.classList.add("drawn"),quiet?0:400); } });
 }
@@ -629,8 +640,8 @@ const fog=(()=>{
   return {start,stop};
 })();
 
-/* ---------- bats & lightning ---------- */
-let batTimer=null, stormTimer=null;
+/* ---------- bats ---------- */
+let batTimer=null;
 function spawnBats(){
   if(quiet) return;
   const n=1+Math.floor(Math.random()*3), y0=10+Math.random()*40, ltr=Math.random()<.5;
@@ -638,16 +649,17 @@ function spawnBats(){
     const b=document.createElement("div"); b.className="bat";
     b.innerHTML='<svg viewBox="0 0 64 32"><path fill="#140c0a" d="M32 12c-2-4-4-5-6-5 1 2 1 4 0 5-4-5-10-8-18-7 4 2 6 6 6 10-3-2-7-2-12 0 6 2 11 6 14 13 3-4 8-6 12-5 1 2 3 4 4 4s3-2 4-4c4-1 9 1 12 5 3-7 8-11 14-13-5-2-9-2-12 0 0-4 2-8 6-10-8-1-14 2-18 7-1-1-1-3 0-5-2 0-4 1-6 5Z"/></svg>';
     document.body.appendChild(b);
-    const dur=5200+Math.random()*2600, delay=i*260, sx0=ltr?-80:innerWidth+80, ex=ltr?innerWidth+80:-80, y=innerHeight*(y0/100)+i*28, amp=30+Math.random()*50, sc=.6+Math.random()*.7, t0=performance.now()+delay;
-    (function step(now){ const k=(now-t0)/dur; if(k<0){ requestAnimationFrame(step); return; } if(k>1){ b.remove(); return; }
-      const x=sx0+(ex-sx0)*k, yy=y+Math.sin(k*12)*amp*.35-Math.sin(k*3.14)*amp; b.style.transform=`translate(${x}px,${yy}px) scale(${ltr?sc:-sc},${sc})`; requestAnimationFrame(step); })(performance.now());
+    const dur=5200+Math.random()*2600, delay=i*260, sx0=ltr?-80:innerWidth+80, ex=ltr?innerWidth+80:-80, y=innerHeight*(y0/100)+i*28, amp=30+Math.random()*50, sc=.6+Math.random()*.7;
+    /* path is sampled once into keyframes; the browser animates it without a per-frame script */
+    const frames=[]; for(let k=0;k<=24;k++){ const f=k/24, x=sx0+(ex-sx0)*f, yy=y+Math.sin(f*12)*amp*.35-Math.sin(f*3.14)*amp; frames.push({transform:`translate(${x}px,${yy}px) scale(${ltr?sc:-sc},${sc})`}); }
+    b.style.transform=frames[0].transform;
+    b.animate(frames,{duration:dur,delay,easing:"linear",fill:"backwards"}).onfinish=()=>b.remove();
   }
   if(Sound.isOn()) Sound.whoosh();
 }
 function batLoop(){ clearTimeout(batTimer); batTimer=setTimeout(()=>{ spawnBats(); batLoop(); }, 24000+Math.random()*30000); }
-function lightning(){ if(quiet) return; const f=$("#flash"); f.classList.remove("go"); void f.offsetWidth; f.classList.add("go"); }
-addEventListener("lightning",lightning);
-function stormLoop(){ clearTimeout(stormTimer); stormTimer=setTimeout(()=>{ if(!Sound.isOn()) lightning(); stormLoop(); }, 60000+Math.random()*60000); }
+/* pause the bats while the page is hidden */
+document.addEventListener("visibilitychange",()=>{ if(document.hidden) clearTimeout(batTimer); else if(!quiet && document.body.classList.contains("entered")) batLoop(); });
 
 /* ---------- controls ---------- */
 function paintControls(){
@@ -657,27 +669,36 @@ function paintControls(){
 }
 function applyQuiet(){
   document.body.classList.toggle("quiet",quiet);
-  if(quiet){ fog.stop(); clearTimeout(batTimer); clearTimeout(stormTimer); $$(".bat").forEach(b=>b.remove()); }
-  else { fog.start(); batLoop(); stormLoop(); }
+  if(quiet){ fog.stop(); clearTimeout(batTimer); $$(".bat").forEach(b=>b.remove()); }
+  else { fog.start(); batLoop(); }
   observeReveals(); paintControls();
 }
-$$(".btn-sound").forEach(b=>b.addEventListener("click",()=>{ const want=!Sound.isOn(); if(want && quiet){ quiet=false; store.set("bv-quiet","0"); applyQuiet(); } Sound.setOn(want); store.set("bv-sound",want?"1":"0"); if(want) Sound.mood(current); paintControls(); }));
+$$(".btn-sound").forEach(b=>b.addEventListener("click",()=>{ const want=!Sound.isOn(); if(want && quiet){ quiet=false; store.set("bv-quiet","0"); applyQuiet(); } Sound.setOn(want); store.set("bv-sound",want?"1":"0"); paintControls(); }));
 $$(".btn-quiet").forEach(b=>b.addEventListener("click",()=>{ quiet=!quiet; store.set("bv-quiet",quiet?"1":"0"); if(quiet) Sound.setOn(false); applyQuiet(); }));
 
 /* ---------- gate ---------- */
 function enter(withSound){
+  document.body.classList.add("entered");
   if(withSound){ quiet=false; store.set("bv-quiet","0"); Sound.setOn(true); store.set("bv-sound","1"); setTimeout(()=>Sound.bell(1),150); setTimeout(()=>Sound.heartbeat(),1700); }
   applyQuiet();
   if(!quiet){ const m=$("#mistPart"); m.classList.add("go"); setTimeout(()=>m.classList.remove("go"),2600); }
   $("#gate").classList.add("gone"); setTimeout(()=>$("#gate").classList.add("done"),1600);
   try{ sessionStorage.setItem("bv-entered","1"); }catch(e){}
   show(location.hash.slice(1)||"home", false);
-  Sound.mood(current);
   if(!quiet) setTimeout(spawnBats,3500);
 }
 $("#enterBtn").addEventListener("click",()=>enter(true));
 $("#enterQuiet").addEventListener("click",()=>enter(false));
 let entered=false; try{ entered=sessionStorage.getItem("bv-entered")==="1"; }catch(e){}
-if(entered){ $("#gate").classList.add("gone"); setTimeout(()=>$("#gate").classList.add("done"),1600); applyQuiet(); show(location.hash.slice(1)||"home",false); }
+if(entered){ document.body.classList.add("entered"); $("#gate").classList.add("gone"); setTimeout(()=>$("#gate").classList.add("done"),1600); applyQuiet(); show(location.hash.slice(1)||"home",false); }
 else { paintControls(); if(!quiet) fog.start(); }
 document.fonts && document.fonts.ready.then(placeMarkers);
+
+/* once the page is idle, quietly fetch the small map and fog so the Locations tab opens without a stall */
+function whenIdle(fn){ ("requestIdleCallback" in window) ? requestIdleCallback(fn,{timeout:5000}) : setTimeout(fn,2500); }
+addEventListener("load",()=>whenIdle(()=>{
+  ["img/barovia-map-1000.webp","img/fog.webp","img/fog2.webp"].forEach(src=>{ const im=new Image(); im.src=src; im.decode&&im.decode().catch(()=>{}); });
+}));
+
+/* offline cache + instant repeat visits */
+if("serviceWorker" in navigator && (location.protocol==="https:"||location.hostname==="localhost")) addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
