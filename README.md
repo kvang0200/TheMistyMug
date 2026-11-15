@@ -13,10 +13,20 @@ unmet NPCs, or quests the party hasn't started.
 | `index.html` | Page skeleton: gate, header, tab sections, pop-up markup | Rarely |
 | `css/style.css` | All styling and animation | Rarely |
 | `js/app.js` | Tabs, cards, pop-ups, search, map, effects | Rarely |
-| `js/sound.js` | Synthesized audio (Web Audio, no sound files) | Rarely |
-| `img/` | Map (`barovia-map.webp`), fog layers, app icons, portraits | When adding art or fog changes |
+| `js/sound.js` | Synthesized click/card effects plus an occasional distant howl or bell (Web Audio, no sound files) | Rarely |
+| `sw.js` | Offline cache (service worker) | Bump `VERSION` when anything except `data.js` changes |
+| `fonts/` | Self-hosted Cinzel, Cinzel Decorative (700) and Cormorant Garamond, subset to Latin; OFL licences included | No |
+| `img/` | Map (`barovia-map.webp` 2000px + `barovia-map-1000.webp` preview), fog layers, grain/ink textures, app icons, portraits | When adding art or fog changes |
 
 No build step. Edit a file, commit, and Pages republishes in a minute or two.
+
+**Caching:** players' devices keep a copy of the site so it opens instantly and works offline.
+`index.html` and `js/data.js` are always fetched fresh when online, so normal session updates
+show up right away. If you change anything else (CSS, `app.js`, `sound.js`, images, fonts), also
+change `VERSION` at the top of `sw.js` (today's date is fine) so devices drop their old copies.
+
+**Map files:** if you edit the map art, export both sizes: `barovia-map.webp` at 2000×1364 and
+`barovia-map-1000.webp` at 1000×682. The small one shows first; the big one loads when someone zooms in.
 
 ## After each session
 
@@ -39,4 +49,4 @@ in `img/` or a full image URL. Only use art we have permission to use, and credi
 ## Credits
 
 - Map: free fan resource shared on Reddit.
-- Fonts: Cinzel, Cinzel Decorative, Cormorant Garamond (Google Fonts).
+- Fonts: Cinzel, Cinzel Decorative, Cormorant Garamond (SIL Open Font License; self-hosted in `fonts/`).

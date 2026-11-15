@@ -2,11 +2,10 @@
    AUDIO ENGINE — everything is synthesized, no files
    ===================================================================== */
 const Sound = (() => {
-  let ctx=null, master=null, verb=null, droneBus=null, voices=[], windGain=null, on=false, started=false, randomTimer=null, noiseBuf=null;
-  const moods = {
-    home:[73.42,110,174.61], chronicle:[65.41,98,155.56], souls:[55,82.41,130.81],
-    places:[87.31,130.81,207.65], fortunes:[82.41,123.47,196], party:[58.27,87.31,146.83]
-  };
+  /* No background drone and no thunder: the only sounds are short effects tied to clicks,
+     plus an occasional distant howl or bell. The audio engine is suspended whenever sound
+     is muted or the page is hidden, so it uses no CPU or battery in the background. */
+  let ctx=null, master=null, verb=null, on=false, started=false, randomTimer=null, noiseBuf=null, suspendT=null;
   function makeVerb(){
     const len = ctx.sampleRate*4, b = ctx.createBuffer(2,len,ctx.sampleRate);
     for(let c=0;c<2;c++){const d=b.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.6);}
@@ -22,37 +21,31 @@ const Sound = (() => {
     try{ ctx=new AC(); }catch(e){ return false; }
     master=ctx.createGain(); master.gain.value=0.0001; master.connect(ctx.destination);
     verb=makeVerb(); const vg=ctx.createGain(); vg.gain.value=.55; verb.connect(vg).connect(master);
-    // drone
-    droneBus=ctx.createGain(); droneBus.gain.value=.0001;
-    const lp=ctx.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value=520; lp.Q.value=4;
-    const lfo=ctx.createOscillator(); lfo.frequency.value=.045; const lfoG=ctx.createGain(); lfoG.gain.value=260; lfo.connect(lfoG).connect(lp.frequency); lfo.start();
-    droneBus.connect(lp); out(lp,.7);
-    moods.home.forEach((f,i)=>{
-      [-4,4].forEach(det=>{ const o=ctx.createOscillator(); o.type=i===0?"triangle":"sawtooth"; o.frequency.value=f; o.detune.value=det; const g=ctx.createGain(); g.gain.value=i===0?.22:.07; o.connect(g).connect(droneBus); o.start(); voices.push({o,i}); });
-    });
-    const sub=ctx.createOscillator(); sub.type="sine"; sub.frequency.value=36.7; const sg=ctx.createGain(); sg.gain.value=.12; sub.connect(sg).connect(droneBus); sub.start(); voices.push({o:sub,i:-1});
-    // swell
-    const sw=ctx.createOscillator(); sw.frequency.value=.025; const swg=ctx.createGain(); swg.gain.value=.025; sw.connect(swg).connect(droneBus.gain); sw.start();
     started=true; return true;
   }
   function setOn(v){
     if(v && !init()) return false;
     on=v; if(!ctx) return v;
+    clearTimeout(suspendT);
     if(v && ctx.state==="suspended") ctx.resume();
     const t=ctx.currentTime;
     master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(Math.max(master.gain.value,.0001),t);
-    master.gain.exponentialRampToValueAtTime(v?.75:.0001, t+(v?2.5:.6));
-    droneBus.gain.setTargetAtTime(v?.06:.0001,t,1.5);
-    clearTimeout(randomTimer); if(v) scheduleRandom();
+    master.gain.exponentialRampToValueAtTime(v?.75:.0001, t+(v?.4:.5));
+    clearTimeout(randomTimer);
+    if(v){ if(!document.hidden) scheduleRandom(); }
+    else suspendT=setTimeout(()=>{ if(!on && ctx.state==="running") ctx.suspend(); },700);
     return v;
   }
-  function mood(name){
-    if(!ctx||!on) return; const m=moods[name]||moods.home; const t=ctx.currentTime;
-    voices.forEach(v=>{ if(v.i>=0) v.o.frequency.setTargetAtTime(m[v.i],t,1.2); });
-  }
+  /* page hidden: stop the engine; page back: pick up where we left off */
+  document.addEventListener("visibilitychange",()=>{
+    if(!ctx||!on) return;
+    if(document.hidden){ clearTimeout(randomTimer); ctx.suspend(); }
+    else { ctx.resume(); scheduleRandom(); }
+  });
+  function mood(){ /* the per-section drone was removed; kept so older calls are harmless */ }
   function scheduleRandom(){
-    randomTimer=setTimeout(()=>{ if(!on) return; const r=Math.random();
-      if(r<.38) howl(); else if(r<.72){ thunder(); window.dispatchEvent(new Event("lightning")); } else bell(.5);
+    clearTimeout(randomTimer);
+    randomTimer=setTimeout(()=>{ if(!on||document.hidden) return; if(Math.random()<.55) howl(); else bell(.5);
       scheduleRandom(); }, 38000+Math.random()*50000);
   }
   // ----- effects -----
@@ -74,7 +67,6 @@ const Sound = (() => {
   function howl(){ if(!on) return; const t=ctx.currentTime; const o=ctx.createOscillator(); o.type="sawtooth"; o.frequency.setValueAtTime(330,t); o.frequency.linearRampToValueAtTime(560,t+.9); o.frequency.linearRampToValueAtTime(520,t+2.2); o.frequency.linearRampToValueAtTime(380,t+3.2);
     const v=ctx.createOscillator(); v.frequency.value=5.5; const vg=ctx.createGain(); vg.gain.value=9; v.connect(vg).connect(o.frequency);
     const bp=ctx.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=900; bp.Q.value=3; const g=ctx.createGain(); env(g,t,.6,.05,2.6); o.connect(bp).connect(g); out(g,.95); o.start(t); v.start(t); o.stop(t+3.6); v.stop(t+3.6); }
-  function thunder(){ if(!on) return; const t=ctx.currentTime+.15; const s=ctx.createBufferSource(); s.buffer=noise(); s.loop=true; const lp=ctx.createBiquadFilter(); lp.type="lowpass"; lp.frequency.setValueAtTime(900,t); lp.frequency.exponentialRampToValueAtTime(120,t+3); const g=ctx.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.45,t+.08); g.gain.exponentialRampToValueAtTime(.18,t+.6); g.gain.linearRampToValueAtTime(.25,t+1); g.gain.exponentialRampToValueAtTime(.0001,t+4.2); s.connect(lp).connect(g); out(g,.6); s.start(t); s.stop(t+4.5); }
   function summon(stars=3){ if(!on) return; const t=ctx.currentTime;
     const s=ctx.createBufferSource(); s.buffer=noise(); s.loop=true; const bp=ctx.createBiquadFilter(); bp.type="bandpass"; bp.Q.value=2; bp.frequency.setValueAtTime(200,t); bp.frequency.exponentialRampToValueAtTime(5000,t+1.05); const g=ctx.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.28,t+1); g.gain.exponentialRampToValueAtTime(.0001,t+1.12); s.connect(bp).connect(g); out(g,.5); s.start(t); s.stop(t+1.2);
     const o=ctx.createOscillator(); o.type="sawtooth"; o.frequency.setValueAtTime(80,t); o.frequency.exponentialRampToValueAtTime(stars>=5?880:660,t+1.05); const lp=ctx.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value=1800; const og=ctx.createGain(); og.gain.setValueAtTime(.0001,t); og.gain.exponentialRampToValueAtTime(.08,t+.9); og.gain.exponentialRampToValueAtTime(.0001,t+1.1); o.connect(lp).connect(og); out(og,.6); o.start(t); o.stop(t+1.2); }
@@ -101,5 +93,5 @@ const Sound = (() => {
     const s=ctx.createBufferSource(); s.buffer=noise(); const bp=ctx.createBiquadFilter(); bp.type="bandpass"; bp.Q.value=.9; bp.frequency.setValueAtTime(5200,t); bp.frequency.exponentialRampToValueAtTime(1600,t+.09); const g=ctx.createGain(); env(g,t,.006,.32,.08); s.connect(bp).connect(g); out(g,.15); s.start(t,Math.random()); s.stop(t+.16);
     const s2=ctx.createBufferSource(); s2.buffer=noise(); const hp=ctx.createBiquadFilter(); hp.type="highpass"; hp.frequency.value=1400; const g2=ctx.createGain(); env(g2,t+.085,.001,.42,.022); s2.connect(hp).connect(g2); out(g2,.1); s2.start(t+.085,Math.random()); s2.stop(t+.14);
     const o=ctx.createOscillator(); o.type="triangle"; o.frequency.value=260; const og=ctx.createGain(); env(og,t+.085,.001,.06,.04); o.connect(og); out(og,.1); o.start(t+.08); o.stop(t+.16); }
-  return {init,setOn,isOn:()=>on,mood,bell,heartbeat,flip,whoosh,scratch,growl,gasp,musicBox,howl,thunder,summon,reveal,crack,rustle,chime,crunch,cardFlip};
+  return {init,setOn,isOn:()=>on,mood,bell,heartbeat,flip,whoosh,scratch,growl,gasp,musicBox,howl,summon,reveal,crack,rustle,chime,crunch,cardFlip};
 })();
