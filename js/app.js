@@ -172,8 +172,6 @@ const SX=(()=>{
      scroll through the wrapper. The wrapper is made tall enough for the scene:
        cover  the title card holds still while it settles, then the next part of
               the page slides up over it
-       deal   the Tarokka cards are dealt onto the table one at a time
-       track  the player cards slide sideways across the screen
      --pt is the scene's progress (0 to 1), --pu how far the next part has covered it. */
   let pins=[];
   const ro="ResizeObserver" in window?new ResizeObserver(()=>kick()):null;
@@ -192,13 +190,8 @@ const SX=(()=>{
     if(!active) return {p,active};
     const stage=p.querySelector(".sstage"), sh=stage.offsetHeight, room=vh-hdr;
     const stick=sh>room?vh-sh:hdr+(type==="cover"?0:(room-sh)/2);
-    let L=type==="cover"?vh*.55:type==="deal"?vh*1.1:0, O=type==="cover"?vh:0, track=null;
-    if(type==="track"){
-      track=stage.querySelector(".ptrack");
-      if(!track.matches(":hover")||p._L==null) p._L=Math.max(0,track.scrollWidth-track.parentElement.clientWidth)+40;
-      L=p._L;
-    }
-    return {p,active,type,stage,track,sh,stick,L,O,top:p.getBoundingClientRect().top};
+    const L=type==="cover"?vh*.55:0, O=type==="cover"?vh:0;
+    return {p,active,type,stage,sh,stick,L,O,top:p.getBoundingClientRect().top};
   }
   function pinWrite(r){
     const p=r.p; if(!r.active){ off(p); return; }
@@ -209,7 +202,6 @@ const SX=(()=>{
     if(nx&&nx.classList.contains("after-pin")&&p._ov!==r.O){ p._ov=r.O; nx.style.marginTop=(-r.O)+"px"; }
     const d=r.stick-r.top, t=r.L?clamp(d/r.L):0;
     set(p,"--pt",t); set(p,"--pu",r.O?clamp((d-r.L)/r.O):0);
-    if(r.track) px(r.track,"--tx",t*r.L);
   }
 
   function frame(){
@@ -379,7 +371,8 @@ function renderHome(){
 
 
   <section class="section players-sec" id="players"><div class="mist" style="top:0" aria-hidden="true"></div><div class="wrap" style="position:relative">
-    <div class="scene" data-pin="track"><div class="sstage">${head("01 — The party",`The <i>players</i>`,`<p>Hover a player to flip their portrait over, and tap to open their file. Each personal fortune is sealed inside it.</p>`)}<div class="ptrack-wrap"><div class="ptrack">${PCS.map(playerCard).join("")}</div></div></div></div>
+    ${head("01 — The party",`The <i>players</i>`,`<p>Hover a player to flip their portrait over, and tap to open their file. Each personal fortune is sealed inside it.</p>`)}
+    <div class="ptrack">${PCS.map(playerCard).join("")}</div>
   </div></section>
 
   <section class="section light" id="latest"><div class="wrap">
@@ -673,7 +666,7 @@ function show(v,fx=true,after){
     scrollTo({top:0,behavior:"auto"});
     if(v==="locations"&&mapMode==="map") enterMap();
   }
-  requestAnimationFrame(()=>{ SX.scan(); if(changed) Deal.prep(); });
+  requestAnimationFrame(()=>{ SX.scan(); if(changed) Deal.prep(); if(v==="home") fitPhotos(); });
   if(after) requestAnimationFrame(()=>requestAnimationFrame(after));
 }
 addEventListener("hashchange",()=>{ const a=pendingAfter; pendingAfter=null; show(location.hash.slice(1)||"home",true,a); });
@@ -794,6 +787,9 @@ paintSound();
    START
    ===================================================================== */
 renderHome(); renderSessions(); renderNpcs(); renderLocList(); renderQuests(); countUp($("#v-home"));
+/* the flipped portrait covers each player card from the stats down, so the name and class always stay visible */
+function fitPhotos(){ $$(".pslot").forEach(sl=>{ let el=sl.querySelector(".stats"), y=0; if(!el||!el.offsetParent) return; while(el&&el!==sl){ y+=el.offsetTop; el=el.offsetParent; } sl.style.setProperty("--ptop",(y-6)+"px"); }); }
+fitPhotos(); addEventListener("resize",()=>requestAnimationFrame(fitPhotos)); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fitPhotos);
 $("#footNote").textContent="Kept for the players · Updated after Session "+LAST;
 let introSeen=false; try{ introSeen=sessionStorage.getItem("bv-intro")==="1"; sessionStorage.setItem("bv-intro","1"); }catch(e){ introSeen=true; }
 if(!introSeen&&!reduced){ $("#introN").textContent=LAST; $("#intro").classList.remove("gone"); $("#v-home").style.setProperty("--base","1.4s"); setTimeout(()=>{ $("#intro").classList.add("gone"); },1900); }
