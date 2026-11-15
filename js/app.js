@@ -153,31 +153,48 @@ const FX=(()=>{
    only while the page is actually scrolling. Works in every browser.
    ===================================================================== */
 const SX=(()=>{
-  const SEL=".in,.mist,.ribbon,.bgword,.thread-host,.mapframe";
+  const SEL=".in,.mist,.thread-host,.mapframe";
   const live=new Set(), rootEl=document.documentElement; let raf=0, io=null;
   const clamp=v=>v<0?0:v>1?1:v;
   function set(el,k,v){ const t=v.toFixed(3); if(el["_"+k]!==t){ el["_"+k]=t; el.style.setProperty(k,t); } }
-  function measure(el,vh){
-    const r=el.getBoundingClientRect(); if(!r.height&&!r.width) return;
+  /* read every position first, then write every variable, so the browser lays out once per frame */
+  function read(el,vh){
+    const r=el.getBoundingClientRect(); if(!r.height&&!r.width) return null;
     const e=clamp((vh-r.top)/(vh*.55));
-    set(el,"--sxe",1-Math.pow(1-e,3));
-    set(el,"--sxp",clamp((vh-r.top)/(vh+r.height)));
-    set(el,"--sxq",clamp((vh*.75-r.top)/Math.max(1,r.height)));
+    return [el,1-Math.pow(1-e,3),clamp((vh-r.top)/(vh+r.height)),clamp((vh*.75-r.top)/Math.max(1,r.height))];
+  }
+  function write(m){ if(!m) return; set(m[0],"--sxe",m[1]); set(m[0],"--sxp",m[2]); set(m[0],"--sxq",m[3]); }
+  const measure=(el,vh)=>write(read(el,vh));
+  /* sections that hand off to each other: each pins when its bottom reaches the
+     bottom of the screen, and the next one slides up over it */
+  let panels=[];
+  const PANELS=".view.on>section,.view.on>.section,.view.on>#questList>section";
+  const ro="ResizeObserver" in window?new ResizeObserver(()=>kick()):null;
+  function findPanels(){
+    panels.forEach(p=>p.classList.remove("panel"));
+    panels=$$(PANELS); if(panels.length<2) panels=[];
+    panels.forEach(p=>{ p.classList.add("panel"); if(ro&&!p._ro){ p._ro=1; ro.observe(p); } });
   }
   function frame(){
     raf=0; const vh=innerHeight, y=scrollY, H=rootEl.scrollHeight-vh;
+    const ph=panels.map(p=>p.offsetHeight), pt=panels.map(p=>p.getBoundingClientRect().top);
+    const els=[]; live.forEach(el=>{ if(!el.isConnected) live.delete(el); else els.push(read(el,vh)); });
     set(rootEl,"--sy",clamp(y/vh)); set(rootEl,"--sp",H>0?clamp(y/H):0);
-    live.forEach(el=>{ if(!el.isConnected) live.delete(el); else measure(el,vh); });
+    panels.forEach((p,i)=>{
+      const top=Math.round(vh-ph[i]); if(p._top!==top){ p._top=top; p.style.setProperty("--stick",top+"px"); }
+      set(p,"--out",clamp((vh-(i<panels.length-1?Math.min(...pt.slice(i+1)):vh))/vh));
+    });
+    els.forEach(write);
   }
   const kick=()=>{ if(!raf) raf=requestAnimationFrame(frame); };
   function scan(){
     if(reduced) return;
     if(!io) io=new IntersectionObserver(list=>{ list.forEach(x=>{ if(x.isIntersecting) live.add(x.target); else { live.delete(x.target); measure(x.target,innerHeight); } }); kick(); },{rootMargin:"30% 0px 30% 0px"});
-    const vh=innerHeight;
+    const vh=innerHeight; findPanels();
     $$(SEL).forEach(el=>{ if(!el._sx){ el._sx=1; io.observe(el); } if(el.offsetParent!==null) measure(el,vh); });
     kick();
   }
-  if(!reduced){ addEventListener("scroll",kick,{passive:true}); addEventListener("resize",kick); }
+  if(!reduced){ rootEl.classList.add("sx"); addEventListener("scroll",kick,{passive:true}); addEventListener("resize",kick); }
   return {scan,kick};
 })();
 /* numbers in the campaign strip count up the first time they come into view */
@@ -189,8 +206,6 @@ function countUp(scope){
     el.textContent="0"+m[2]; requestAnimationFrame(step); }),{threshold:.6});
   scope.querySelectorAll(".tally .n").forEach(n=>io.observe(n));
 }
-const ribbon=(a,b)=>`<div class="ribbon" aria-hidden="true"><span class="r1">${(esc(a)+" · ").repeat(6)}</span><span class="r2">${(esc(b)+" · ").repeat(6)}</span></div>`;
-const toRoman=n=>{ n=parseInt(n,10)||0; let o=""; [[10,"X"],[9,"IX"],[5,"V"],[4,"IV"],[1,"I"]].forEach(([v,r])=>{ while(n>=v){ o+=r; n-=v; } }); return o; };
 
 /* =====================================================================
    HOME
@@ -235,7 +250,7 @@ function playerCard(p){
     <span class="cls">${esc(p.sp)} · ${esc(p.cl.replace(/ \d+$/,""))}</span>
     <dl class="stats">${stats}</dl>
     ${(p.langs||[]).length?`<p class="pc-line"><span class="label">Languages</span> ${esc(p.langs.join(", "))}</p>`:""}
-    ${(p.notes||[]).length?`<p class="pc-note">${esc(p.notes[0])}</p>`:""}
+    ${p.d?`<p class="pc-note">${esc(p.d)}</p>`:""}
     <span class="pc-foot">${v?`<span class="label"><i class="seal-dot" aria-hidden="true"></i>Sealed fortune inside</span>`:""}</span>
   </article></div>`;
 }
@@ -261,8 +276,7 @@ function renderHome(){
   const ongoing=D.quests.filter(q=>q.st!=="done").length;
   const fulfilled=D.tarokka.filter(t=>t.st==="done").length;
   $("#v-home").innerHTML=`
-  <div class="mist" style="top:200px" aria-hidden="true"></div>
-  <section class="cover"><div class="wrap">
+  <section class="cover"><div class="mist" style="top:200px" aria-hidden="true"></div><div class="wrap">
     <div class="metaline"><span class="snap" ${d(.0)}>Updated after Session ${esc(LAST)}</span><span class="snap" ${d(.1)}>Curse of Strahd · Party level ${esc(D.level)}</span></div>
     <h1 class="mast" aria-label="Barovia"><span class="bar rule-draw" aria-hidden="true" ${d(-.1)}></span>${letters("BAROVIA",.1)}</h1>
     <div class="rule-draw" style="height:1px;background:var(--s);opacity:.35;margin-top:18px;animation-delay:calc(var(--base,0s) + .5s)"></div>
@@ -300,14 +314,13 @@ function renderHome(){
     <div class="t snap" ${d(1.16)}><span class="n">${esc(ongoing)}</span><span class="l">ONGOING\nQUESTS</span></div>
     <div class="t snap" ${d(1.24)}><span class="n">${fulfilled}/${D.tarokka.length}</span><span class="l">TAROKKA CARDS\nFULFILLED</span></div>
   </div></section>
-  ${ribbon("We hunt him · He watches","Barovia · Session "+LAST)}
 
-  <section class="section players-sec" id="players"><div class="bgword" aria-hidden="true">PARTY</div><div class="mist" style="top:0" aria-hidden="true"></div><div class="wrap" style="position:relative">
+  <section class="section players-sec" id="players"><div class="mist" style="top:0" aria-hidden="true"></div><div class="wrap" style="position:relative">
     ${head("01 — The party",`The <i>players</i>`,`<p>Tap a player to open their file. Each personal fortune is sealed inside it.</p>`)}
     <div class="grid g-240">${PCS.map(playerCard).join("")}</div>
   </div></section>
 
-  <section class="section light" id="latest"><div class="bgword" aria-hidden="true">${toRoman(LAST)}</div><div class="wrap">
+  <section class="section light" id="latest"><div class="wrap">
     ${latestBlock()}
     <div class="subhead in"><h3>Earlier sessions, <i>under seal</i></h3><a class="link" href="#sessions">All sessions →</a></div>
     <div class="grid g-240" style="margin-top:40px">${earlier.slice(0,4).map(sessionCard).join("")}</div>
@@ -319,13 +332,13 @@ function renderHome(){
    ===================================================================== */
 function renderSessions(){
   $("#v-sessions").innerHTML=`
-  <section class="section light"><div class="bgword" aria-hidden="true">${toRoman(LAST)}</div><div class="wrap">
+  <section class="section light"><div class="wrap">
     ${head("Sessions",`The <i>chronicle</i>`,`<p>The latest session is open. Break a seal to read an older one.</p>`)}
     ${latestBlock().replace('id="latestText"','id="latestText2"')}
     <div class="subhead in"><h3>Every session, <i>under seal</i></h3><span class="label" style="color:var(--ink-muted)">Newest first</span></div>
     <div class="grid g-240 thread-host" style="margin-top:40px">${earlier.map((s,i)=>sessionCard(s,i,true)).join("")}</div>
   </div></section>
-  <section class="section" style="padding:0"><div class="mist red" style="top:-200px" aria-hidden="true"></div>${ribbon("The chronicle · "+D.sessions.length+" sessions","Every seal holds a session")}</section>`;
+`;
 }
 
 /* =====================================================================
@@ -341,6 +354,7 @@ function npcCard(n,i){
       <div style="position:relative;flex:0 0 72px;height:90px">${sil(n)}</div>
       <div style="flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:4px"><span class="name">${esc(n.name)}</span><span style="font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink-muted)">${esc(n.epi||"")}</span></div>
     </div>
+    ${n.d?`<p class="npc-desc">${esc(n.d)}</p>`:""}
     <dl class="dl"><dt>Status</dt><dd>${statusWord(n)}</dd><dt>First met</dt><dd>${esc(metLabel(n.met))}</dd><dt>Last seen</dt><dd>${esc(where(n))}</dd></dl>
     <span class="stamp ${st.tone} stamp-view" aria-hidden="true" style="right:14px;bottom:16px">${st.stamp}</span>
   </article></a>`;
@@ -349,12 +363,11 @@ function renderNpcs(){
   const list=D.npcs.filter(n=>npcFilter==="all"||(npcFilter==="fallen"?n.fate==="dead":(n.side===npcFilter&&n.fate!=="dead")));
   $("#v-npcs").innerHTML=`
   <div class="mist" style="top:160px" aria-hidden="true"></div>
-  <section class="section"><div class="bgword" aria-hidden="true">WHO</div><div class="wrap" style="position:relative">
+  <section class="section"><div class="wrap" style="position:relative">
     ${head("NPCs",`Friends, foes, <i>and the fallen</i>`,`<div class="filters" role="group" aria-label="Show">${NPC_FILTERS.map(([k,l])=>`<button type="button" data-nf="${k}" aria-pressed="${k===npcFilter}">${l}</button>`).join("")}</div>`)}
     <p class="label muted" style="margin:-28px 0 32px">${list.length} ${list.length===1?"NPC":"NPCs"} · each card is stamped with where they stand with the party</p>
     <div class="grid g-240">${list.map(npcCard).join("")||`<p class="empty">No one here yet.</p>`}</div>
-  </div></section>
-  ${ribbon("Friends · Foes · The fallen","Who can you trust in Barovia")}`;
+  </div></section>`;
   SX.scan();
 }
 
@@ -381,7 +394,7 @@ const Q_FILTERS=[["ongoing","Ongoing"],["done","Completed"],["all","All"]];
 let questFilter="ongoing";
 function renderQuests(){
   $("#v-quests").innerHTML=`
-  <section class="section" id="tarokka"><div class="bgword" aria-hidden="true">FATE</div><div class="mist red" style="top:0" aria-hidden="true"></div><div class="wrap" style="position:relative">
+  <section class="section" id="tarokka"><div class="mist red" style="top:0" aria-hidden="true"></div><div class="wrap" style="position:relative">
     ${head("Quests · The reading",`The Tarokka <i>reading</i>`,`<p>Madam Eva's reading from Session 5. Break a seal to turn a card, and tap Reseal to turn it back.</p>`)}
     <p class="jumps"><a class="link" href="#quests" data-fortune="">Personal fortunes ↓</a><a class="link" href="#quests" data-fortune="list">Quests ↓</a><a class="link" href="#quests" data-fortune="loose">Loose ends ↓</a></p>
     <div class="grid g-210 fan">${D.tarokka.map(tarotCard).join("")}</div>
@@ -389,7 +402,6 @@ function renderQuests(){
     <p class="fortune-note">Madam Eva gave each player a personal fortune in Session 5. Each one stays under wax until its player breaks the seal.</p>
     <div class="grid g-240">${PCS.map(fortuneCard).join("")}</div>
   </div></section>
-  ${ribbon("The cards have spoken","Fate · Fortune · Unfinished business")}
   <div id="questList"></div>
   <section class="section light"><div class="wrap">
     <div class="subhead in" id="loose" style="margin-top:0"><h3>Loose <i>ends</i></h3></div>
@@ -457,7 +469,7 @@ function openNpc(id){
   openSheet({tab:`NPC · ${esc(n.name.toUpperCase())}`,photo:portraitFrame(n),
     kicker:`${esc(st.label.toUpperCase())} · ${n.met&&n.met!=="—"?"FIRST MET IN "+esc(metLabel(n.met).toUpperCase()):"NOT YET MET"}`,
     name:n.name,epi:n.epi,stamp:{text:st.stamp,tone:st.tone},
-    body:`<dl class="dl snap" style="animation-delay:1.45s"><dt>Status</dt><dd>${statusWord(n)}</dd><dt>Last seen</dt><dd>${esc(where(n))}</dd></dl>
+    body:`${n.d?`<p class="lede snap" style="animation-delay:1.4s">${esc(n.d)}</p>`:""}<dl class="dl snap" style="animation-delay:1.45s"><dt>Status</dt><dd>${statusWord(n)}</dd><dt>Last seen</dt><dd>${esc(where(n))}</dd></dl>
       ${n.facts&&n.facts.length?`<h3 class="snap" style="animation-delay:1.6s">WHAT THE PARTY KNOWS</h3>${factList(n.facts)}`:""}
       ${sessionChips(sessionsWith(n.id))}`});
 }
@@ -467,7 +479,7 @@ function openPc(id){
   const row=(k,x)=>x==null||x===""?"":`<dt>${k}</dt><dd>${esc(x)}</dd>`;
   openSheet({tab:`PLAYER CHARACTER · LEVEL ${esc(D.level)}`,photo:portraitFrame({...p,name:p.n}),
     kicker:`${esc(p.sp.toUpperCase())} · ${esc(p.cl.toUpperCase())}`,name:p.n,epi:"",stamp:{text:"THE PARTY",tone:"ink"},
-    body:`<dl class="dl snap" style="animation-delay:1.45s">${row("Armor Class",p.ac+(p.acx?` (${p.acx})`:""))}${row("Hit Points",p.hp)}${row("Passive Perception",p.pp)}${row("Passive Insight",p.pi)}${row("Save DC",p.dc)}${row("Languages",(p.langs||[]).join(", "))}</dl>
+    body:`${p.d?`<p class="lede snap" style="animation-delay:1.4s">${esc(p.d)}</p>`:""}<dl class="dl snap" style="animation-delay:1.45s">${row("Armor Class",p.ac+(p.acx?` (${p.acx})`:""))}${row("Hit Points",p.hp)}${row("Passive Perception",p.pp)}${row("Passive Insight",p.pi)}${row("Save DC",p.dc)}${row("Languages",(p.langs||[]).join(", "))}</dl>
       ${p.notes&&p.notes.length?`<h3 class="snap" style="animation-delay:1.6s">NOTES</h3>${factList(p.notes)}`:""}
       ${v?`<h3 class="snap" style="animation-delay:2.1s">PERSONAL FORTUNE</h3><div class="snap" style="animation-delay:2.2s">${sealBox("f-"+slug(p.n),p.n,fortuneText(v))}</div>`:""}`});
 }

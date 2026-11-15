@@ -449,11 +449,6 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 .player[data-pcard]:hover .open-hint svg{translate:4px 0}
 .player[data-pcard]:hover .name::after{transform:skewX(-18deg) scaleX(1)}
 
-/* a giant outlined ribbon that slides sideways as you scroll past it */
-.ribbon{position:relative;overflow:hidden;padding:clamp(28px,4vw,48px) 0;display:flex;flex-direction:column;gap:6px;pointer-events:none;user-select:none}
-.ribbon span{display:block;white-space:nowrap;font-family:var(--serif);font-style:italic;font-size:clamp(56px,9vw,132px);line-height:1;letter-spacing:-.02em}
-.ribbon .r1{color:transparent;-webkit-text-stroke:1px color-mix(in srgb,var(--s) 40%,transparent)}
-.ribbon .r2{color:var(--a);font-style:normal;font-weight:500;text-transform:uppercase;font-size:clamp(34px,5vw,72px);letter-spacing:.04em;opacity:.9}
 
 /* the latest session's title stays pinned beside the summary while you read it */
 @media (min-width:900px){ .latest .left{position:sticky;top:110px;align-self:flex-start} }
@@ -494,24 +489,17 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 .grid>.in:nth-child(4n+3){--rise:100px}
 .grid>.in:nth-child(4n+4){--rise:170px}
 
-/* section titles slide in from the left, their notes from the right, and the rule draws across */
+/* section titles rise gently into place and their rule draws across */
 .head{position:relative;border-bottom-color:transparent!important}
 .head::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:currentColor;opacity:.3;transform-origin:left;transform:scaleX(var(--sxe,1))}
-.head h2{translate:calc((1 - var(--sxe,1)) * -10vw) 0;opacity:calc(.1 + .9 * var(--sxe,1));transform:skewX(calc((1 - var(--sxe,1)) * -14deg))}
-.head>:not(h2):not(div:first-child){translate:calc((1 - var(--sxe,1)) * 8vw) 0;opacity:var(--sxe,1)}
+.head h2,.subhead h3{translate:0 calc((1 - var(--sxe,1)) * 36px);opacity:calc(.05 + .95 * var(--sxe,1))}
+.head>:not(div:first-child){translate:0 calc((1 - var(--sxe,1)) * 24px);opacity:var(--sxe,1)}
 .head.in,.subhead.in{opacity:1;translate:none;scale:none}
-.subhead h3{translate:calc((1 - var(--sxe,1)) * 12vw) 0;opacity:calc(.1 + .9 * var(--sxe,1))}
 
-/* mist and giant ghost words drift at their own depths */
+/* mist drifts at its own depth */
 .mist{translate:0 calc((var(--sxp,.5) - .5) * 360px)}
-.section{isolation:isolate}
-.bgword{position:absolute;top:0;right:-.04em;z-index:-1;pointer-events:none;user-select:none;white-space:nowrap;font-family:var(--serif);font-weight:500;font-size:clamp(150px,27vw,440px);line-height:.8;letter-spacing:-.04em;color:transparent;-webkit-text-stroke:1px color-mix(in srgb,var(--s) 16%,transparent);translate:calc((var(--sxp,.5) - .5) * -28vw) calc((var(--sxp,.5) - .5) * 260px)}
 .stamp-view{--s2:clamp(0,(var(--sxe,1) - .55) * 2.4,1);opacity:var(--s2);scale:calc(2.4 - 1.4 * var(--s2))}
-.light .bgword{-webkit-text-stroke-color:color-mix(in srgb,var(--p) 14%,transparent)}
 
-/* outlined ribbons slide sideways in opposite directions */
-.ribbon .r1{translate:calc(var(--sxp,.5) * -42%) 0}
-.ribbon .r2{translate:calc(-48% + var(--sxp,.5) * 42%) 0}
 
 /* title card: BAROVIA sinks and fades, the copy and Strahd's card rise at different speeds */
 .mast{translate:0 calc(var(--sy,0) * 170px);opacity:calc(1 - var(--sy,0) * .85)}
@@ -522,19 +510,16 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 /* Sessions: a red thread runs down the page as you read */
 .thread-host{position:relative}
 .thread-host::before{content:"";position:absolute;left:-26px;top:0;bottom:0;width:2px;background:var(--a);transform-origin:top;transform:scaleY(var(--sxq,1));box-shadow:0 0 10px var(--a)}
-#v-sessions .grid>.flip.in{transform:perspective(1200px) rotateY(calc((1 - var(--sxe,1)) * -32deg));transform-origin:0 50%}
 
-/* NPCs: cards tip up off the table */
-#v-npcs .grid>.in{transform:perspective(1000px) rotateX(calc((1 - var(--sxe,1)) * 42deg));transform-origin:50% 100%}
 
 /* Locations: the map unrolls, place cards come in from both sides */
 .mapframe{clip-path:inset(calc((1 - var(--sxe,1)) * 14%) calc((1 - var(--sxe,1)) * 10%));scale:calc(.94 + .06 * var(--sxe,1))}
 #locList .grid>.in:nth-child(odd){translate:calc((1 - var(--sxe,1)) * -90px) 0}
 #locList .grid>.in:nth-child(even){translate:calc((1 - var(--sxe,1)) * 90px) 0}
 
-/* Quests: the Tarokka cards start stacked in Madam Eva's hand and fan out across the table */
+/* Quests: the Tarokka cards start stacked together and slide apart across the table */
 @media (min-width:1240px){
-  .fan>.flip.in{translate:calc((2 - var(--i)) * (1 - var(--sxe,1)) * 104%) calc((1 - var(--sxe,1)) * 60px);rotate:calc((var(--i) - 2) * (1 - var(--sxe,1)) * 10deg);opacity:1;scale:1}
+  .fan>.flip.in{translate:calc((2 - var(--i)) * (1 - var(--sxe,1)) * 104%) calc((1 - var(--sxe,1)) * 60px);opacity:1;scale:1}
   .fan>.flip:nth-child(1),.fan>.flip:nth-child(5){z-index:1}
   .fan>.flip:nth-child(2),.fan>.flip:nth-child(4){z-index:2}
   .fan>.flip:nth-child(3){z-index:3}
@@ -544,7 +529,6 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
   .grid>.in:nth-child(n){--rise:50px}
   .villain{translate:0 calc(var(--sy,0) * -30px)}
   .thread-host::before{display:none}
-  .bgword{font-size:44vw}
 }
 
 /* ---- personal fortunes under wax ---- */
@@ -576,3 +560,16 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 /* after the crack, the broken seal clears out of the row */
 @keyframes waxGone{to{width:0;margin-right:-16px;opacity:0}}
 .sealbox.is-open .seal-row .wax{animation:shake .3s ease-in-out both,waxGone .35s ease .9s forwards}
+
+/* ---- sections hand off to each other ----
+   Each section pins once its bottom reaches the bottom of the screen, and the
+   next one slides up over it while the pinned one dims and settles back.
+   js/app.js (SX) sets --stick and --out; only on when motion is allowed. */
+#questList{display:contents}
+html.sx .panel{position:sticky;top:var(--stick,0px);isolation:isolate}
+html.sx .panel+.panel,html.sx #questList>.panel,html.sx #tarokka~.panel{box-shadow:0 -28px 60px rgba(0,0,0,.5)}
+html.sx .panel::after{content:"";position:absolute;inset:0;background:#000;opacity:calc(var(--out,0) * .6);pointer-events:none;z-index:60;will-change:opacity}
+html.sx .panel:not(.light):not(.tally){background:var(--p)}
+/* descriptions on NPC cards and in pop-ups */
+.npc-desc{margin:14px 0 0;font-family:var(--serif);font-size:15.5px;line-height:1.5}
+.sheet .lede{margin:14px 0 0;max-width:620px;font-family:var(--serif);font-size:19px;line-height:1.5}

@@ -23,7 +23,7 @@ unmet NPCs, or quests the party hasn't started.
 
 - **Tabs:** Home, Sessions, NPCs, Locations (interactive map + list), Quests.
 - **Home** is the players' landing page: title card, then the players (tap a card for their file), then the latest session.
-- **Scroll motion** on every tab (parallax title, giant background words, sliding ribbons, cards dealt in, the Tarokka fan, the sessions thread, reading bar) is driven by a small scroll engine in `app.js` (SX) that works in every browser and only measures what is on screen.
+- **Scroll motion** on every tab: sections hand off to each other (the next one slides up over the last, which dims), cards rise into place, the title card parallaxes, and a reading bar fills under the header. A small scroll engine in `app.js` (SX) drives it in every browser and only measures what is on screen.
 - **Colors:** primary (ink black), secondary (parchment beige) and accent (blood red) are
   `--p`, `--s` and `--a` at the top of `css/style.css`. Change those three to restyle everything.
 - **Wax seals:** the latest session is always open; every older session is sealed until a
