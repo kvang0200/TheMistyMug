@@ -23,15 +23,15 @@ unmet NPCs, or quests the party hasn't started.
 
 - **Tabs:** Home, Sessions, NPCs, Locations (interactive map + list), Quests.
 - **Home** is the players' landing page: title card, then the players (tap a card for their file), then the latest session.
-- **Scroll motion** (parallax title, sliding ribbon, cards dealt in, reading bar) is driven by the browser's scroll timelines, so it costs no JavaScript. Older browsers show the page still.
+- **Scroll motion** on every tab (parallax title, giant background words, sliding ribbons, cards dealt in, the Tarokka fan, the sessions thread, reading bar) is driven by a small scroll engine in `app.js` (SX) that works in every browser and only measures what is on screen.
 - **Colors:** primary (ink black), secondary (parchment beige) and accent (blood red) are
   `--p`, `--s` and `--a` at the top of `css/style.css`. Change those three to restyle everything.
 - **Wax seals:** the latest session is always open; every older session is sealed until a
   player breaks it. The Tarokka cards (on the Quests tab) are sealed too. An opened card has a
   Reseal button that turns it back over. Each device remembers which seals it has broken, so a
   player on a new device sees them sealed again.
-- **Classified covers:** each player's personal fortune (from `visions`) sits under a
-  CLASSIFIED cover on its player's Home card and on the Quests tab (opening one opens both) until it is tapped, and can be resealed the same way.
+- **Sealed fortunes:** each player's personal fortune (from `visions`) sits under a
+  wax seal in the player's pop-up file and on the Quests tab (breaking one breaks both). Tap the seal again to reseal it.
 - **Loose ends** (`threads` in `data.js`) are pinned on the Quests tab, under the quest list.
 - **Stamps** come from fields you already fill in: NPC `side` / `fate` (ALLY, UNCERTAIN, HOSTILE,
   DECEASED, MISSING), place `s` (VISITED · SESSION 11 or NOT VISITED) and quest `st` (COMPLETED).
