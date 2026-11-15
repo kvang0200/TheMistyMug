@@ -25,15 +25,17 @@ unmet NPCs, or quests the party hasn't started.
 - **Colors:** primary (ink black), secondary (parchment beige) and accent (blood red) are
   `--p`, `--s` and `--a` at the top of `css/style.css`. Change those three to restyle everything.
 - **Wax seals:** the latest session is always open; every older session is sealed until a
-  player breaks it. The Tarokka cards are sealed too. Each device remembers which seals it has
-  broken, so a player on a new device sees them sealed again.
+  player breaks it. The Tarokka cards (on the Quests tab) are sealed too. An opened card has a
+  Reseal button that turns it back over. Each device remembers which seals it has broken, so a
+  player on a new device sees them sealed again.
 - **Classified covers:** each player's personal fortune (from `visions`) sits under a
-  CLASSIFIED cover until it is tapped.
+  CLASSIFIED cover on the Quests tab until it is tapped, and can be resealed the same way.
 - **Stamps** come from fields you already fill in: NPC `side` / `fate` (ALLY, UNCERTAIN, HOSTILE,
   DECEASED, MISSING), place `s` (VISITED · SESSION 11 or NOT VISITED) and quest `st` (COMPLETED).
 - **Redactions:** in the latest session's summary, wrap words in `[[double brackets]]` to black
   them out until a player taps "Reveal the details".
-- **Sound** is off until a player turns it on with the speaker button.
+- **Sound** is on by default and starts at a player's first tap (browsers block sound before
+  that). The speaker button turns it off, and each device remembers the choice.
 - **Motion** is turned off automatically for anyone whose device asks for reduced motion.
 
 No build step. Edit a file, commit, and Pages republishes in a minute or two.

@@ -324,7 +324,8 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 .tarot .back{padding:26px 22px;display:flex;flex-direction:column;justify-content:space-between;gap:16px;min-height:340px}
 .tarot .back .t{font-family:var(--serif);font-size:22px;line-height:1.1}
 .tarot .back p{margin:0;font-family:var(--serif);font-size:16px;line-height:1.45}
-.tarot .stamp{right:14px;top:20px;font-size:13px}
+.tarot .stamp{right:14px;bottom:18px;font-size:13px}
+.tarot .back{padding-bottom:64px}
 .foot{border-top:1px solid var(--rule)}
 .foot .wrap{padding-top:40px;padding-bottom:52px;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:16px}
 .foot .end{font-family:var(--serif);font-size:34px;letter-spacing:-.01em}
@@ -468,3 +469,29 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
   .intro,.cut,.modal .pass{display:none!important}
   .is-open .wax,.classified.is-open .tl,.classified.is-open .br,.classified.is-open .slash{display:none!important}
 }
+
+/* ---- particles (wax shards, embers) ---- */
+.fx-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999}
+
+/* ---- reseal: press a fresh seal back on ---- */
+.reseal{all:unset;box-sizing:border-box;position:absolute;z-index:3;display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 6px 0 10px;cursor:pointer;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted)}
+.reseal i{display:block;width:26px;height:26px;border-radius:48% 52% 50% 46%;background:radial-gradient(circle at 34% 28%,color-mix(in srgb,var(--a) 62%,var(--s)) 0%,var(--a) 42%,color-mix(in srgb,var(--a) 72%,var(--p)) 100%);box-shadow:inset 0 0 0 3px color-mix(in srgb,var(--p) 18%,transparent),0 3px 8px rgba(0,0,0,.35)}
+.reseal:hover,.reseal:focus-visible{color:var(--a)}
+.reseal:hover i,.reseal:focus-visible i{animation:wobble .5s ease-in-out}
+.reseal:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+.flip .back>.reseal{top:6px;right:6px}
+.classified>.reseal{right:-6px;bottom:-6px}
+.classified:not(.is-open)>.reseal{display:none}
+.classified.is-open .reveal{padding-bottom:36px}
+@keyframes rewax{0%{transform:scale(2) translateY(-18px) rotate(30deg);opacity:0}60%{transform:scale(.82) rotate(-6deg);opacity:1}80%{transform:scale(1.06)}100%{transform:none;opacity:1}}
+.flip.rewax .wax .whole{animation:rewax .65s cubic-bezier(.16,1,.3,1) .35s both}
+@keyframes shutterIn{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0)}}
+.classified.resealing .cover{animation:shutterIn .55s cubic-bezier(.7,0,.2,1) both}
+.classified.resealing .tape{animation:stampIn .5s cubic-bezier(.2,.9,.3,1) .45s both}
+
+/* ---- players on Home link to their fortune on the Quests tab ---- */
+.player:not(.fortune) .parch{min-height:0}
+.fortune-link{margin-top:18px;align-self:flex-start}
+.fortune-note{margin:24px 0 40px;max-width:560px;font-family:var(--serif);font-style:italic;font-size:18px;line-height:1.5;color:var(--muted)}
+#tarokka,#fortunes,[id^="fortune-"]{scroll-margin-top:90px}
+@media (prefers-reduced-motion:reduce){.flip.rewax .wax .whole,.classified.resealing .cover,.classified.resealing .tape{animation:none}}
