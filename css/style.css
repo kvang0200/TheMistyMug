@@ -470,6 +470,78 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
   .is-open .wax,.classified.is-open .tl,.classified.is-open .br,.classified.is-open .slash{display:none!important}
 }
 
+/* =====================================================================
+   SCROLL-DRIVEN MOTION
+   Everything here is tied to the scroll position by the browser itself
+   (no scroll listeners), so it stays smooth on tablets. Browsers without
+   scroll timelines just show the page still, and reduced motion turns
+   all of it off (see the reduced-motion block above).
+   ===================================================================== */
+.player[data-pcard]{cursor:pointer}
+.player .topline{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.open-hint{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--a);white-space:nowrap}
+.open-hint svg{width:14px;height:14px;transition:translate .25s cubic-bezier(.2,1.6,.4,1)}
+.player[data-pcard]>.parch{transition:translate .3s cubic-bezier(.2,1.4,.4,1)}
+.player[data-pcard]:hover>.parch{translate:0 -6px}
+.player[data-pcard]:hover .open-hint svg{translate:4px 0}
+.player[data-pcard]:hover .name::after{transform:skewX(-18deg) scaleX(1)}
+
+/* a giant outlined ribbon that slides sideways as you scroll past it */
+.ribbon{position:relative;overflow:hidden;padding:clamp(28px,4vw,48px) 0;display:flex;flex-direction:column;gap:6px;pointer-events:none;user-select:none}
+.ribbon span{display:block;white-space:nowrap;font-family:var(--serif);font-style:italic;font-size:clamp(56px,9vw,132px);line-height:1;letter-spacing:-.02em}
+.ribbon .r1{color:transparent;-webkit-text-stroke:1px color-mix(in srgb,var(--s) 40%,transparent)}
+.ribbon .r2{color:var(--a);font-style:normal;font-weight:500;text-transform:uppercase;font-size:clamp(34px,5vw,72px);letter-spacing:.04em;opacity:.9}
+.ribbon .r1{translate:-8% 0}
+.ribbon .r2{translate:-30% 0}
+
+@keyframes progress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes mastOut{to{translate:0 140px;opacity:.15}}
+@keyframes parUp{to{translate:0 calc(var(--par,60px) * -1)}}
+@keyframes ribL{from{translate:0 0}to{translate:-38% 0}}
+@keyframes ribR{from{translate:-44% 0}to{translate:-6% 0}}
+@keyframes headSlide{from{opacity:.15;translate:-7vw 0}to{opacity:1;translate:0 0}}
+@keyframes lineDraw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes mistPar{from{translate:0 -160px}to{translate:0 160px}}
+@keyframes deal{from{opacity:0;translate:0 var(--rise,60px);rotate:var(--spin,0deg)}to{opacity:1;translate:0 0;rotate:0deg}}
+
+@supports (animation-timeline: view()){
+  /* red reading bar under the header */
+  .hdr::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:var(--a);transform-origin:left;transform:scaleX(0);animation:progress linear both;animation-timeline:scroll(root)}
+
+  /* title card: the masthead sinks and fades, the copy and Strahd's card rise at different speeds */
+  .mast{animation:mastOut linear both;animation-timeline:scroll(root);animation-range:0 85vh}
+  .cover-copy,.villain{animation:parUp linear both;animation-timeline:scroll(root);animation-range:0 100vh}
+  .cover-copy{--par:50px}
+  .villain{--par:150px}
+
+  /* the ribbon rows slide in opposite directions */
+  .ribbon .r1{animation:ribL linear both;animation-timeline:view()}
+  .ribbon .r2{animation:ribR linear both;animation-timeline:view()}
+
+  /* section titles slide in and their rule draws across */
+  .head{position:relative;border-bottom-color:transparent!important}
+  .head::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:currentColor;opacity:.3;transform-origin:left;animation:lineDraw linear both;animation-timeline:view();animation-range:entry 20% cover 35%}
+  .head h2{animation:headSlide linear both;animation-timeline:view();animation-range:entry 0% cover 30%}
+
+  /* mist drifts at its own depth */
+  .mist{animation:mist 38s ease-in-out infinite alternate,mistPar linear both;animation-timeline:auto,view()}
+  .mist.red{animation:mist 44s ease-in-out infinite alternate-reverse,mistPar linear both;animation-timeline:auto,view()}
+
+  /* cards are dealt in: each column rises from a different depth */
+  .grid>.in:nth-child(4n+1){--rise:70px;--spin:-2deg}
+  .grid>.in:nth-child(4n+2){--rise:130px;--spin:1.5deg}
+  .grid>.in:nth-child(4n+3){--rise:95px;--spin:-1deg}
+  .grid>.in:nth-child(4n+4){--rise:160px;--spin:2deg}
+  .grid>.in{animation-name:deal}
+  .grid>.sway.in{animation-name:deal,sway}
+}
+@media (max-width:700px){
+  .grid>.in:nth-child(n){--rise:50px;--spin:0deg}
+  .villain{--par:30px}
+}
+/* the latest session's title stays pinned beside the summary while you read it */
+@media (min-width:900px){ .latest .left{position:sticky;top:110px;align-self:flex-start} }
+
 /* ---- particles (wax shards, embers) ---- */
 .fx-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999}
 

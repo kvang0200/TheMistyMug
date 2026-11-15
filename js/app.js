@@ -186,8 +186,8 @@ function latestBlock(){
 function playerCard(p){
   const v=visionFor(p.n);
   const stats=[["AC",p.ac],["HP",p.hp],["PER",p.pp],["DC",p.dc]].map(([k,x])=>`<div><dt>${k}</dt><dd>${esc(x==null?"—":x)}</dd></div>`).join("");
-  return `<div class="card player sway in" style="--tilt:${tilt(p.i+1)}deg"><div class="shade"></div><article class="parch">
-    <span class="label" style="color:var(--ink-muted)">Player character · Level ${esc(D.level)}</span>
+  return `<div class="card player sway in" data-pcard="${esc(p.id)}" style="--tilt:${tilt(p.i+1)}deg"><div class="shade"></div><article class="parch">
+    <span class="topline"><span class="label" style="color:var(--ink-muted)">Level ${esc(D.level)}</span><span class="open-hint" aria-hidden="true">Open file ${ICON.arrow}</span></span>
     <button type="button" class="open-sheet" data-pc="${esc(p.id)}" aria-label="Open ${esc(p.n)}'s character sheet"><span class="who name" style="display:inline-block">${esc(p.n)}</span></button>
     <span class="cls">${esc(p.sp)} · ${esc(p.cl.replace(/ \d+$/,""))}</span>
     <dl class="stats">${stats}</dl>
@@ -219,14 +219,14 @@ function renderHome(){
   <div class="mist" style="top:200px" aria-hidden="true"></div>
   <section class="cover"><div class="wrap">
     <div class="metaline"><span class="snap" ${d(.0)}>Updated after Session ${esc(LAST)}</span><span class="snap" ${d(.1)}>Curse of Strahd · Party level ${esc(D.level)}</span></div>
-    <h1 class="mast drift" aria-label="Barovia"><span class="bar rule-draw" aria-hidden="true" ${d(-.1)}></span>${letters("BAROVIA",.1)}</h1>
+    <h1 class="mast" aria-label="Barovia"><span class="bar rule-draw" aria-hidden="true" ${d(-.1)}></span>${letters("BAROVIA",.1)}</h1>
     <div class="rule-draw" style="height:1px;background:var(--s);opacity:.35;margin-top:18px;animation-delay:calc(var(--base,0s) + .5s)"></div>
     <div class="cover-row">
       <div class="cover-copy">
         <span class="tag snap" ${d(.6)}><span>Where we stand</span></span>
         <h2 class="headline snap" ${d(.7)}>We hunt him. <span class="underslash"><i>He watches.</i></span></h2>
         <p class="flavor snap" ${d(.8)}>${esc(D.flavor)}</p>
-        <div class="snap" ${d(.9)}><a class="btn" href="#sessions">Read the latest session ${ICON.arrow}</a></div>
+        <div class="snap" ${d(.9)}><a class="btn" href="#home" data-jump="latest">Read the latest session ${ICON.arrow}</a></div>
       </div>
       ${strahd?`<div class="villain">
         <div class="redpanel rule-draw" aria-hidden="true" ${d(.3)}></div>
@@ -255,16 +255,17 @@ function renderHome(){
     <div class="t snap" ${d(1.16)}><span class="n">${esc(ongoing)}</span><span class="l">ONGOING\nQUESTS</span></div>
     <div class="t snap" ${d(1.24)}><span class="n">${fulfilled}/${D.tarokka.length}</span><span class="l">TAROKKA CARDS\nFULFILLED</span></div>
   </div></section>
+  <div class="ribbon" aria-hidden="true"><span class="r1">We hunt him · He watches · We hunt him · He watches · We hunt him · He watches ·</span><span class="r2">Barovia · Session ${esc(LAST)} · Barovia · Session ${esc(LAST)} · Barovia · Session ${esc(LAST)} · Barovia ·</span></div>
 
-  <section class="section light"><div class="wrap">
+  <section class="section players-sec" id="players"><div class="mist" style="top:0" aria-hidden="true"></div><div class="wrap" style="position:relative">
+    ${head("01 — The party",`The <i>players</i>`,`<p>Tap a player to open their file. Each personal fortune stays classified until its player opens it.</p>`)}
+    <div class="grid g-240">${PCS.map(playerCard).join("")}</div>
+  </div></section>
+
+  <section class="section light" id="latest"><div class="wrap">
     ${latestBlock()}
     <div class="subhead in"><h3>Earlier sessions, <i>under seal</i></h3><a class="link" href="#sessions">All sessions →</a></div>
     <div class="grid g-240" style="margin-top:40px">${earlier.slice(0,4).map(sessionCard).join("")}</div>
-  </div></section>
-
-  <section class="section"><div class="mist" style="top:0" aria-hidden="true"></div><div class="wrap" style="position:relative">
-    ${head("02 — The players",`Personal <i>fortunes</i>`,`<p>Madam Eva gave each player a personal fortune in Session 5. Each fortune is classified until its player opens it. Tap a name for the full character sheet.</p>`)}
-    <div class="grid g-240">${PCS.map(playerCard).join("")}</div>
   </div></section>`;
 }
 
@@ -501,6 +502,8 @@ document.addEventListener("click",e=>{
   const crack=t.closest("[data-crack]"); if(crack){ crackSeal(crack.closest("[data-seal]")); return; }
   const tear=t.closest("[data-tear]"); if(tear){ tearCover(tear.closest(".classified")); return; }
   const rs=t.closest("[data-reseal]"); if(rs){ const box=rs.closest("[data-seal]"); if(box.classList.contains("classified")) resealCover(box); else resealCard(box); return; }
+  const jp=t.closest("[data-jump]"); if(jp){ e.preventDefault(); const el=document.getElementById(jp.dataset.jump); if(el) el.scrollIntoView({behavior:reduced?"auto":"smooth"}); return; }
+  const pcd=t.closest("[data-pcard]"); if(pcd&&!t.closest(".classified,button,a")){ openPc(pcd.dataset.pcard); return; }
   const fl=t.closest("[data-fortune]"); if(fl){ e.preventDefault(); const f=fl.dataset.fortune; jumpTo(f==="tarokka"||f==="loose"?f:f?"fortune-"+f:"fortunes"); return; }
   const dec=t.closest("[data-declass]");
   if(dec){ const p=dec.closest(".latest").querySelector(".summary"); const on=p.classList.toggle("declassified"); dec.setAttribute("aria-pressed",String(on)); dec.querySelector("span").textContent=on?"Hide the details":"Reveal the details"; Sound.slash(); return; }

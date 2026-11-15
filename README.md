@@ -22,6 +22,8 @@ unmet NPCs, or quests the party hasn't started.
 ## How the page works
 
 - **Tabs:** Home, Sessions, NPCs, Locations (interactive map + list), Quests.
+- **Home** is the players' landing page: title card, then the players (tap a card for their file), then the latest session.
+- **Scroll motion** (parallax title, sliding ribbon, cards dealt in, reading bar) is driven by the browser's scroll timelines, so it costs no JavaScript. Older browsers show the page still.
 - **Colors:** primary (ink black), secondary (parchment beige) and accent (blood red) are
   `--p`, `--s` and `--a` at the top of `css/style.css`. Change those three to restyle everything.
 - **Wax seals:** the latest session is always open; every older session is sealed until a
