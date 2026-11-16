@@ -74,7 +74,7 @@ function wax(kind="key",w=78){
 }
 function flipCard({key,cls="",i=0,front,back,frontParch=true,id="",still=false}){
   const open=isOpen(key);
-  return `<div class="flip${still?"":" sway"} in ${cls}${open?" is-open instant":""}" data-seal="${esc(key)}"${id?` id="${esc(id)}"`:""} style="--tilt:${tilt(i)}deg;--i:${i}"><div class="shade"></div><div class="inner"><div class="face front${frontParch?" parch":""}"${open?" inert":""}>${front}</div><div class="face back parch"${open?"":" inert"}>${back}${resealBtn("this card")}</div></div></div>`;
+  return `<div class="flip in ${cls}${open?" is-open instant":""}" data-seal="${esc(key)}"${id?` id="${esc(id)}"`:""} style="--tilt:${tilt(i)}deg;--i:${i}"><div class="shade"></div><div class="inner"><div class="face front${frontParch?" parch":""}"${open?" inert":""}>${front}</div><div class="face back parch"${open?"":" inert"}>${back}${resealBtn("this card")}</div></div></div>`;
 }
 /* a wax-sealed note (personal fortunes): tap the seal to crack it, tap again to reseal */
 function sealBox(key,name,inner){
@@ -296,7 +296,7 @@ function playerCard(p){
   const stats=[["AC",p.ac],["HP",p.hp],["PER",p.pp],["DC",p.dc]].map(([k,x])=>`<div><dt>${k}</dt><dd>${esc(x==null?"—":x)}</dd></div>`).join("");
   /* the portrait is tucked behind the card, its back peeking over the top; hovering flips it over in front of the card, below the name */
   return `<div class="pslot in" data-pcard="${esc(p.id)}">
-  <div class="card player sway" style="--tilt:${tilt(p.i+1)}deg"><div class="shade"></div><article class="parch">
+  <div class="card player" style="--tilt:${tilt(p.i+1)}deg"><div class="shade"></div><article class="parch">
     <span class="topline"><span class="label" style="color:var(--ink-muted)">Level ${esc(D.level)}</span><span class="open-hint" aria-hidden="true">Open file ${ICON.arrow}</span></span>
     <button type="button" class="open-sheet" data-pc="${esc(p.id)}" aria-label="Open ${esc(p.n)}'s character sheet"><span class="who name" style="display:inline-block">${esc(p.n)}</span></button>
     <span class="cls">${esc(p.sp)} · ${esc(p.cl.replace(/ \d+$/,""))}</span>
@@ -328,7 +328,7 @@ function renderHome(){
   const ongoing=D.quests.filter(q=>q.st!=="done").length;
   const fulfilled=D.tarokka.filter(t=>t.st==="done").length;
   $("#v-home").innerHTML=`
-  <div class="scene" data-pin="cover"><section class="cover sstage"><div class="mist" style="top:200px" aria-hidden="true"></div><div class="wrap">
+  <div class="scene" data-pin="cover"><section class="cover sstage"><div class="cfog" aria-hidden="true"><i></i><i></i></div><div class="mist" style="top:200px" aria-hidden="true"></div><div class="wrap">
     <div class="metaline"><span class="snap" ${d(.0)}>Updated after Session ${esc(LAST)}</span><span class="snap" ${d(.1)}>Curse of Strahd · Party level ${esc(D.level)}</span></div>
     <h1 class="mast" aria-label="Barovia"><span class="bar rule-draw" aria-hidden="true" ${d(-.1)}></span>${letters("BAROVIA",.1)}</h1>
     <div class="rule-draw" style="height:1px;background:var(--s);opacity:.35;margin-top:18px;animation-delay:calc(var(--base,0s) + .5s)"></div>
@@ -340,12 +340,12 @@ function renderHome(){
         <div class="snap" ${d(.9)}><a class="btn" href="#home" data-jump="latest">Read the latest session ${ICON.arrow}</a></div>
       </div>
       ${strahd?`<div class="villain">
-        <div class="redpanel rule-draw" aria-hidden="true" ${d(.3)}></div>
-        <div class="snap" style="position:relative;animation-delay:calc(var(--base,0s) + .9s)">
-          <a href="#npcs" class="card sway" data-npc="strahd" aria-label="Open ${esc(strahd.name)}'s card"><div class="shade"></div><article class="parch">
+        <div class="redpanel rule-draw" aria-hidden="true" ${d(1.0)}></div>
+        <div class="snap" style="position:relative;animation-delay:calc(var(--base,0s) + 1.15s)">
+          <a href="#npcs" class="card" data-npc="strahd" aria-label="Open ${esc(strahd.name)}'s card"><div class="shade"></div><article class="parch">
             <span class="label" style="display:block;margin-bottom:14px;color:var(--ink-muted)">NPC</span>
             <div style="display:flex;gap:18px">
-              <div style="position:relative;flex:0 0 120px;height:150px">${sil(strahd)}<div class="glow" aria-hidden="true" style="position:absolute;left:50%;top:30%;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--a) 55%,transparent),transparent 66%)"></div></div>
+              <div style="position:relative;flex:0 0 120px;height:150px">${sil(strahd)}<div class="glow watch" aria-hidden="true" style="position:absolute;left:50%;top:30%;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--a) 55%,transparent),transparent 66%)"></div></div>
               <div style="flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:6px">
                 <span class="label dot">Main villain</span>
                 <span class="name" style="font-size:30px;line-height:1">${esc(strahd.name)}</span>
@@ -353,17 +353,17 @@ function renderHome(){
               </div>
             </div>
             <dl class="dl"><dt>Status</dt><dd>${statusWord(strahd)}</dd><dt>Location</dt><dd>${esc(where(strahd))}</dd>${seen?`<dt>Last seen</dt><dd>Session ${esc(seen.n)} · ${esc(seen.t)}</dd>`:""}<dt>Weakness</dt><dd><span style="display:inline-block;width:120px;height:14px;background:var(--p);vertical-align:middle"></span> <span style="font-size:11px;color:var(--ink-muted)">unknown</span></dd></dl>
-            <span class="stamp red stamp-now" aria-hidden="true" style="right:18px;bottom:18px;font-size:16px;animation-delay:calc(var(--base,0s) + 1.3s)">HOSTILE</span>
+            <span class="stamp red stamp-now" aria-hidden="true" style="right:18px;bottom:18px;font-size:16px;animation-delay:calc(var(--base,0s) + 1.75s)">HOSTILE</span>
           </article></a>
         </div>
       </div>`:""}
     </div>
   </div>
   <div class="tally" role="group" aria-label="The campaign at a glance"><div class="wrap">
-    <div class="t snap" ${d(1.0)}><span class="n">${esc(LAST)}</span><span class="l">SESSIONS\nPLAYED</span></div>
-    <div class="t snap" ${d(1.08)}><span class="n">${esc(D.party.length)}</span><span class="l">PLAYERS\nAT LEVEL ${esc(D.level)}</span></div>
-    <div class="t snap" ${d(1.16)}><span class="n">${esc(ongoing)}</span><span class="l">ONGOING\nQUESTS</span></div>
-    <div class="t snap" ${d(1.24)}><span class="n">${fulfilled}/${D.tarokka.length}</span><span class="l">TAROKKA CARDS\nFULFILLED</span></div>
+    <div class="t snap" ${d(1.45)}><span class="n">${esc(LAST)}</span><span class="l">SESSIONS\nPLAYED</span></div>
+    <div class="t snap" ${d(1.52)}><span class="n">${esc(D.party.length)}</span><span class="l">PLAYERS\nAT LEVEL ${esc(D.level)}</span></div>
+    <div class="t snap" ${d(1.59)}><span class="n">${esc(ongoing)}</span><span class="l">ONGOING\nQUESTS</span></div>
+    <div class="t snap" ${d(1.66)}><span class="n">${fulfilled}/${D.tarokka.length}</span><span class="l">TAROKKA CARDS\nFULFILLED</span></div>
   </div></div>
   </section></div>
 
@@ -463,7 +463,7 @@ function renderQuests(){
     <div class="subhead in" id="loose" style="margin-top:0"><h3>Loose <i>ends</i></h3></div>
     <p class="fortune-note" style="color:var(--ink-muted)">Things the party left unresolved. Some may turn into quests.</p>
     <div class="board"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline class="string" pathLength="1" points="12,18 38,30 64,16 88,32 74,74 46,66 20,78 38,30" fill="none" stroke="var(--a)" stroke-width="1.4" vector-effect="non-scaling-stroke"/></svg>
-      <ol class="grid g-240">${D.threads.map((t,i)=>`<li class="note sway in" style="--tilt:${[-2,1.5,-1,2,-1.5,1,-2.5][i%7]}deg"><span class="label">Loose end ${i+1}</span><p>${esc(t)}</p></li>`).join("")}</ol>
+      <ol class="grid g-240">${D.threads.map((t,i)=>`<li class="note in" style="--tilt:${[-2,1.5,-1,2,-1.5,1,-2.5][i%7]}deg"><span class="label">Loose end ${i+1}</span><p>${esc(t)}</p></li>`).join("")}</ol>
     </div>
   </div></section>`;
   renderQuestList();
@@ -475,9 +475,9 @@ function renderQuestList(){
   <section class="section light" id="list"><div class="wrap">
     ${head("Quests",`${questFilter==="done"?"Completed":"Ongoing"} <i>quests</i>`,`<p>What the party has promised to do, and what it has done.</p>`)}
     <div class="stickybar light-bar"><div class="filters" role="group" aria-label="Show">${Q_FILTERS.map(([k,l])=>`<button type="button" data-qf="${k}" aria-pressed="${k===questFilter}">${l}</button>`).join("")}</div><span class="label" style="color:var(--ink-muted)">${on.length} ongoing · ${done.length} completed</span></div>
-    ${showOn?`<ol class="grid g-240" style="margin:0;padding:0;gap:40px 28px">${on.map((q,i)=>`<li class="note sway in" style="--tilt:${[-2,1.5,-1,2,-1.5,1,-2.5][i%7]}deg"><span class="label">Ongoing · ${esc(q.t)}</span><p style="font-size:22px;line-height:1.15">${esc(q.n)}</p><p style="font-size:16px;color:color-mix(in srgb,var(--s) 82%,transparent)">${esc(q.p)}</p></li>`).join("")||`<p class="empty">Nothing ongoing.</p>`}</ol>`:""}
+    ${showOn?`<ol class="grid g-240" style="margin:0;padding:0;gap:40px 28px">${on.map((q,i)=>`<li class="note in" style="--tilt:${[-2,1.5,-1,2,-1.5,1,-2.5][i%7]}deg"><span class="label">Ongoing · ${esc(q.t)}</span><p style="font-size:22px;line-height:1.15">${esc(q.n)}</p><p style="font-size:16px;color:color-mix(in srgb,var(--s) 82%,transparent)">${esc(q.p)}</p></li>`).join("")||`<p class="empty">Nothing ongoing.</p>`}</ol>`:""}
     ${showOn&&showDone?`<div class="subhead in"><h3>Completed <i>quests</i></h3></div>`:""}
-    ${showDone?`<div class="grid g-210" style="margin-top:${showOn?40:0}px">${done.map((q,i)=>`<div class="card quest sway in" style="--tilt:${tilt(i+3)}deg"><div class="shade"></div><article class="parch"><span class="label" style="color:var(--ink-muted)">${esc(q.t)} quest</span><span class="t">${esc(q.n)}</span><p>${esc(q.p)}</p><span class="stamp red stamp-view" aria-hidden="true">COMPLETED</span></article></div>`).join("")}</div>`:""}
+    ${showDone?`<div class="grid g-210" style="margin-top:${showOn?40:0}px">${done.map((q,i)=>`<div class="card quest in" style="--tilt:${tilt(i+3)}deg"><div class="shade"></div><article class="parch"><span class="label" style="color:var(--ink-muted)">${esc(q.t)} quest</span><span class="t">${esc(q.n)}</span><p>${esc(q.p)}</p><span class="stamp red stamp-view" aria-hidden="true">COMPLETED</span></article></div>`).join("")}</div>`:""}
   </div></section>`;
   SX.scan();
 }
@@ -789,11 +789,14 @@ paintSound();
 renderHome(); renderSessions(); renderNpcs(); renderLocList(); renderQuests(); countUp($("#v-home"));
 /* the flipped portrait covers each player card from the stats down, so the name and class always stay visible */
 function fitPhotos(){ $$(".pslot").forEach(sl=>{ let el=sl.querySelector(".stats"), y=0; if(!el||!el.offsetParent) return; while(el&&el!==sl){ y+=el.offsetTop; el=el.offsetParent; } sl.style.setProperty("--ptop",(y-6)+"px"); }); }
+$("#v-home").addEventListener("pointermove",e=>{ const sl=e.target.closest(".pslot"); if(!sl) return; const r=sl.getBoundingClientRect(); sl.style.setProperty("--mx",((e.clientX-r.left)/r.width*100).toFixed(1)+"%"); sl.style.setProperty("--my",((e.clientY-r.top)/r.height*100).toFixed(1)+"%"); },{passive:true});
 fitPhotos(); addEventListener("resize",()=>requestAnimationFrame(fitPhotos)); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fitPhotos);
 $("#footNote").textContent="Kept for the players · Updated after Session "+LAST;
 let introSeen=false; try{ introSeen=sessionStorage.getItem("bv-intro")==="1"; sessionStorage.setItem("bv-intro","1"); }catch(e){ introSeen=true; }
-if(!introSeen&&!reduced){ $("#introN").textContent=LAST; $("#intro").classList.remove("gone"); $("#v-home").style.setProperty("--base","1.4s"); setTimeout(()=>{ $("#intro").classList.add("gone"); },1900); }
+if(!introSeen&&!reduced){ $("#introN").textContent=LAST; $("#intro").classList.remove("gone"); $("#v-home").style.setProperty("--base",".6s"); setTimeout(()=>{ $("#intro").classList.add("gone"); },950); }
 else $("#v-home").style.setProperty("--base","0s");
+/* Strahd's HOSTILE stamp lands with a thud (if sound has already been woken by a tap) */
+setTimeout(()=>{ if(current==="home") Sound.stamp(); },(introSeen?0:600)+1800);
 show(location.hash.slice(1)||"home",false);
 
 /* once the page is idle, fetch the small map and fog so Locations opens without a stall */
