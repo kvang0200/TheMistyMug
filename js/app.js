@@ -242,7 +242,7 @@ const Deal=(()=>{
   }
   function prep(){
     if(reduced) return;
-    if(!io) io=new IntersectionObserver(list=>list.forEach(x=>{ if(x.isIntersecting){ io.unobserve(x.target); run(x.target); } }),{threshold:.2});
+    if(!io) io=new IntersectionObserver(list=>list.forEach(x=>{ if(x.isIntersecting){ io.unobserve(x.target); run(x.target); } }),{threshold:0,rootMargin:"0px 0px -12% 0px"});
     $$(".view.on .deal").forEach(g=>{ g.classList.remove("dealt"); g.classList.add("undealt"); io.observe(g); });
   }
   return {prep};
@@ -417,25 +417,29 @@ const NPC_FILTERS=[["all","All"],["ally","Allies"],["unsure","Uncertain"],["foe"
 let npcFilter="all";
 function npcCard(n,i){
   const st=standing(n);
-  return `<a href="#npcs" class="card in" data-npc="${esc(n.id)}" style="--tilt:${tilt(i)}deg" aria-label="Open ${esc(n.name)}">${isNew(n)?`<span class="new">NEW</span>`:""}<div class="shade"></div><article class="parch" style="display:flex;flex-direction:column;padding-bottom:calc(62 * var(--u))">
-    <span class="label" style="display:block;margin-bottom:calc(14 * var(--u));color:var(--ink-muted)">NPC</span>
-    <div style="display:flex;gap:calc(14 * var(--u));align-items:flex-start">
-      <div style="position:relative;flex:0 0 calc(72 * var(--u));height:calc(90 * var(--u))">${sil(n)}</div>
-      <div style="flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:calc(4 * var(--u))"><span class="name">${esc(n.name)}</span><span style="font-family:var(--serif);font-style:italic;font-size:calc(15 * var(--u));color:var(--ink-muted)">${esc(n.epi||"")}</span></div>
+  return `<a href="#npcs" class="card npc in" data-npc="${esc(n.id)}" style="--tilt:${tilt(i)}deg" aria-label="Open ${esc(n.name)}">${isNew(n)?`<span class="new">NEW</span>`:""}<div class="shade"></div><article class="parch">
+    <span class="label npc-kick">NPC</span>
+    <div class="npc-top">
+      <div class="npc-ph">${sil(n)}</div>
+      <div class="npc-id"><span class="name">${esc(n.name)}</span><span class="npc-epi">${esc(n.epi||"")}</span></div>
     </div>
     ${n.d?`<p class="npc-desc">${esc(n.d)}</p>`:""}
     <dl class="dl"><dt>Status</dt><dd>${statusWord(n)}</dd><dt>First met</dt><dd>${esc(metLabel(n.met))}</dd><dt>Last seen</dt><dd>${esc(where(n))}</dd></dl>
-    <span class="stamp ${st.tone} stamp-view" aria-hidden="true" style="right:calc(14 * var(--u));bottom:calc(16 * var(--u))">${st.stamp}</span>
+    <span class="stamp ${st.tone} stamp-view" aria-hidden="true">${st.stamp}</span>
   </article></a>`;
 }
+const inGroup=(n,k)=>k==="all"||(k==="fallen"?n.fate==="dead":(n.side===k&&n.fate!=="dead"));
 function renderNpcs(){
-  const list=D.npcs.filter(n=>npcFilter==="all"||(npcFilter==="fallen"?n.fate==="dead":(n.side===npcFilter&&n.fate!=="dead")));
+  const list=D.npcs.filter(n=>inGroup(n,npcFilter));
+  /* "All" is split into labelled groups (allies, uncertain, foes, fallen) so the long list is easy to scan */
+  const groups=npcFilter==="all"?NPC_FILTERS.slice(1).map(([k,l])=>[l,D.npcs.filter(n=>inGroup(n,k))]).filter(([,g])=>g.length):[[null,list]];
+  const body=list.length?groups.map(([l,g])=>`${l?`<h3 class="npc-group"><span>${l}</span><span class="label muted">${g.length}</span></h3>`:""}<div class="grid g-240 npc-grid">${g.map(npcCard).join("")}</div>`).join(""):`<p class="empty">No one here yet.</p>`;
   $("#v-npcs").innerHTML=`
   <div class="mist" style="top:calc(160 * var(--u))" aria-hidden="true"></div>
   <section class="section"><div class="wrap" style="position:relative">
     ${head("NPCs",`Friends, foes, <i>and the fallen</i>`,`<p>Each card is stamped with where they stand with the party.</p>`)}
     <div class="stickybar"><div class="filters" role="group" aria-label="Show">${NPC_FILTERS.map(([k,l])=>`<button type="button" data-nf="${k}" aria-pressed="${k===npcFilter}">${l}</button>`).join("")}</div><span class="label muted">${list.length} ${list.length===1?"NPC":"NPCs"}</span></div>
-    <div class="grid g-240">${list.map(npcCard).join("")||`<p class="empty">No one here yet.</p>`}</div>
+    ${body}
   </div></section>`;
   SX.scan();
 }
