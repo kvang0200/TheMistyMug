@@ -24,6 +24,7 @@ unmet NPCs, or quests the party hasn't started.
 - **Tabs:** Home, Sessions, NPCs, Locations (interactive map + list), Quests.
 - **Home** is the players' landing page: title card, then the players (tap a card for their file), then the latest session.
 - **Scroll motion:** pinned scenes (the Home title card holds while the page slides up over it;), sticky filter bars on NPCs and Quests, cards rising into place, and a reading bar under the header. The Tarokka and personal fortune cards are dealt onto the table when Quests opens. Hovering a player card flips their portrait over in front of it. A small scroll engine in `app.js` (SX) drives it in every browser and only measures what is on screen.
+- **Screen sizes:** every size in `css/style.css` is written in design pixels (`var(--u)`). Up to 1920×1080 one design pixel is one pixel; on bigger screens (1440p, 4K) it grows, so the whole page keeps the same proportions instead of sitting small in the middle.
 - **Colors:** primary (ink black), secondary (parchment beige) and accent (blood red) are
   `--p`, `--s` and `--a` at the top of `css/style.css`. Change those three to restyle everything.
 - **Wax seals:** the latest session is always open; every older session is sealed until a

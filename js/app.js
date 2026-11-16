@@ -70,7 +70,7 @@ function sealArt(kind){
 }
 function wax(kind="key",w=78){
   const art=sealArt(kind);
-  return `<span class="wax" style="--w:${w}px" aria-hidden="true"><span class="disc whole">${art}</span><span class="disc l">${art}</span><span class="disc r">${art}</span><svg class="crackline" viewBox="0 0 100 100"><polyline pathLength="1" points="53,-4 44,22 58,41 45,60 55,79 47,104" fill="none" stroke="var(--p)" stroke-width="3" stroke-linejoin="round"/></svg><span class="shard" style="left:46%;top:30%;width:9px;height:7px;clip-path:polygon(0 0,100% 30%,40% 100%);--x:-38px;--y:-26px;--r:-140deg"></span><span class="shard" style="left:52%;top:55%;width:7px;height:9px;clip-path:polygon(0 20%,100% 0,70% 100%);--x:40px;--y:-18px;--r:160deg"></span><span class="shard" style="left:48%;top:78%;width:6px;height:6px;clip-path:polygon(50% 0,100% 100%,0 80%);--x:10px;--y:44px;--r:90deg"></span></span>`;
+  return `<span class="wax" style="--w:calc(${w} * var(--u))" aria-hidden="true"><span class="disc whole">${art}</span><span class="disc l">${art}</span><span class="disc r">${art}</span><svg class="crackline" viewBox="0 0 100 100"><polyline pathLength="1" points="53,-4 44,22 58,41 45,60 55,79 47,104" fill="none" stroke="var(--p)" stroke-width="3" stroke-linejoin="round"/></svg><span class="shard" style="left:46%;top:30%;width:calc(9 * var(--u));height:calc(7 * var(--u));clip-path:polygon(0 0,100% 30%,40% 100%);--x:calc(-38 * var(--u));--y:calc(-26 * var(--u));--r:-140deg"></span><span class="shard" style="left:52%;top:55%;width:calc(7 * var(--u));height:calc(9 * var(--u));clip-path:polygon(0 20%,100% 0,70% 100%);--x:calc(40 * var(--u));--y:calc(-18 * var(--u));--r:160deg"></span><span class="shard" style="left:48%;top:78%;width:calc(6 * var(--u));height:calc(6 * var(--u));clip-path:polygon(50% 0,100% 100%,0 80%);--x:calc(10 * var(--u));--y:calc(44 * var(--u));--r:90deg"></span></span>`;
 }
 function flipCard({key,cls="",i=0,front,back,frontParch=true,id="",still=false}){
   const open=isOpen(key);
@@ -264,7 +264,7 @@ function countUp(scope){
 function sessionCard(s,i,still=false){
   const people=(s.who||[]).filter(id=>npcById[id]);
   return flipCard({key:"s"+s.n,i,id:"s-"+slug(s.n),cls:"sess",still,
-    front:`<button type="button" class="sealed-btn" data-crack aria-label="Break the seal on Session ${esc(s.n)}: ${esc(s.t)}"><span class="label" style="color:var(--ink-muted)">Session ${esc(s.n)}</span><span class="t" style="font-family:var(--serif);font-style:italic;font-size:26px;line-height:1.1">${esc(s.t)}</span>${wax("key",84)}<span class="label">Break the seal</span></button>`,
+    front:`<button type="button" class="sealed-btn" data-crack aria-label="Break the seal on Session ${esc(s.n)}: ${esc(s.t)}"><span class="label" style="color:var(--ink-muted)">Session ${esc(s.n)}</span><span class="t" style="font-family:var(--serif);font-style:italic;font-size:calc(26 * var(--u));line-height:1.1">${esc(s.t)}</span>${wax("key",84)}<span class="label">Break the seal</span></button>`,
     back:`<div class="sess-back"><span class="label dot">Session ${esc(s.n)}</span><span class="t">${esc(s.t)}</span><p>${esc(plain(s.s))}</p>${people.length?`<div class="chips">${people.map(id=>`<button type="button" class="chip" data-npc="${esc(id)}">${esc(npcById[id].name)}</button>`).join("")}</div>`:""}</div>`});
 }
 function latestBlock(){
@@ -284,7 +284,7 @@ function latestBlock(){
     <div class="right in">
       <p class="summary" id="latestText">${redacted(latest.s)}</p>
       ${people.length?`<div class="chips">${people.map(id=>`<button type="button" class="chip" data-npc="${esc(id)}">${esc(npcById[id].name)}</button>`).join("")}</div>`:""}
-      <div style="display:flex;flex-wrap:wrap;gap:12px">
+      <div style="display:flex;flex-wrap:wrap;gap:calc(12 * var(--u))">
         ${hasRedactions?`<button type="button" class="btn dark" data-declass aria-pressed="false"><span>Reveal the details</span>${ICON.arrow}</button>`:""}
         <a class="btn ghost" href="#sessions">All ${esc(D.sessions.length)} sessions</a>
       </div>
@@ -328,10 +328,10 @@ function renderHome(){
   const ongoing=D.quests.filter(q=>q.st!=="done").length;
   const fulfilled=D.tarokka.filter(t=>t.st==="done").length;
   $("#v-home").innerHTML=`
-  <div class="scene" data-pin="cover"><section class="cover sstage"><div class="cfog" aria-hidden="true"><i></i><i></i></div><div class="mist" style="top:200px" aria-hidden="true"></div><div class="wrap">
+  <div class="scene" data-pin="cover"><section class="cover sstage"><div class="cfog" aria-hidden="true"><i></i><i></i></div><div class="mist" style="top:calc(200 * var(--u))" aria-hidden="true"></div><div class="wrap">
     <div class="metaline"><span class="snap" ${d(.0)}>Updated after Session ${esc(LAST)}</span><span class="snap" ${d(.1)}>Curse of Strahd · Party level ${esc(D.level)}</span></div>
     <h1 class="mast" aria-label="Barovia"><span class="bar rule-draw" aria-hidden="true" ${d(-.1)}></span>${letters("BAROVIA",.1)}</h1>
-    <div class="rule-draw" style="height:1px;background:var(--s);opacity:.35;margin-top:18px;animation-delay:calc(var(--base,0s) + .5s)"></div>
+    <div class="rule-draw" style="height:calc(1 * var(--u));background:var(--s);opacity:.35;margin-top:calc(18 * var(--u));animation-delay:calc(var(--base,0s) + .5s)"></div>
     <div class="cover-row">
       <div class="cover-copy">
         <div class="cfile snap" ${d(.55)} role="group" aria-label="The campaign at a glance">
@@ -356,17 +356,17 @@ function renderHome(){
         <div class="dice" aria-hidden="true"><span class="roll r1"><span class="d20 big"><svg viewBox="0 0 100 100" aria-hidden="true"><polygon class="f0" points="50,4 90,27 90,73 50,96 10,73 10,27"/><polygon class="f1" points="50,4 90,27 50,22"/><polygon class="f1" points="50,4 10,27 50,22"/><polygon class="f2" points="90,27 90,73 78,66"/><polygon class="f2" points="10,27 10,73 22,66"/><polygon class="f1" points="90,73 50,96 78,66"/><polygon class="f1" points="10,73 50,96 22,66"/><polygon class="f3" points="50,22 78,66 22,66"/><g class="ln"><polyline points="50,22 78,66 22,66 50,22"/><line x1="50" y1="22" x2="50" y2="4"/><line x1="50" y1="22" x2="90" y2="27"/><line x1="50" y1="22" x2="10" y2="27"/><line x1="78" y1="66" x2="90" y2="27"/><line x1="78" y1="66" x2="90" y2="73"/><line x1="78" y1="66" x2="50" y2="96"/><line x1="22" y1="66" x2="10" y2="27"/><line x1="22" y1="66" x2="10" y2="73"/><line x1="22" y1="66" x2="50" y2="96"/></g><text x="50" y="57" text-anchor="middle">20</text></svg></span></span><span class="roll r2"><span class="d20 small"><svg viewBox="0 0 100 100" aria-hidden="true"><polygon class="f0" points="50,4 90,27 90,73 50,96 10,73 10,27"/><polygon class="f1" points="50,4 90,27 50,22"/><polygon class="f1" points="50,4 10,27 50,22"/><polygon class="f2" points="90,27 90,73 78,66"/><polygon class="f2" points="10,27 10,73 22,66"/><polygon class="f1" points="90,73 50,96 78,66"/><polygon class="f1" points="10,73 50,96 22,66"/><polygon class="f3" points="50,22 78,66 22,66"/><g class="ln"><polyline points="50,22 78,66 22,66 50,22"/><line x1="50" y1="22" x2="50" y2="4"/><line x1="50" y1="22" x2="90" y2="27"/><line x1="50" y1="22" x2="10" y2="27"/><line x1="78" y1="66" x2="90" y2="27"/><line x1="78" y1="66" x2="90" y2="73"/><line x1="78" y1="66" x2="50" y2="96"/><line x1="22" y1="66" x2="10" y2="27"/><line x1="22" y1="66" x2="10" y2="73"/><line x1="22" y1="66" x2="50" y2="96"/></g><text x="50" y="57" text-anchor="middle">13</text></svg></span></span></div>
         <div class="snap" style="position:relative;animation-delay:calc(var(--base,0s) + 1.15s)">
           <a href="#npcs" class="card" data-npc="strahd" aria-label="Open ${esc(strahd.name)}'s card"><div class="shade"></div><article class="parch">
-            <span class="label" style="display:block;margin-bottom:14px;color:var(--ink-muted)">NPC</span>
-            <div style="display:flex;gap:18px">
-              <div style="position:relative;flex:0 0 120px;height:150px">${sil(strahd)}<div class="glow watch" aria-hidden="true" style="position:absolute;left:50%;top:30%;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--a) 55%,transparent),transparent 66%)"></div></div>
-              <div style="flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:6px">
+            <span class="label" style="display:block;margin-bottom:calc(14 * var(--u));color:var(--ink-muted)">NPC</span>
+            <div style="display:flex;gap:calc(18 * var(--u))">
+              <div style="position:relative;flex:0 0 calc(120 * var(--u));height:calc(150 * var(--u))">${sil(strahd)}<div class="glow watch" aria-hidden="true" style="position:absolute;left:50%;top:30%;width:calc(120 * var(--u));height:calc(120 * var(--u));margin:calc(-60 * var(--u)) 0 0 calc(-60 * var(--u));border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--a) 55%,transparent),transparent 66%)"></div></div>
+              <div style="flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:calc(6 * var(--u))">
                 <span class="label dot">Main villain</span>
-                <span class="name" style="font-size:30px;line-height:1">${esc(strahd.name)}</span>
-                <span style="font-family:var(--serif);font-style:italic;font-size:16px;color:var(--ink-muted)">${esc(strahd.epi)}</span>
+                <span class="name" style="font-size:calc(30 * var(--u));line-height:1">${esc(strahd.name)}</span>
+                <span style="font-family:var(--serif);font-style:italic;font-size:calc(16 * var(--u));color:var(--ink-muted)">${esc(strahd.epi)}</span>
               </div>
             </div>
-            <dl class="dl"><dt>Status</dt><dd>${statusWord(strahd)}</dd><dt>Location</dt><dd>${esc(where(strahd))}</dd>${seen?`<dt>Last seen</dt><dd>Session ${esc(seen.n)} · ${esc(seen.t)}</dd>`:""}<dt>Weakness</dt><dd><span style="display:inline-block;width:120px;height:14px;background:var(--p);vertical-align:middle"></span> <span style="font-size:11px;color:var(--ink-muted)">unknown</span></dd></dl>
-            <span class="stamp red stamp-now" aria-hidden="true" style="right:18px;bottom:18px;font-size:16px;animation-delay:calc(var(--base,0s) + 1.75s)">HOSTILE</span>
+            <dl class="dl"><dt>Status</dt><dd>${statusWord(strahd)}</dd><dt>Location</dt><dd>${esc(where(strahd))}</dd>${seen?`<dt>Last seen</dt><dd>Session ${esc(seen.n)} · ${esc(seen.t)}</dd>`:""}<dt>Weakness</dt><dd><span style="display:inline-block;width:calc(120 * var(--u));height:calc(14 * var(--u));background:var(--p);vertical-align:middle"></span> <span style="font-size:calc(11 * var(--u));color:var(--ink-muted)">unknown</span></dd></dl>
+            <span class="stamp red stamp-now" aria-hidden="true" style="right:calc(18 * var(--u));bottom:calc(18 * var(--u));font-size:calc(16 * var(--u));animation-delay:calc(var(--base,0s) + 1.75s)">HOSTILE</span>
           </article></a>
         </div>
       </div>`:""}
@@ -386,7 +386,7 @@ function renderHome(){
   <section class="section light" id="latest"><div class="wrap">
     ${latestBlock()}
     <div class="subhead in"><h3>Earlier sessions, <i>under seal</i></h3><a class="link" href="#sessions">All sessions →</a></div>
-    <div class="grid g-240" style="margin-top:40px">${earlier.slice(0,4).map(sessionCard).join("")}</div>
+    <div class="grid g-240" style="margin-top:calc(40 * var(--u))">${earlier.slice(0,4).map(sessionCard).join("")}</div>
   </div></section>
   </div>`;
 }
@@ -395,12 +395,17 @@ function renderHome(){
    SESSIONS
    ===================================================================== */
 function renderSessions(){
+  /* three bands of colour: the page title on black, the latest session on parchment, the sealed sessions on black */
   $("#v-sessions").innerHTML=`
-  <section class="section light"><div class="wrap">
+  <section class="section sess-top"><div class="mist" style="top:calc(-120 * var(--u))" aria-hidden="true"></div><div class="wrap" style="position:relative">
     ${head("Sessions",`The <i>chronicle</i>`,`<p>The latest session is open. Break a seal to read an older one.</p>`)}
-    <div class="sess-latest">${latestBlock().replace('id="latestText"','id="latestText2"')}</div>
-    <div class="subhead in stickyhead"><h3>Every session, <i>under seal</i></h3><span class="label" style="color:var(--ink-muted)">Newest first</span></div>
-    <div class="grid g-240 thread-host" style="margin-top:40px">${earlier.map((s,i)=>sessionCard(s,i,true)).join("")}</div>
+  </div></section>
+  <section class="section light sess-mid"><div class="wrap">
+    ${latestBlock().replace('id="latestText"','id="latestText2"')}
+  </div></section>
+  <section class="section sess-list"><div class="mist red" style="top:0" aria-hidden="true"></div><div class="wrap" style="position:relative">
+    <div class="subhead in stickyhead" style="margin-top:0"><h3>Every session, <i>under seal</i></h3><span class="label" style="color:var(--muted)">Newest first</span></div>
+    <div class="grid g-240 thread-host" style="margin-top:calc(40 * var(--u))">${earlier.map((s,i)=>sessionCard(s,i,true)).join("")}</div>
   </div></section>
 `;
 }
@@ -412,21 +417,21 @@ const NPC_FILTERS=[["all","All"],["ally","Allies"],["unsure","Uncertain"],["foe"
 let npcFilter="all";
 function npcCard(n,i){
   const st=standing(n);
-  return `<a href="#npcs" class="card in" data-npc="${esc(n.id)}" style="--tilt:${tilt(i)}deg" aria-label="Open ${esc(n.name)}">${isNew(n)?`<span class="new">NEW</span>`:""}<div class="shade"></div><article class="parch" style="display:flex;flex-direction:column;padding-bottom:62px">
-    <span class="label" style="display:block;margin-bottom:14px;color:var(--ink-muted)">NPC</span>
-    <div style="display:flex;gap:14px;align-items:flex-start">
-      <div style="position:relative;flex:0 0 72px;height:90px">${sil(n)}</div>
-      <div style="flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:4px"><span class="name">${esc(n.name)}</span><span style="font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink-muted)">${esc(n.epi||"")}</span></div>
+  return `<a href="#npcs" class="card in" data-npc="${esc(n.id)}" style="--tilt:${tilt(i)}deg" aria-label="Open ${esc(n.name)}">${isNew(n)?`<span class="new">NEW</span>`:""}<div class="shade"></div><article class="parch" style="display:flex;flex-direction:column;padding-bottom:calc(62 * var(--u))">
+    <span class="label" style="display:block;margin-bottom:calc(14 * var(--u));color:var(--ink-muted)">NPC</span>
+    <div style="display:flex;gap:calc(14 * var(--u));align-items:flex-start">
+      <div style="position:relative;flex:0 0 calc(72 * var(--u));height:calc(90 * var(--u))">${sil(n)}</div>
+      <div style="flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:calc(4 * var(--u))"><span class="name">${esc(n.name)}</span><span style="font-family:var(--serif);font-style:italic;font-size:calc(15 * var(--u));color:var(--ink-muted)">${esc(n.epi||"")}</span></div>
     </div>
     ${n.d?`<p class="npc-desc">${esc(n.d)}</p>`:""}
     <dl class="dl"><dt>Status</dt><dd>${statusWord(n)}</dd><dt>First met</dt><dd>${esc(metLabel(n.met))}</dd><dt>Last seen</dt><dd>${esc(where(n))}</dd></dl>
-    <span class="stamp ${st.tone} stamp-view" aria-hidden="true" style="right:14px;bottom:16px">${st.stamp}</span>
+    <span class="stamp ${st.tone} stamp-view" aria-hidden="true" style="right:calc(14 * var(--u));bottom:calc(16 * var(--u))">${st.stamp}</span>
   </article></a>`;
 }
 function renderNpcs(){
   const list=D.npcs.filter(n=>npcFilter==="all"||(npcFilter==="fallen"?n.fate==="dead":(n.side===npcFilter&&n.fate!=="dead")));
   $("#v-npcs").innerHTML=`
-  <div class="mist" style="top:160px" aria-hidden="true"></div>
+  <div class="mist" style="top:calc(160 * var(--u))" aria-hidden="true"></div>
   <section class="section"><div class="wrap" style="position:relative">
     ${head("NPCs",`Friends, foes, <i>and the fallen</i>`,`<p>Each card is stamped with where they stand with the party.</p>`)}
     <div class="stickybar"><div class="filters" role="group" aria-label="Show">${NPC_FILTERS.map(([k,l])=>`<button type="button" data-nf="${k}" aria-pressed="${k===npcFilter}">${l}</button>`).join("")}</div><span class="label muted">${list.length} ${list.length===1?"NPC":"NPCs"}</span></div>
@@ -483,7 +488,7 @@ function renderQuestList(){
   <section class="section light" id="list"><div class="wrap">
     ${head("Quests",`${questFilter==="done"?"Completed":"Ongoing"} <i>quests</i>`,`<p>What the party has promised to do, and what it has done.</p>`)}
     <div class="stickybar light-bar"><div class="filters" role="group" aria-label="Show">${Q_FILTERS.map(([k,l])=>`<button type="button" data-qf="${k}" aria-pressed="${k===questFilter}">${l}</button>`).join("")}</div><span class="label" style="color:var(--ink-muted)">${on.length} ongoing · ${done.length} completed</span></div>
-    ${showOn?`<ol class="grid g-240" style="margin:0;padding:0;gap:40px 28px">${on.map((q,i)=>`<li class="note in" style="--tilt:${[-2,1.5,-1,2,-1.5,1,-2.5][i%7]}deg"><span class="label">Ongoing · ${esc(q.t)}</span><p style="font-size:22px;line-height:1.15">${esc(q.n)}</p><p style="font-size:16px;color:color-mix(in srgb,var(--s) 82%,transparent)">${esc(q.p)}</p></li>`).join("")||`<p class="empty">Nothing ongoing.</p>`}</ol>`:""}
+    ${showOn?`<ol class="grid g-240" style="margin:0;padding:0;gap:calc(40 * var(--u)) calc(28 * var(--u))">${on.map((q,i)=>`<li class="note in" style="--tilt:${[-2,1.5,-1,2,-1.5,1,-2.5][i%7]}deg"><span class="label">Ongoing · ${esc(q.t)}</span><p style="font-size:calc(22 * var(--u));line-height:1.15">${esc(q.n)}</p><p style="font-size:calc(16 * var(--u));color:color-mix(in srgb,var(--s) 82%,transparent)">${esc(q.p)}</p></li>`).join("")||`<p class="empty">Nothing ongoing.</p>`}</ol>`:""}
     ${showOn&&showDone?`<div class="subhead in"><h3>Completed <i>quests</i></h3></div>`:""}
     ${showDone?`<div class="grid g-210" style="margin-top:${showOn?40:0}px">${done.map((q,i)=>`<div class="card quest in" style="--tilt:${tilt(i+3)}deg"><div class="shade"></div><article class="parch"><span class="label" style="color:var(--ink-muted)">${esc(q.t)} quest</span><span class="t">${esc(q.n)}</span><p>${esc(q.p)}</p><span class="stamp red stamp-view" aria-hidden="true">COMPLETED</span></article></div>`).join("")}</div>`:""}
   </div></section>`;
@@ -525,7 +530,7 @@ function closeSheet(){
   if(lastFocus&&document.contains(lastFocus)) lastFocus.focus({preventScroll:true});
 }
 const factList=(items,start=1.7)=>`<ol>${items.map((t,i)=>`<li class="snap" style="animation-delay:${(start+i*.08).toFixed(2)}s"><span class="n">${i+1}</span><span>${esc(t)}</span></li>`).join("")}</ol>`;
-const sessionChips=list=>list.length?`<div class="chips-row snap" style="animation-delay:2.2s"><span class="label" style="color:var(--ink-muted);margin-right:6px">Appears in sessions</span>${list.map(s=>`<button type="button" class="chip" data-session="${esc(s.n)}">Session ${esc(s.n)}</button>`).join("")}</div>`:"";
+const sessionChips=list=>list.length?`<div class="chips-row snap" style="animation-delay:2.2s"><span class="label" style="color:var(--ink-muted);margin-right:calc(6 * var(--u))">Appears in sessions</span>${list.map(s=>`<button type="button" class="chip" data-session="${esc(s.n)}">Session ${esc(s.n)}</button>`).join("")}</div>`:"";
 const portraitFrame=n=>`${sil(n)}<div class="glowdot glow" aria-hidden="true"></div><span class="label cap">Portrait</span>`;
 function openNpc(id){
   const n=npcById[id]; if(!n) return;
@@ -551,15 +556,15 @@ function pinFor(p){ return PINS.find(x=>x.key===p.n)||PINS.find(x=>(x.places||[]
 function openPlace(name){
   const p=placeByName[name]; if(!p) return;
   const pin=pinFor(p), visited=p.s&&p.s!=="—";
-  const photo=pin?`<div class="mapcrop" role="img" aria-label="Map around ${esc(p.n)}" style="background-image:url(img/barovia-map-1000.webp);background-size:1000px auto;background-position:calc(50% - ${(+pin.x*.5-500).toFixed(0)}px) calc(50% - ${(+pin.y*.5-341).toFixed(0)}px)"></div><span class="label cap" style="color:var(--s);background:var(--p);padding:3px 8px">On the map</span>`
+  const photo=pin?`<div class="mapcrop" role="img" aria-label="Map around ${esc(p.n)}" style="background-image:url(img/barovia-map-1000.webp);background-size:calc(1000 * var(--u)) auto;background-position:calc(50% - ${(+pin.x*.5-500).toFixed(0)} * var(--u)) calc(50% - ${(+pin.y*.5-341).toFixed(0)} * var(--u))"></div><span class="label cap" style="color:var(--s);background:var(--p);padding:calc(3 * var(--u)) calc(8 * var(--u))">On the map</span>`
     :`${sil({name:p.n})}<span class="label cap">Not on the map yet</span>`;
   const inside=pin&&pin.key===p.n&&pin.places?pin.places.map(n=>placeByName[n]).filter(Boolean):[];
   openSheet({tab:`LOCATION · ${esc(p.r.toUpperCase())}`,photo,
     kicker:visited?`VISITED · ${esc(metLabel(p.s).toUpperCase())}`:"HEARD OF · NOT VISITED YET",
     name:p.n,epi:p.r,stamp:{text:visited?"VISITED":"NOT VISITED",tone:visited?"ink":"red"},
     body:`<h3 class="snap" style="animation-delay:1.5s">WHAT WE KNOW</h3><p class="text snap" style="animation-delay:1.6s">${esc(p.p)}</p>
-      ${inside.length?`<h3 class="snap" style="animation-delay:1.8s">PLACES HERE</h3><div class="chips snap" style="margin-top:10px;animation-delay:1.9s">${inside.map(q=>`<button type="button" class="chip" data-place="${esc(q.n)}">${esc(q.n)}</button>`).join("")}</div>`:""}
-      ${visited?`<div class="chips-row snap" style="animation-delay:2.1s"><span class="label" style="color:var(--ink-muted);margin-right:6px">First visited</span><button type="button" class="chip" data-session="${esc(p.s)}">Session ${esc(p.s)}</button></div>`:""}`});
+      ${inside.length?`<h3 class="snap" style="animation-delay:1.8s">PLACES HERE</h3><div class="chips snap" style="margin-top:calc(10 * var(--u));animation-delay:1.9s">${inside.map(q=>`<button type="button" class="chip" data-place="${esc(q.n)}">${esc(q.n)}</button>`).join("")}</div>`:""}
+      ${visited?`<div class="chips-row snap" style="animation-delay:2.1s"><span class="label" style="color:var(--ink-muted);margin-right:calc(6 * var(--u))">First visited</span><button type="button" class="chip" data-session="${esc(p.s)}">Session ${esc(p.s)}</button></div>`:""}`});
 }
 modal.addEventListener("click",e=>{ if(e.target===modal||e.target.closest("[data-close]")) closeSheet(); });
 addEventListener("keydown",e=>{
@@ -797,11 +802,13 @@ paintSound();
 renderHome(); renderSessions(); renderNpcs(); renderLocList(); renderQuests(); 
 /* the flipped portrait covers each player card from the stats down, so the name and class always stay visible */
 /* the dice fill the space under Strahd's card, whatever the screen size */
+/* the size of one design pixel (--u), which grows on very large screens */
+function unitPx(){ const d=document.createElement("div"); d.style.cssText="position:absolute;visibility:hidden;width:calc(100 * var(--u))"; document.body.appendChild(d); const u=d.offsetWidth/100; d.remove(); return u||1; }
 function fitDice(){
   const dc=$(".dice"); if(!dc||!dc.offsetParent) return;
   const v=dc.parentElement, card=v.querySelector(".card"); if(!card) return;
   const below=v.clientHeight-(card.parentElement.offsetTop+card.offsetTop+card.offsetHeight);
-  dc.style.setProperty("--dsz",Math.round(Math.max(220,Math.min(1000,below*1.1,innerWidth*.3)))+"px");
+  dc.style.setProperty("--dsz",Math.round(Math.max(220*unitPx(),Math.min(1000*unitPx(),below*1.1,innerWidth*.3)))+"px");
 }
 function fitPhotos(){ fitDice(); $$(".pslot").forEach(sl=>{ let el=sl.querySelector(".stats"), y=0; if(!el||!el.offsetParent) return; while(el&&el!==sl){ y+=el.offsetTop; el=el.offsetParent; } sl.style.setProperty("--ptop",(y-6)+"px"); }); }
 $("#v-home").addEventListener("pointermove",e=>{ const sl=e.target.closest(".pslot"); if(!sl) return; const r=sl.getBoundingClientRect(); sl.style.setProperty("--mx",((e.clientX-r.left)/r.width*100).toFixed(1)+"%"); sl.style.setProperty("--my",((e.clientY-r.top)/r.height*100).toFixed(1)+"%"); },{passive:true});
