@@ -863,3 +863,13 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 }
 /* the taller Strahd card would hide the small die: roll it out beside the big one */
 @media (min-width:701px){ .dice .r2{bottom:8%;right:-30%} }
+
+/* phones: scroll the overlay, not the sheet, so the parchment (absolutely
+   positioned behind the content) always stretches to the full length of the
+   text instead of stopping at the screen height */
+@media (max-width:760px){
+  .modal{align-items:flex-start;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-top:calc(16 * var(--u));padding-bottom:calc(40 * var(--u))}
+  .modal .sheet{max-height:none;overflow:visible;flex:0 0 auto;margin:0 auto}
+  .modal .sheet>.parch{transform:rotate(-.3deg)}
+  .sheet .stamp{margin-top:calc(30 * var(--u))}
+}
