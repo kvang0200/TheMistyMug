@@ -802,3 +802,16 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 }
 /* the campaign strip moves with the rest of the title card as you scroll */
 .scene.on .cover .cfile{translate:0 calc(var(--pt,0) * calc(-36 * var(--u)) + var(--pu,0) * calc(60 * var(--u)))}
+
+/* BAROVIA's red bar runs to both edges of the screen on wide layouts */
+@media (min-width:701px){ .cover .mast .bar{left:calc(-1 * max(calc(60 * var(--u)),(100vw - var(--wrap)) / 2 + var(--pad)));right:calc(-1 * max(calc(60 * var(--u)),(100vw - var(--wrap)) / 2 + var(--pad)))} }
+/* tablets and narrow windows where Strahd's card drops below the text: a straight red band */
+.cover.stacked .villain{max-width:none;flex-basis:100%}
+.cover.stacked .villain .redpanel{left:calc(-1 * var(--pad) - 20px);right:calc(-1 * var(--pad) - 20px);top:calc(40 * var(--u));bottom:calc(-30 * var(--u));clip-path:none}
+.cover.stacked .villain>.snap{max-width:calc(520 * var(--u));margin:0 auto}
+.cover.stacked .dice{display:none}
+.cover.stacked .peek{display:none}
+.cover.stacked .cover-copy{padding-bottom:0!important}
+.cover.sstage.stacked{padding-bottom:calc(70 * var(--u))}
+.cover.stacked .cover-row{row-gap:calc(30 * var(--u))}
+#sesslist{scroll-margin-top:var(--hdr,66px)}

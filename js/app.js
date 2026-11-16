@@ -267,7 +267,7 @@ function sessionCard(s,i,still=false){
     front:`<button type="button" class="sealed-btn" data-crack aria-label="Break the seal on Session ${esc(s.n)}: ${esc(s.t)}"><span class="label" style="color:var(--ink-muted)">Session ${esc(s.n)}</span><span class="t" style="font-family:var(--serif);font-style:italic;font-size:calc(26 * var(--u));line-height:1.1">${esc(s.t)}</span>${wax("key",84)}<span class="label">Break the seal</span></button>`,
     back:`<div class="sess-back"><span class="label dot">Session ${esc(s.n)}</span><span class="t">${esc(s.t)}</span><p>${esc(plain(s.s))}</p>${people.length?`<div class="chips">${people.map(id=>`<button type="button" class="chip" data-npc="${esc(id)}">${esc(npcById[id].name)}</button>`).join("")}</div>`:""}</div>`});
 }
-function latestBlock(){
+function latestBlock(onSessions=false){
   const people=(latest.who||[]).filter(id=>npcById[id]);
   const places=D.places.filter(p=>String(p.s)===LAST);
   const hasRedactions=/\[\[.+?\]\]/.test(latest.s);
@@ -286,7 +286,7 @@ function latestBlock(){
       ${people.length?`<div class="chips">${people.map(id=>`<button type="button" class="chip" data-npc="${esc(id)}">${esc(npcById[id].name)}</button>`).join("")}</div>`:""}
       <div style="display:flex;flex-wrap:wrap;gap:calc(12 * var(--u))">
         ${hasRedactions?`<button type="button" class="btn dark" data-declass aria-pressed="false"><span>Reveal the details</span>${ICON.arrow}</button>`:""}
-        <a class="btn ghost" href="#sessions">All ${esc(D.sessions.length)} sessions</a>
+        ${onSessions?`<a class="btn ghost" href="#sessions" data-jump="sesslist">Previous sessions ↓</a>`:`<a class="btn ghost" href="#sessions">All sessions</a>`}
       </div>
     </div>
   </div>`;
@@ -401,9 +401,9 @@ function renderSessions(){
     ${head("Sessions",`The <i>chronicle</i>`,`<p>The latest session is open. Break a seal to read an older one.</p>`)}
   </div></section>
   <section class="section light sess-mid"><div class="wrap">
-    ${latestBlock().replace('id="latestText"','id="latestText2"')}
+    ${latestBlock(true).replace('id="latestText"','id="latestText2"')}
   </div></section>
-  <section class="section sess-list"><div class="mist red" style="top:0" aria-hidden="true"></div><div class="wrap" style="position:relative">
+  <section class="section sess-list" id="sesslist"><div class="mist red" style="top:0" aria-hidden="true"></div><div class="wrap" style="position:relative">
     <div class="subhead in stickyhead" style="margin-top:0"><h3>Every session, <i>under seal</i></h3><span class="label" style="color:var(--muted)">Newest first</span></div>
     <div class="grid g-240 thread-host" style="margin-top:calc(40 * var(--u))">${earlier.map((s,i)=>sessionCard(s,i,true)).join("")}</div>
   </div></section>
@@ -814,7 +814,19 @@ function fitDice(){
   const below=v.clientHeight-(card.parentElement.offsetTop+card.offsetTop+card.offsetHeight);
   dc.style.setProperty("--dsz",Math.round(Math.max(220*unitPx(),Math.min(1000*unitPx(),below*.92,innerWidth*.3)))+"px");
 }
-function fitPhotos(){ fitDice(); $$(".pslot").forEach(sl=>{ let el=sl.querySelector(".stats"), y=0; if(!el||!el.offsetParent) return; while(el&&el!==sl){ y+=el.offsetTop; el=el.offsetParent; } sl.style.setProperty("--ptop",(y-6)+"px"); }); }
+/* title card: the headline grows to fill spare height, and a stacked layout (Strahd's card below the text) gets the straight red band */
+function fitCover(){
+  const cv=$(".cover.sstage"); if(!cv||!cv.offsetParent) return;
+  const copy=cv.querySelector(".cover-copy"), vil=cv.querySelector(".villain"), hl=cv.querySelector(".headline");
+  cv.classList.toggle("stacked",!!(vil&&copy&&vil.offsetTop>copy.offsetTop+40));
+  if(!hl) return; hl.style.fontSize="";
+  if(innerWidth<=700||cv.classList.contains("stacked")) return;
+  const room=innerHeight-$("#hdr").offsetHeight; if(cv.offsetHeight>room) return;
+  const base=parseFloat(getComputedStyle(hl).fontSize); let lo=base, hi=Math.min(base*1.8,innerHeight*.16);
+  for(let k=0;k<7;k++){ const mid=(lo+hi)/2; hl.style.fontSize=mid+"px"; if(cv.offsetHeight<=room&&hl.scrollWidth<=hl.clientWidth+2) lo=mid; else hi=mid; }
+  hl.style.fontSize=lo+"px";
+}
+function fitPhotos(){ fitCover(); fitDice(); $$(".pslot").forEach(sl=>{ let el=sl.querySelector(".stats"), y=0; if(!el||!el.offsetParent) return; while(el&&el!==sl){ y+=el.offsetTop; el=el.offsetParent; } sl.style.setProperty("--ptop",(y-6)+"px"); }); }
 $("#v-home").addEventListener("pointermove",e=>{ const sl=e.target.closest(".pslot"); if(!sl) return; const r=sl.getBoundingClientRect(); sl.style.setProperty("--mx",((e.clientX-r.left)/r.width*100).toFixed(1)+"%"); sl.style.setProperty("--my",((e.clientY-r.top)/r.height*100).toFixed(1)+"%"); },{passive:true});
 fitPhotos(); addEventListener("resize",()=>requestAnimationFrame(fitPhotos)); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fitPhotos);
 $("#footNote").textContent="Kept for the players · Updated after Session "+LAST;
