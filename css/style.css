@@ -911,3 +911,33 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
   .nav{gap:0 calc(8 * var(--u));letter-spacing:.07em}
   .nav a{padding-left:0;padding-right:0}
 }
+
+/* =====================================================================
+   MOBILE: no portrait pop-over, more breathing room (Nov 2026)
+   ===================================================================== */
+/* touch devices and phones: the player portrait no longer flips up in front
+   of the card on tap/hover, and the other players don't dim */
+@media (hover:none),(max-width:700px){
+  .pslot .pphoto{display:none}
+  .pslot{padding-top:0}
+  .pslot:hover .card>.parch{translate:none}
+  .ptrack:hover>.pslot:not(:hover){filter:none}
+}
+
+/* phones: wider margins and more space between stacked things */
+@media (max-width:700px){
+  :root{--pad:calc(24 * var(--u))}
+  .grid{gap:calc(36 * var(--u))}
+  .ptrack{gap:calc(32 * var(--u))}
+  .npc-grid{gap:calc(30 * var(--u)) calc(20 * var(--u))}
+  #v-quests ol.grid{gap:calc(52 * var(--u)) 0!important}
+  #v-locations .grid{gap:calc(30 * var(--u))}
+  .loc-list .region,.npc-group{margin-top:calc(56 * var(--u))}
+  /* hero: the tally, tag and headline were stacked almost on top of each other */
+  .cover.sstage .cover-copy,.cover .cover-copy{gap:calc(28 * var(--u))}
+  /* section openers: kicker, title, intro and filters get a little more air */
+  .head{gap:calc(22 * var(--u));padding-bottom:calc(26 * var(--u))}
+  .head .kick{margin-bottom:calc(6 * var(--u))}
+  .stickybar{margin-bottom:calc(40 * var(--u))}
+  .chips{gap:calc(10 * var(--u))}
+}
