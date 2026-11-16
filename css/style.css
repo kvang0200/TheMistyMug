@@ -716,28 +716,41 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 }
 @media (min-width:701px){ .cover.sstage .cover-copy{justify-content:center} }
 
-/* ---- two d20s tumble in under Strahd's card, and roll away as you scroll ---- */
-.dice{position:absolute;left:12%;bottom:clamp(26px,5vh,64px);display:flex;align-items:flex-end;gap:10px;pointer-events:none;z-index:1;
-  translate:calc(var(--pt,0) * 32vw + var(--pu,0) * 40vw) 0;rotate:calc(var(--pt,0) * 300deg + var(--pu,0) * 300deg)}
-.dice .roll{display:block}
-.dice .r1{animation:rollIn1 1.25s cubic-bezier(.2,.75,.25,1) calc(var(--base,0s) + 1.5s) both}
-.dice .r2{animation:rollIn2 1.35s cubic-bezier(.2,.75,.25,1) calc(var(--base,0s) + 1.7s) both;margin-bottom:-6px}
-@keyframes rollIn1{0%{translate:60vw 0;rotate:900deg;opacity:0}8%{opacity:1}70%{translate:-8px 0;rotate:-14deg}85%{translate:3px 0;rotate:5deg}100%{translate:0 0;rotate:0deg;opacity:1}}
-@keyframes rollIn2{0%{translate:60vw 0;rotate:1080deg;opacity:0}8%{opacity:1}72%{translate:-6px 0;rotate:-10deg}88%{translate:2px 0;rotate:4deg}100%{translate:0 0;rotate:0deg;opacity:1}}
-.d20{display:block;width:clamp(78px,11vh,118px);filter:drop-shadow(0 10px 14px rgba(0,0,0,.35))}
-.d20.dark{width:clamp(60px,8.4vh,90px);rotate:16deg}
-.d20.light{rotate:-8deg}
-.d20 svg{display:block;width:100%;height:auto;overflow:visible}
-.d20 .ln{fill:none;stroke-width:2.2;stroke-linejoin:round}
-.d20 text{font-family:var(--serif);font-size:22px;font-weight:600}
-.d20.light .f0{fill:var(--s)} .d20.light .f1{fill:color-mix(in srgb,var(--s) 86%,var(--p))} .d20.light .f2{fill:color-mix(in srgb,var(--s) 74%,var(--p))} .d20.light .f3{fill:var(--s)}
-.d20.light .ln{stroke:var(--p)} .d20.light text{fill:var(--a)}
-.d20.dark .f0{fill:var(--p)} .d20.dark .f1{fill:color-mix(in srgb,var(--p) 86%,var(--s))} .d20.dark .f2{fill:color-mix(in srgb,var(--p) 76%,var(--s))} .d20.dark .f3{fill:var(--p)}
-.d20.dark .ln{stroke:var(--s)} .d20.dark text{fill:var(--s)}
-@media (max-width:700px){ .dice{display:none} }
-@media (prefers-reduced-motion:reduce){ .dice .r1,.dice .r2{animation:none} .dice{translate:none;rotate:none} }
-
 /* ---- Sessions: more air around the latest session ---- */
 .sess-latest{margin-top:clamp(56px,7vw,104px)}
 #v-sessions .stickyhead{margin-top:clamp(96px,11vw,150px)}
-.dice.nodice{display:none}
+
+/* ---- campaign file: a quiet row between BAROVIA and "Where we stand" ---- */
+.cfile{display:flex;flex-wrap:nowrap;white-space:nowrap;align-items:baseline;gap:6px 0;margin-top:-4px}
+.cfile>.label{color:var(--muted);margin-right:20px}
+.cfile .t{display:inline-flex;align-items:baseline;gap:8px;padding:0 16px;border-left:1px solid var(--rule);font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.cfile .t:nth-child(2){padding-left:0;border-left:0}
+.cfile b{font-family:var(--serif);font-weight:400;font-size:clamp(24px,3.4vh,32px);line-height:1;letter-spacing:0;color:var(--a)}
+
+/* ---- two huge d20s, double-exposed against the red panel and the dark:
+   drawn in red with a "difference" blend, so they turn black over the red
+   and red over the black. Facet lines and the numbers are cut-outs. ---- */
+.cover.sstage{overflow-y:clip}
+.cover.sstage .cover-copy{position:relative;z-index:2}
+.villain>.snap{z-index:2}
+.dice{position:absolute;left:-38%;bottom:-14%;z-index:1;pointer-events:none;display:block;width:clamp(300px,48vh,520px);height:clamp(300px,48vh,520px);
+  mix-blend-mode:difference;translate:calc(var(--pt,0) * 30vw + var(--pu,0) * 40vw) 0;rotate:calc(var(--pt,0) * 200deg + var(--pu,0) * 200deg)}
+.dice .roll{position:absolute;display:block}
+.dice .r1{left:0;bottom:0;width:72%;animation:rollIn1 1.5s cubic-bezier(.2,.75,.25,1) calc(var(--base,0s) + 1.4s) both}
+.dice .r2{right:-6%;bottom:46%;width:44%;animation:rollIn2 1.6s cubic-bezier(.2,.75,.25,1) calc(var(--base,0s) + 1.65s) both}
+@keyframes rollIn1{0%{translate:70vw 0;rotate:720deg;opacity:0}10%{opacity:1}72%{translate:-14px 0;rotate:-10deg}88%{translate:5px 0;rotate:4deg}100%{translate:0 0;rotate:0deg;opacity:1}}
+@keyframes rollIn2{0%{translate:70vw -10vh;rotate:900deg;opacity:0}10%{opacity:1}74%{translate:-10px 0;rotate:-8deg}90%{translate:4px 0;rotate:3deg}100%{translate:0 0;rotate:0deg;opacity:1}}
+.dice .d20{display:block;width:100%;filter:none}
+.dice .d20.big{rotate:-12deg}
+.dice .d20.small{rotate:20deg}
+.dice svg{display:block;width:100%;height:auto;overflow:visible}
+.dice .f0,.dice .f3{fill:#b3131c}
+.dice .f1{fill:#9c1018}
+.dice .f2{fill:#851016}
+.dice .ln{fill:none;stroke:#000;stroke-width:1.6;stroke-linejoin:round}
+.dice text{fill:#000;font-family:var(--serif);font-size:21px;font-weight:600}
+@media (max-width:1099px){ .dice{display:none} }
+@media (prefers-reduced-motion:reduce){ .dice .r1,.dice .r2{animation:none} .dice{translate:none;rotate:none} }
+.cover.sstage .cover-row{margin-top:clamp(10px,2vh,44px)}
+.cover.sstage .cover-copy{gap:clamp(10px,1.8vh,24px)}
+.cover .mast{font-size:clamp(56px,min(19vw,14vh),256px)}

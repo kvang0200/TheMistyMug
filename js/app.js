@@ -334,6 +334,13 @@ function renderHome(){
     <div class="rule-draw" style="height:1px;background:var(--s);opacity:.35;margin-top:18px;animation-delay:calc(var(--base,0s) + .5s)"></div>
     <div class="cover-row">
       <div class="cover-copy">
+        <div class="cfile snap" ${d(.55)} role="group" aria-label="The campaign at a glance">
+          <span class="label">Campaign file</span>
+          <span class="t"><b>${esc(LAST)}</b>Sessions</span>
+          <span class="t"><b>${esc(D.party.length)}</b>Players · Lv ${esc(D.level)}</span>
+          <span class="t"><b>${esc(ongoing)}</b>Quests</span>
+          <span class="t"><b>${fulfilled}/${D.tarokka.length}</b>Tarokka</span>
+        </div>
         <span class="tag snap" ${d(.6)}><span>Where we stand</span></span>
         <h2 class="headline snap" ${d(.7)}>We hunt him. <span class="underslash"><i>He watches.</i></span></h2>
         <p class="flavor snap" ${d(.8)}>${esc(D.flavor)}</p>
@@ -346,7 +353,7 @@ function renderHome(){
       </div>
       ${strahd?`<div class="villain">
         <div class="redpanel rule-draw" aria-hidden="true" ${d(1.0)}></div>
-        <div class="dice" aria-hidden="true"><span class="roll r1"><span class="d20 light"><svg viewBox="0 0 100 100" aria-hidden="true"><polygon class="f0" points="50,4 90,27 90,73 50,96 10,73 10,27"/><polygon class="f1" points="50,4 90,27 50,22"/><polygon class="f1" points="50,4 10,27 50,22"/><polygon class="f2" points="90,27 90,73 78,66"/><polygon class="f2" points="10,27 10,73 22,66"/><polygon class="f1" points="90,73 50,96 78,66"/><polygon class="f1" points="10,73 50,96 22,66"/><polygon class="f3" points="50,22 78,66 22,66"/><g class="ln"><polyline points="50,4 90,27 90,73 50,96 10,73 10,27 50,4"/><polyline points="50,22 78,66 22,66 50,22"/><line x1="50" y1="22" x2="50" y2="4"/><line x1="50" y1="22" x2="90" y2="27"/><line x1="50" y1="22" x2="10" y2="27"/><line x1="78" y1="66" x2="90" y2="27"/><line x1="78" y1="66" x2="90" y2="73"/><line x1="78" y1="66" x2="50" y2="96"/><line x1="22" y1="66" x2="10" y2="27"/><line x1="22" y1="66" x2="10" y2="73"/><line x1="22" y1="66" x2="50" y2="96"/></g><text x="50" y="56" text-anchor="middle">20</text></svg></span></span><span class="roll r2"><span class="d20 dark"><svg viewBox="0 0 100 100" aria-hidden="true"><polygon class="f0" points="50,4 90,27 90,73 50,96 10,73 10,27"/><polygon class="f1" points="50,4 90,27 50,22"/><polygon class="f1" points="50,4 10,27 50,22"/><polygon class="f2" points="90,27 90,73 78,66"/><polygon class="f2" points="10,27 10,73 22,66"/><polygon class="f1" points="90,73 50,96 78,66"/><polygon class="f1" points="10,73 50,96 22,66"/><polygon class="f3" points="50,22 78,66 22,66"/><g class="ln"><polyline points="50,4 90,27 90,73 50,96 10,73 10,27 50,4"/><polyline points="50,22 78,66 22,66 50,22"/><line x1="50" y1="22" x2="50" y2="4"/><line x1="50" y1="22" x2="90" y2="27"/><line x1="50" y1="22" x2="10" y2="27"/><line x1="78" y1="66" x2="90" y2="27"/><line x1="78" y1="66" x2="90" y2="73"/><line x1="78" y1="66" x2="50" y2="96"/><line x1="22" y1="66" x2="10" y2="27"/><line x1="22" y1="66" x2="10" y2="73"/><line x1="22" y1="66" x2="50" y2="96"/></g><text x="50" y="56" text-anchor="middle">13</text></svg></span></span></div>
+        <div class="dice" aria-hidden="true"><span class="roll r1"><span class="d20 big"><svg viewBox="0 0 100 100" aria-hidden="true"><polygon class="f0" points="50,4 90,27 90,73 50,96 10,73 10,27"/><polygon class="f1" points="50,4 90,27 50,22"/><polygon class="f1" points="50,4 10,27 50,22"/><polygon class="f2" points="90,27 90,73 78,66"/><polygon class="f2" points="10,27 10,73 22,66"/><polygon class="f1" points="90,73 50,96 78,66"/><polygon class="f1" points="10,73 50,96 22,66"/><polygon class="f3" points="50,22 78,66 22,66"/><g class="ln"><polyline points="50,22 78,66 22,66 50,22"/><line x1="50" y1="22" x2="50" y2="4"/><line x1="50" y1="22" x2="90" y2="27"/><line x1="50" y1="22" x2="10" y2="27"/><line x1="78" y1="66" x2="90" y2="27"/><line x1="78" y1="66" x2="90" y2="73"/><line x1="78" y1="66" x2="50" y2="96"/><line x1="22" y1="66" x2="10" y2="27"/><line x1="22" y1="66" x2="10" y2="73"/><line x1="22" y1="66" x2="50" y2="96"/></g><text x="50" y="57" text-anchor="middle">20</text></svg></span></span><span class="roll r2"><span class="d20 small"><svg viewBox="0 0 100 100" aria-hidden="true"><polygon class="f0" points="50,4 90,27 90,73 50,96 10,73 10,27"/><polygon class="f1" points="50,4 90,27 50,22"/><polygon class="f1" points="50,4 10,27 50,22"/><polygon class="f2" points="90,27 90,73 78,66"/><polygon class="f2" points="10,27 10,73 22,66"/><polygon class="f1" points="90,73 50,96 78,66"/><polygon class="f1" points="10,73 50,96 22,66"/><polygon class="f3" points="50,22 78,66 22,66"/><g class="ln"><polyline points="50,22 78,66 22,66 50,22"/><line x1="50" y1="22" x2="50" y2="4"/><line x1="50" y1="22" x2="90" y2="27"/><line x1="50" y1="22" x2="10" y2="27"/><line x1="78" y1="66" x2="90" y2="27"/><line x1="78" y1="66" x2="90" y2="73"/><line x1="78" y1="66" x2="50" y2="96"/><line x1="22" y1="66" x2="10" y2="27"/><line x1="22" y1="66" x2="10" y2="73"/><line x1="22" y1="66" x2="50" y2="96"/></g><text x="50" y="57" text-anchor="middle">13</text></svg></span></span></div>
         <div class="snap" style="position:relative;animation-delay:calc(var(--base,0s) + 1.15s)">
           <a href="#npcs" class="card" data-npc="strahd" aria-label="Open ${esc(strahd.name)}'s card"><div class="shade"></div><article class="parch">
             <span class="label" style="display:block;margin-bottom:14px;color:var(--ink-muted)">NPC</span>
@@ -359,16 +366,7 @@ function renderHome(){
               </div>
             </div>
             <dl class="dl"><dt>Status</dt><dd>${statusWord(strahd)}</dd><dt>Location</dt><dd>${esc(where(strahd))}</dd>${seen?`<dt>Last seen</dt><dd>Session ${esc(seen.n)} · ${esc(seen.t)}</dd>`:""}<dt>Weakness</dt><dd><span style="display:inline-block;width:120px;height:14px;background:var(--p);vertical-align:middle"></span> <span style="font-size:11px;color:var(--ink-muted)">unknown</span></dd></dl>
-            <div class="vtally" role="group" aria-label="The campaign at a glance">
-              <span class="label">Campaign file</span>
-              <div class="vt-row">
-                <span class="t"><b>${esc(LAST)}</b>Sessions</span>
-                <span class="t"><b>${esc(D.party.length)}</b>Players · Lv ${esc(D.level)}</span>
-                <span class="t"><b>${esc(ongoing)}</b>Quests</span>
-                <span class="t"><b>${fulfilled}/${D.tarokka.length}</b>Cards</span>
-              </div>
-            </div>
-            <span class="stamp red stamp-now" aria-hidden="true" style="left:22px;top:118px;right:auto;bottom:auto;font-size:15px;animation-delay:calc(var(--base,0s) + 1.75s)">HOSTILE</span>
+            <span class="stamp red stamp-now" aria-hidden="true" style="right:18px;bottom:18px;font-size:16px;animation-delay:calc(var(--base,0s) + 1.75s)">HOSTILE</span>
           </article></a>
         </div>
       </div>`:""}
@@ -801,7 +799,7 @@ renderHome(); renderSessions(); renderNpcs(); renderLocList(); renderQuests();
 /* the dice only roll in where there's room below Strahd's card */
 function fitDice(){ const dc=$(".dice"); if(!dc) return; const card=dc.parentElement.querySelector(".card"); dc.classList.remove("nodice"); if(!card||!dc.offsetParent) return;
   const cardBottom=card.parentElement.offsetTop+card.offsetTop+card.offsetHeight; dc.classList.toggle("nodice",dc.offsetTop<cardBottom+16); }
-function fitPhotos(){ fitDice(); $$(".pslot").forEach(sl=>{ let el=sl.querySelector(".stats"), y=0; if(!el||!el.offsetParent) return; while(el&&el!==sl){ y+=el.offsetTop; el=el.offsetParent; } sl.style.setProperty("--ptop",(y-6)+"px"); }); }
+function fitPhotos(){ $$(".pslot").forEach(sl=>{ let el=sl.querySelector(".stats"), y=0; if(!el||!el.offsetParent) return; while(el&&el!==sl){ y+=el.offsetTop; el=el.offsetParent; } sl.style.setProperty("--ptop",(y-6)+"px"); }); }
 $("#v-home").addEventListener("pointermove",e=>{ const sl=e.target.closest(".pslot"); if(!sl) return; const r=sl.getBoundingClientRect(); sl.style.setProperty("--mx",((e.clientX-r.left)/r.width*100).toFixed(1)+"%"); sl.style.setProperty("--my",((e.clientY-r.top)/r.height*100).toFixed(1)+"%"); },{passive:true});
 fitPhotos(); addEventListener("resize",()=>requestAnimationFrame(fitPhotos)); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fitPhotos);
 $("#footNote").textContent="Kept for the players · Updated after Session "+LAST;
