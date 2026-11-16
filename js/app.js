@@ -32,7 +32,8 @@ const ICON={
 };
 
 /* ---------- small builders ---------- */
-const letters=(word,start,step=.06)=>[...String(word)].map((ch,i)=>ch===" "?" ":`<span class="mask" aria-hidden="true"><span style="animation-delay:calc(var(--base,0s) + ${(start+i*step).toFixed(2)}s)">${esc(ch)}</span></span>`).join("");
+/* letter-by-letter reveal; each word is kept in a no-wrap group so a long name can only break between words, never mid-word ("Refor / mation") */
+const letters=(word,start,step=.06)=>{ let i=0; return String(word).split(" ").map(w=>`<span class="lw">${[...w].map(ch=>`<span class="mask" aria-hidden="true"><span style="animation-delay:calc(var(--base,0s) + ${(start+(i++)*step).toFixed(2)}s)">${esc(ch)}</span></span>`).join("")}</span>`+(i++,"")).join(" "); };
 const d=(t)=>`style="animation-delay:calc(var(--base,0s) + ${t}s)"`;
 function sil(n){
   const dead=n.fate==="dead";

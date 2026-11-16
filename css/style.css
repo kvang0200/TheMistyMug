@@ -873,3 +873,41 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
   .modal .sheet>.parch{transform:rotate(-.3deg)}
   .sheet .stamp{margin-top:calc(30 * var(--u))}
 }
+
+/* =====================================================================
+   SWEEP FIXES (Nov 2026)
+   ===================================================================== */
+/* names built letter-by-letter only break between words */
+.lw{display:inline-block;white-space:nowrap}
+
+/* pop-up stamps sit in the flow at the foot of the file at every size, so a
+   long name (Vallakovich Reformation Center, The Wachter Father) or a long
+   description can never end up underneath one */
+.sheet .stamp{position:relative;right:auto;top:auto;align-self:flex-end;flex:none;margin:calc(26 * var(--u)) calc(6 * var(--u)) calc(6 * var(--u)) 0}
+.sheet .body{padding-bottom:calc(40 * var(--u))}
+
+/* small mono captions: nothing under 11px */
+.player .stats dt,.seal-sub{font-size:calc(11 * var(--u))}
+.reseal span{font-size:calc(11 * var(--u))}
+
+/* the browser's own blue clear button doubled up with ours */
+.search input::-webkit-search-cancel-button,.search input::-webkit-search-decoration{-webkit-appearance:none;appearance:none;display:none}
+
+/* tablets in portrait: nav gets its own row instead of the search and sound
+   buttons dropping to an awkward second line on the left */
+@media (min-width:701px) and (max-width:1000px){
+  .hdr .wrap{gap:0 calc(16 * var(--u))}
+  .nav{order:3;width:100%;justify-content:space-between;border-top:calc(1 * var(--u)) solid var(--rule)}
+}
+
+/* tablets and phones: the search results drop down under the header across
+   the screen, instead of hanging off the left edge */
+@media (max-width:1000px){
+  .results{position:fixed;left:calc(12 * var(--u));right:calc(12 * var(--u));top:calc(var(--hdr,calc(110 * var(--u))) + calc(6 * var(--u)));width:auto;max-height:calc(100dvh - var(--hdr,calc(110 * var(--u))) - calc(24 * var(--u)))}
+}
+
+/* narrow phones: all five tabs fit without "Quests" running off the edge */
+@media (max-width:400px){
+  .nav{gap:0 calc(8 * var(--u));letter-spacing:.07em}
+  .nav a{padding-left:0;padding-right:0}
+}
