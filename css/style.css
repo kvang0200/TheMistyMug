@@ -566,8 +566,8 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 .cover.sstage{min-height:calc(100vh - var(--hdr,66px));min-height:calc(100svh - var(--hdr,66px));padding-bottom:0;display:flex;flex-direction:column;background:var(--p)}
 .cover.sstage>.wrap{padding-bottom:clamp(24px,4vh,56px)}
 /* the title card is sized to fit one screen */
-.cover .mast{font-size:clamp(56px,min(19vw,17vh),256px)}
-.cover .headline{font-size:clamp(36px,min(7vw,7.5vh),104px)}
+.cover .mast{font-size:clamp(56px,min(19vw,15vh),256px)}
+.cover .headline{font-size:clamp(34px,min(7vw,6.6vh),104px)}
 .cover .villain .card>.parch{padding:20px 22px 22px}
 .cover-row{margin-top:clamp(24px,4vh,64px)}
 .scene.on .mast{translate:0 calc(var(--pt,0) * -24px + var(--pu,0) * 120px);scale:calc(1 + var(--pt,0) * .06);opacity:calc(1 - var(--pu,0) * .4)}
@@ -657,6 +657,7 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 /* ---- title card layout: the beige numbers panel sits flush on the bottom edge,
    under the headline column, with the red panel running down beside it ---- */
 .cover.sstage>.wrap{flex:1 1 auto;display:flex;flex-direction:column;padding-bottom:0}
+.cover-row{margin-top:clamp(16px,3vh,56px)}
 .cover.sstage .cover-row{flex:1 1 auto;align-items:stretch}
 .cover.sstage .cover-copy{align-self:stretch}
 .cover.sstage .villain{align-self:flex-start}
@@ -677,3 +678,66 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
   .stickybar::-webkit-scrollbar{display:none}
 }
 @media (min-width:701px){ .cover.sstage .villain{align-self:stretch} .cover.sstage .villain .redpanel{bottom:-200px} }
+
+/* =====================================================================
+   TITLE CARD (A + teaser + peeking players)
+   ===================================================================== */
+.cover .tally{display:none}
+/* campaign numbers live on Strahd's card, like the tally on a case file */
+.vtally{margin:16px -4px 0;padding:12px 12px 10px;background:color-mix(in srgb,var(--p) 8%,transparent);border-top:3px solid var(--a)}
+.vtally>.label{display:block;margin-bottom:8px;color:var(--ink-muted)}
+.vt-row{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.vt-row .t{display:flex;flex-direction:column;gap:2px;font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--p);padding-left:8px;border-left:1px solid var(--ink-rule)}
+.vt-row .t:first-child{padding-left:0;border-left:0}
+.vt-row b{font-family:var(--serif);font-weight:400;font-size:28px;line-height:1;letter-spacing:0;color:var(--a)}
+/* the latest session, teased under the headline */
+.teaser{margin-top:clamp(6px,2.4vh,36px);display:flex;flex-direction:column;align-items:flex-start;gap:6px;max-width:580px;padding:12px 0 0;border-top:1px solid var(--rule)}
+.teaser .label{color:var(--muted)}
+.tz-t{font-family:var(--serif);font-style:italic;font-size:clamp(24px,3.4vh,32px);line-height:1.05}
+.tz-s{margin:0 0 6px;font-family:var(--serif);font-size:17px;line-height:1.55;color:color-mix(in srgb,var(--s) 82%,transparent)}
+.cover .flavor{font-size:clamp(16px,2.3vh,20px)}
+/* the players' photos peek up from the bottom edge, inviting a scroll */
+.cover.sstage .cover-copy{padding-bottom:72px;gap:clamp(12px,2.2vh,26px)}
+.peek{position:absolute;left:0;right:0;bottom:0;z-index:2;height:64px;overflow:hidden;display:block;cursor:pointer;text-decoration:none}
+.peek-in{position:absolute;left:var(--pad);bottom:-86px;display:flex;gap:16px}
+.pk{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;width:86px;height:120px;padding-top:12px;background:repeating-linear-gradient(45deg,color-mix(in srgb,var(--s) 90%,var(--p)) 0 7px,var(--s) 7px 14px);border:6px solid var(--s);box-shadow:0 -8px 22px rgba(0,0,0,.45);rotate:var(--r,0deg);translate:0 var(--y,0px);transition:translate .45s cubic-bezier(.3,1.4,.5,1)}
+.pk .seal-dot{width:20px;height:20px;margin:0}
+.pk em{margin-top:6px;font-family:var(--serif);font-size:14px;color:var(--p)}
+.peek:hover .pk,.peek:focus-visible .pk{translate:0 calc(var(--y,0px) - 26px)}
+.peek .pk:nth-child(2){transition-delay:.04s}.peek .pk:nth-child(3){transition-delay:.08s}.peek .pk:nth-child(4){transition-delay:.12s}.peek .pk:nth-child(5){transition-delay:.16s}
+.peek-l{position:absolute;left:var(--pad);margin-left:530px;bottom:18px;color:var(--muted)}
+.peek:focus-visible{outline:2px solid var(--a);outline-offset:-4px}
+@media (max-width:700px){
+  .cover.sstage .cover-copy{padding-bottom:0}
+  .peek{position:relative;margin-top:28px}
+  .peek-in{gap:10px} .pk{width:62px} .pk em{font-size:12px}
+  .peek-l{display:none}
+  .vt-row b{font-size:24px}
+}
+@media (min-width:701px){ .cover.sstage .cover-copy{justify-content:center} }
+
+/* ---- two d20s tumble in under Strahd's card, and roll away as you scroll ---- */
+.dice{position:absolute;left:12%;bottom:clamp(26px,5vh,64px);display:flex;align-items:flex-end;gap:10px;pointer-events:none;z-index:1;
+  translate:calc(var(--pt,0) * 32vw + var(--pu,0) * 40vw) 0;rotate:calc(var(--pt,0) * 300deg + var(--pu,0) * 300deg)}
+.dice .roll{display:block}
+.dice .r1{animation:rollIn1 1.25s cubic-bezier(.2,.75,.25,1) calc(var(--base,0s) + 1.5s) both}
+.dice .r2{animation:rollIn2 1.35s cubic-bezier(.2,.75,.25,1) calc(var(--base,0s) + 1.7s) both;margin-bottom:-6px}
+@keyframes rollIn1{0%{translate:60vw 0;rotate:900deg;opacity:0}8%{opacity:1}70%{translate:-8px 0;rotate:-14deg}85%{translate:3px 0;rotate:5deg}100%{translate:0 0;rotate:0deg;opacity:1}}
+@keyframes rollIn2{0%{translate:60vw 0;rotate:1080deg;opacity:0}8%{opacity:1}72%{translate:-6px 0;rotate:-10deg}88%{translate:2px 0;rotate:4deg}100%{translate:0 0;rotate:0deg;opacity:1}}
+.d20{display:block;width:clamp(78px,11vh,118px);filter:drop-shadow(0 10px 14px rgba(0,0,0,.35))}
+.d20.dark{width:clamp(60px,8.4vh,90px);rotate:16deg}
+.d20.light{rotate:-8deg}
+.d20 svg{display:block;width:100%;height:auto;overflow:visible}
+.d20 .ln{fill:none;stroke-width:2.2;stroke-linejoin:round}
+.d20 text{font-family:var(--serif);font-size:22px;font-weight:600}
+.d20.light .f0{fill:var(--s)} .d20.light .f1{fill:color-mix(in srgb,var(--s) 86%,var(--p))} .d20.light .f2{fill:color-mix(in srgb,var(--s) 74%,var(--p))} .d20.light .f3{fill:var(--s)}
+.d20.light .ln{stroke:var(--p)} .d20.light text{fill:var(--a)}
+.d20.dark .f0{fill:var(--p)} .d20.dark .f1{fill:color-mix(in srgb,var(--p) 86%,var(--s))} .d20.dark .f2{fill:color-mix(in srgb,var(--p) 76%,var(--s))} .d20.dark .f3{fill:var(--p)}
+.d20.dark .ln{stroke:var(--s)} .d20.dark text{fill:var(--s)}
+@media (max-width:700px){ .dice{display:none} }
+@media (prefers-reduced-motion:reduce){ .dice .r1,.dice .r2{animation:none} .dice{translate:none;rotate:none} }
+
+/* ---- Sessions: more air around the latest session ---- */
+.sess-latest{margin-top:clamp(56px,7vw,104px)}
+#v-sessions .stickyhead{margin-top:clamp(96px,11vw,150px)}
+.dice.nodice{display:none}
