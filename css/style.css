@@ -800,3 +800,5 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
   .villain{max-width:none}
   .cover-row,.cover-copy{min-width:0}
 }
+/* the campaign strip moves with the rest of the title card as you scroll */
+.scene.on .cover .cfile{translate:0 calc(var(--pt,0) * calc(-36 * var(--u)) + var(--pu,0) * calc(60 * var(--u)))}
