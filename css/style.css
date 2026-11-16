@@ -59,10 +59,10 @@ i,em{font-style:italic}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 .mask{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.04em}
-.mask>span{display:inline-block;animation:ink .9s cubic-bezier(.25,.6,.3,1) both}
+.mask>span{display:inline-block;animation:ink .9s cubic-bezier(.25,.6,.3,1) backwards}
 /* text inks into the page: it darkens and sharpens in place, never slides or tilts */
 @keyframes ink{0%{opacity:0;filter:blur(calc(6 * var(--u)))}55%{opacity:.8;filter:blur(calc(1.5 * var(--u)))}100%{opacity:1;filter:none}}
-.snap{animation:ink .9s cubic-bezier(.25,.6,.3,1) both}
+.snap{animation:ink .9s cubic-bezier(.25,.6,.3,1) backwards}
 .rule-draw{transform-origin:left;animation:draw .9s cubic-bezier(.75,0,.2,1) both}
 .stamp-now{animation:stampIn .55s cubic-bezier(.2,1.4,.4,1) both}
 .sway{animation:none}
@@ -361,7 +361,7 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 .modal.on{display:flex;animation:fadeIn .3s ease both}
 .modal .pass{position:absolute;left:-20%;right:-20%;top:50%;height:calc(140 * var(--u));margin-top:calc(-70 * var(--u));background:var(--a);z-index:3;pointer-events:none;animation:slashPass .55s cubic-bezier(.75,0,.2,1) both}
 .modal .mist{top:30%}
-.sheet{position:relative;width:min(calc(1080 * var(--u)),100%);max-height:calc(100vh - calc(32 * var(--u)));max-height:calc(100dvh - calc(32 * var(--u)));display:flex;color:var(--p);animation:wipeIn .7s cubic-bezier(.75,0,.2,1) .3s both}
+.sheet{position:relative;width:min(calc(1080 * var(--u)),100%);max-height:calc(100vh - calc(32 * var(--u)));max-height:calc(100dvh - calc(32 * var(--u)));display:flex;color:var(--p);animation:wipeIn .7s cubic-bezier(.75,0,.2,1) .3s backwards}
 .sheet>.shade{position:absolute;inset:calc(10 * var(--u)) calc(6 * var(--u)) 0;box-shadow:0 calc(40 * var(--u)) calc(80 * var(--u)) rgba(0,0,0,.65);pointer-events:none}
 .sheet>.parch{position:absolute;inset:0;transform:rotate(-.6deg)}
 .sheet .tab{position:absolute;left:calc(40 * var(--u));top:calc(18 * var(--u));z-index:2}
@@ -614,7 +614,7 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 /* ---- dealt cards: they fly in from a deck above the table, one after another ---- */
 @keyframes dealIn{0%{opacity:0;translate:var(--dx,0) var(--dy,calc(-200 * var(--u)));rotate:var(--dr,-10deg);scale:.82}12%{opacity:1}70%{scale:1.03}100%{opacity:1;translate:0 0;rotate:0deg;scale:1}}
 .deal.undealt>*{opacity:0}
-.deal.dealt>*{animation:dealIn .8s cubic-bezier(.2,.85,.25,1) var(--dd,0s) both}
+.deal.dealt>*{animation:dealIn .8s cubic-bezier(.2,.85,.25,1) var(--dd,0s) backwards}
 .deal>.flip{z-index:calc(10 - var(--i,0))}
 
 /* personal fortunes as sealed cards */
@@ -984,6 +984,45 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
     .thread-host::before{display:block;left:calc(-14 * var(--u))}
 
     /* pop-ups rise up from the bottom of the screen like a sheet of paper slid across the table */
-    .modal.on .sheet{animation:sheetUp .55s cubic-bezier(.2,.9,.25,1) .05s both}
+    .modal.on .sheet{animation:sheetUp .55s cubic-bezier(.2,.9,.25,1) .05s backwards}
   }
+}
+
+/* =====================================================================
+   PHONE SHARPNESS FIXES (Nov 2026)
+   ===================================================================== */
+/* The "ink in" text animation used to hold its last frame forever, which left
+   filter:blur(0) on every headline and on all pop-up text. iPhones draw
+   filtered text as a low-resolution picture, so it looked smeared. The
+   animations above now let go when they finish (fill "backwards"). */
+
+/* film grain: it sat on top of the pop-ups and is a 300px tile stretched 3x
+   on phone screens, smudging text on parchment. On touch screens it now sits
+   under the pop-ups and holds still. */
+@media (hover:none),(max-width:760px){
+  .grain{z-index:55;animation:none;opacity:.04}
+}
+
+/* pop-ups on phones: the red slash that wipes across when a file opens was
+   left parked just off the right edge, and the pop-up could be dragged
+   sideways to reveal it as a bright red band */
+@media (max-width:760px){
+  .modal{overflow-x:hidden}
+}
+
+/* touch screens keep :hover "stuck" after a tap, which left red-pink
+   highlight bars under card names, chips and nav links. Only real mice get
+   those now; taps use the .pressing highlight instead. */
+@media (hover:none){
+  a.card:hover .name::after,button.card:hover .name::after,.pslot:hover .name::after,.player[data-pcard]:hover .name::after,.player .open-sheet:hover .name::after{transform:skewX(-18deg) scaleX(0)}
+  .chip:hover::after{transform:skewX(-14deg) scaleX(0)}
+  .chip:hover{transform:none;color:inherit}
+  .latest .chips .chip:hover{color:var(--p)}
+  .nav a:hover:not([aria-current="page"]) i{transform:skewX(-18deg) scaleX(0)}
+  a.card:hover,button.card:hover{transform:none}
+  .icon-btn:hover:not([aria-pressed="true"]),.map-ctrl button:hover{transform:none;background:transparent;border-color:color-mix(in srgb,var(--s) 30%,transparent)}
+  .map-ctrl button:hover{background:var(--p)}
+  .seal-row:hover{background:transparent;border-color:color-mix(in srgb,var(--p) 40%,transparent)}
+  .filters button:hover{transform:none}
+  .pressing .name::after{transform:skewX(-18deg) scaleX(1)}
 }

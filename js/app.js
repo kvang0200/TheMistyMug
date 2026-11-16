@@ -164,7 +164,9 @@ const SX=(()=>{
   function read(el,vh){
     const r=el.getBoundingClientRect(); if(!r.height&&!r.width) return null;
     const e=clamp((vh-r.top)/(vh*.55));
-    return [el,1-Math.pow(1-e,3),clamp((vh-r.top)/(vh+r.height)),clamp((vh*.75-r.top)/Math.max(1,r.height))];
+    const ee=1-Math.pow(1-e,3);
+    /* snap the last sliver to exactly 1 so nothing is left at 99.9% scale (soft text on phones) */
+    return [el,ee>.99?1:ee,clamp((vh-r.top)/(vh+r.height)),clamp((vh*.75-r.top)/Math.max(1,r.height))];
   }
   function write(m){ if(!m) return; set(m[0],"--sxe",m[1]); set(m[0],"--sxp",m[2]); set(m[0],"--sxq",m[3]); }
   const measure=(el,vh)=>write(read(el,vh));
