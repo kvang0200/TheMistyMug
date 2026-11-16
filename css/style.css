@@ -725,7 +725,7 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 .cfile>.label{color:var(--muted);margin-right:20px}
 .cfile .t{display:inline-flex;align-items:baseline;gap:8px;padding:0 16px;border-left:1px solid var(--rule);font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .cfile .t:nth-child(2){padding-left:0;border-left:0}
-.cfile b{font-family:var(--serif);font-weight:400;font-size:clamp(24px,3.4vh,32px);line-height:1;letter-spacing:0;color:var(--a)}
+.cfile b{font-family:var(--serif);font-weight:400;font-size:clamp(22px,3vh,30px);line-height:1;letter-spacing:0;color:var(--a)}
 
 /* ---- two huge d20s, double-exposed against the red panel and the dark:
    drawn in red with a "difference" blend, so they turn black over the red
@@ -733,8 +733,8 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 .cover.sstage{overflow-y:clip}
 .cover.sstage .cover-copy{position:relative;z-index:2}
 .villain>.snap{z-index:2}
-.dice{position:absolute;left:-38%;bottom:-14%;z-index:1;pointer-events:none;display:block;width:clamp(300px,48vh,520px);height:clamp(300px,48vh,520px);
-  mix-blend-mode:difference;translate:calc(var(--pt,0) * 30vw + var(--pu,0) * 40vw) 0;rotate:calc(var(--pt,0) * 200deg + var(--pu,0) * 200deg)}
+.dice{position:absolute;left:calc(var(--dsz,420px) * -.32);bottom:calc(var(--dsz,420px) * -.1);z-index:1;pointer-events:none;display:block;width:var(--dsz,420px);height:var(--dsz,420px);
+  mix-blend-mode:difference}
 .dice .roll{position:absolute;display:block}
 .dice .r1{left:0;bottom:0;width:72%;animation:rollIn1 1.5s cubic-bezier(.2,.75,.25,1) calc(var(--base,0s) + 1.4s) both}
 .dice .r2{right:-6%;bottom:46%;width:44%;animation:rollIn2 1.6s cubic-bezier(.2,.75,.25,1) calc(var(--base,0s) + 1.65s) both}
@@ -754,3 +754,11 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 .cover.sstage .cover-row{margin-top:clamp(10px,2vh,44px)}
 .cover.sstage .cover-copy{gap:clamp(10px,1.8vh,24px)}
 .cover .mast{font-size:clamp(56px,min(19vw,14vh),256px)}
+
+/* campaign row as a slim beige strip */
+.cfile{align-self:flex-start;background:var(--s);color:var(--p);padding:4px 14px 5px 12px;border-left:4px solid var(--a);margin-top:0}
+.cfile>.label{color:var(--p);margin-right:16px}
+.cfile .t{color:var(--p);border-left-color:var(--ink-rule)}
+
+/* the red panel always runs to the right edge of the screen, even on very wide monitors */
+@media (min-width:701px){ .cover.sstage .villain .redpanel{right:calc(-1 * max(400px, (100vw - var(--wrap,1280px)) / 2 + var(--pad) + 20px))} }
