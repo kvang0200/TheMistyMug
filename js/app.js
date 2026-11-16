@@ -332,15 +332,15 @@ function renderHome(){
     <div class="metaline"><span class="snap" ${d(.0)}>Updated after Session ${esc(LAST)}</span><span class="snap" ${d(.1)}>Curse of Strahd · Party level ${esc(D.level)}</span></div>
     <h1 class="mast" aria-label="Barovia"><span class="bar rule-draw" aria-hidden="true" ${d(-.1)}></span>${letters("BAROVIA",.1)}</h1>
     <div class="rule-draw" style="height:calc(1 * var(--u));background:var(--s);opacity:.35;margin-top:calc(18 * var(--u));animation-delay:calc(var(--base,0s) + .5s)"></div>
-    <div class="cover-row">
-      <div class="cover-copy">
-        <div class="cfile snap" ${d(.55)} role="group" aria-label="The campaign at a glance">
+    <div class="cfile snap" ${d(.55)} role="group" aria-label="The campaign at a glance">
           <span class="label">Campaign</span>
           <span class="t"><b>${esc(LAST)}</b>Sessions</span>
           <span class="t"><b>${esc(D.party.length)}</b>Players · Lv ${esc(D.level)}</span>
           <span class="t"><b>${esc(ongoing)}</b>Quests</span>
           <span class="t"><b>${fulfilled}/${D.tarokka.length}</b>Tarokka</span>
         </div>
+    <div class="cover-row">
+      <div class="cover-copy">
         <span class="tag snap" ${d(.6)}><span>Where we stand</span></span>
         <h2 class="headline snap" ${d(.7)}>We hunt him. <span class="underslash"><i>He watches.</i></span></h2>
         <p class="flavor snap" ${d(.8)}>${esc(D.flavor)}</p>
@@ -676,6 +676,10 @@ function show(v,fx=true,after){
     $$("#nav a").forEach(a=>a.toggleAttribute("aria-current",a.getAttribute("href")==="#"+v)); $$("#nav a[aria-current]").forEach(a=>a.setAttribute("aria-current","page"));
     if(fx&&!reduced){ const c=$("#cut"); c.classList.remove("go"); void c.offsetWidth; c.classList.add("go"); }
     if(fx) Sound.page();
+    /* the new page's first section rises and inks in, like the landing page */
+    if(fx&&!reduced&&v!=="home"){ $$(".entering").forEach(x=>x.classList.remove("entering")); const view=$("#v-"+v), first=view.querySelector(".section");
+      if(first){ const mark=[first]; const nx=first.nextElementSibling; if(first.offsetHeight<innerHeight*.6&&nx&&nx.classList.contains("section")) mark.push(nx);
+        mark.forEach((x,i)=>{ x.style.setProperty("--ed",(i*.18).toFixed(2)+"s"); x.classList.add("entering"); }); setTimeout(()=>mark.forEach(x=>x.classList.remove("entering")),1800); } }
     scrollTo({top:0,behavior:"auto"});
     if(v==="locations"&&mapMode==="map") enterMap();
   }

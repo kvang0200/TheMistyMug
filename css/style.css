@@ -598,7 +598,7 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 .pslot{position:relative;padding-top:calc(38 * var(--u));cursor:pointer}
 .pslot>.card{position:relative;z-index:2}
 .pphoto{position:absolute;left:calc(16 * var(--u));right:calc(16 * var(--u));top:var(--ptop,calc(148 * var(--u)));bottom:calc(18 * var(--u));z-index:1;perspective:calc(1400 * var(--u));pointer-events:none;transition:z-index 0s .3s}
-.pp-in{position:absolute;inset:0;transform-style:preserve-3d;transform:translate(28%,-80%) scale(.44) rotate(var(--r,7deg)) rotateY(180deg);transition:transform .75s cubic-bezier(.3,1.25,.5,1)}
+.pp-in{position:absolute;inset:0;transform-style:preserve-3d;transform-origin:50% 0;transform:translate(28%,calc(-1 * var(--ptop,calc(148 * var(--u))) + calc(2 * var(--u)))) scale(.44) rotate(var(--r,7deg)) rotateY(180deg);transition:transform .75s cubic-bezier(.3,1.25,.5,1)}
 .pp-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 calc(18 * var(--u)) calc(34 * var(--u)) rgba(0,0,0,.5)}
 .pp-front{background:var(--s);padding:calc(12 * var(--u)) calc(12 * var(--u)) calc(44 * var(--u))}
 .pp-front .sil{position:absolute;left:calc(12 * var(--u));right:calc(12 * var(--u));top:calc(12 * var(--u));bottom:calc(44 * var(--u))}
@@ -775,3 +775,28 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 @media (max-width:700px){ .peek{display:none} }
 /* hovering anywhere on a player card highlights their name */
 .pslot:hover .name::after,.pslot:focus-within .name::after{transform:skewX(-18deg) scaleX(1)}
+
+/* ---- campaign strip hangs off the line under BAROVIA ---- */
+.cover .cfile{margin-top:0;border-top:0}
+@media (min-width:701px){ .cover .cfile{display:inline-flex;margin-left:0} .cover-row{margin-top:clamp(calc(14 * var(--u)),3vh,calc(56 * var(--u)))} }
+
+/* ---- page transitions: the first section rises and inks in ---- */
+@keyframes enterUp{from{opacity:0;translate:0 calc(34 * var(--u));filter:blur(calc(4 * var(--u)))}to{opacity:1;translate:0 0;filter:none}}
+.entering>.wrap>*{animation:enterUp .7s cubic-bezier(.2,.8,.3,1) backwards}
+.entering>.wrap>*:nth-child(1){animation-delay:calc(var(--ed,0s) + .12s)}
+.entering>.wrap>*:nth-child(2){animation-delay:calc(var(--ed,0s) + .24s)}
+.entering>.wrap>*:nth-child(3){animation-delay:calc(var(--ed,0s) + .34s)}
+.entering>.wrap>*:nth-child(n+4){animation-delay:calc(var(--ed,0s) + .42s)}
+
+/* ---- phones ---- */
+@media (max-width:700px){
+  .cover .mast{font-size:min(16.5vw,calc(96 * var(--u)))}
+  .cover .cfile{display:grid;grid-template-columns:1fr 1fr;gap:calc(8 * var(--u)) 0;white-space:normal;align-self:stretch;margin-top:calc(14 * var(--u));padding:calc(10 * var(--u)) calc(14 * var(--u))}
+  .cover .cfile>.label{grid-column:1/-1;margin:0}
+  .cover .cfile .t,.cover .cfile .t:nth-child(2){padding:0 0 0 calc(10 * var(--u));border-left:calc(1 * var(--u)) solid var(--ink-rule)}
+  .cover .cfile .t:nth-child(2n){padding-left:0;border-left:0}
+  /* Strahd's card sits on a straight red band */
+  .cover.sstage .villain .redpanel{left:calc(-1 * var(--pad));right:calc(-1 * var(--pad));top:calc(36 * var(--u));bottom:calc(-24 * var(--u));clip-path:none}
+  .villain{max-width:none}
+  .cover-row,.cover-copy{min-width:0}
+}
