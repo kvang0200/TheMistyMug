@@ -5,7 +5,7 @@
      refreshed in the background.
    Bump VERSION when you change css/, js/app.js, js/sound.js, fonts/ or img/ to make every
    player's device drop the old copies on its next visit. */
-const VERSION = "2026-11-15b";
+const VERSION = "2026-11-15-redesign-12";
 const CACHE = "barovia-" + VERSION;
 const CORE = [
   "./",
@@ -14,13 +14,12 @@ const CORE = [
   "js/data.js",
   "js/sound.js",
   "js/app.js",
-  "fonts/cinzel.woff2",
-  "fonts/cinzel-decorative-700.woff2",
-  "fonts/cormorant.woff2",
-  "fonts/cormorant-italic.woff2",
+  "fonts/bodoni-moda.woff2",
+  "fonts/bodoni-moda-italic.woff2",
+  "fonts/inter.woff2",
+  "fonts/plex-mono-400.woff2",
+  "fonts/plex-mono-600.woff2",
   "img/grain.webp",
-  "img/grain-paper.webp",
-  "img/ink-blot.webp",
   "img/icon-192.png",
   "manifest.webmanifest"
 ];
