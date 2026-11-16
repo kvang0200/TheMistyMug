@@ -649,3 +649,7 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 @media (max-width:700px){ .cover .tally{grid-template-columns:repeat(2,auto);gap:14px 0} .cover .tally .t:nth-child(2){border-right:0;margin-right:0} }
 .cover .tally .l{white-space:pre}
 @media (max-width:1180px){ .cover .tally .t{padding-right:14px;margin-right:14px} .cover-copy{gap:18px} .cover .flavor{font-size:18px} }
+/* the numbers row as a beige strip inside the title card */
+.cover .tally{background:var(--s);color:var(--p);border-top:4px solid var(--a);padding:clamp(10px,1.8vh,16px) 18px;justify-content:space-between;justify-self:start;max-width:620px;box-shadow:0 14px 30px rgba(0,0,0,.35)}
+.cover .tally .t{border-right-color:var(--ink-rule)}
+.cover .tally .l{color:var(--p)}
