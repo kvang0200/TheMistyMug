@@ -837,6 +837,18 @@ function fitCover(){
 function fitPhotos(){ fitCover(); fitDice(); $$(".pslot").forEach(sl=>{ let el=sl.querySelector(".stats"), y=0; if(!el||!el.offsetParent) return; while(el&&el!==sl){ y+=el.offsetTop; el=el.offsetParent; } sl.style.setProperty("--ptop",(y-6)+"px"); }); }
 $("#v-home").addEventListener("pointermove",e=>{ const sl=e.target.closest(".pslot"); if(!sl) return; const r=sl.getBoundingClientRect(); sl.style.setProperty("--mx",((e.clientX-r.left)/r.width*100).toFixed(1)+"%"); sl.style.setProperty("--my",((e.clientY-r.top)/r.height*100).toFixed(1)+"%"); },{passive:true});
 fitPhotos(); addEventListener("resize",()=>requestAnimationFrame(fitPhotos)); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fitPhotos);
+/* touch screens: mark whatever is being pressed so it can sink in and spring back.
+   (Phone browsers, Safari especially, don't reliably apply :active to a tap.) */
+(()=>{
+  const PRESS="a.card,button.card,.note,.seal-row,.chips>*,.filters button,.btn,.nav a,.sealed-btn";
+  let held=null, t=0;
+  const up=()=>{ clearTimeout(t); if(held){ held.classList.remove("pressing"); held=null; } };
+  addEventListener("touchstart",e=>{ up(); const el=e.target.closest&&e.target.closest(PRESS); if(el){ held=el; el.classList.add("pressing"); } },{passive:true});
+  /* keep a quick tap pressed for a moment so the sink is actually visible */
+  addEventListener("touchend",()=>{ clearTimeout(t); t=setTimeout(up,140); },{passive:true});
+  addEventListener("touchcancel",up,{passive:true});
+  addEventListener("touchmove",up,{passive:true});
+})();
 $("#footNote").textContent="Kept for the players · Updated after Session "+LAST;
 let introSeen=false; try{ introSeen=sessionStorage.getItem("bv-intro")==="1"; sessionStorage.setItem("bv-intro","1"); }catch(e){ introSeen=true; }
 if(!introSeen&&!reduced){ $("#introN").textContent=LAST; $("#intro").classList.remove("gone"); $("#v-home").style.setProperty("--base",".6s"); setTimeout(()=>{ $("#intro").classList.add("gone"); },950); }

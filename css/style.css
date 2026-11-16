@@ -956,13 +956,13 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 
   /* touch screens: things you press sink in and spring back, the way hover lifts them on desktop */
   @media (hover:none){
-    a.card,button.card,.note,.seal-row,.chips>*,.filters button,.btn,.nav a,.pslot>.card{transition:transform .35s cubic-bezier(.3,1.6,.5,1),scale .35s cubic-bezier(.3,1.6,.5,1),filter .2s}
-    a.card:active,button.card:active,.pslot>.card:active{scale:.965;filter:brightness(.93)}
-    .flip:not(.is-open) .sealed-btn:active{scale:.97}
-    .note:active,.seal-row:active,.chips>*:active,.filters button:active,.btn:active{scale:.95}
-    .nav a:active{scale:.9}
+    a.card,button.card,.note,.seal-row,.chips>*,.filters button,.btn,.nav a,.pslot>.card,.sealed-btn{transition:transform .35s cubic-bezier(.3,1.6,.5,1),scale .35s cubic-bezier(.3,1.6,.5,1),filter .2s}
+    a.card.pressing,button.card.pressing,.pslot>.card.pressing{scale:.965;filter:brightness(.93)}
+    .flip:not(.is-open) .sealed-btn.pressing{scale:.97}
+    .note.pressing,.seal-row.pressing,.chips>.pressing,.filters button.pressing,.btn.pressing{scale:.95}
+    .nav a.pressing{scale:.9}
     /* pressing a card also underlines its name, like hovering does */
-    a.card:active .name::after,button.card:active .name::after,.pslot:active .name::after{transform:skewX(-18deg) scaleX(1)}
+    .pressing .name::after{transform:skewX(-18deg) scaleX(1)}
 
     /* unbroken seals give a little nudge every few seconds: tap me */
     .flip:not(.is-open):not(.rewax):not(.instant) .wax .whole,.sealbox:not(.is-open) .seal-row .wax .whole{animation:sealNudge 5.5s ease-in-out infinite}

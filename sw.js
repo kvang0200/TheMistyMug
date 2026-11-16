@@ -5,7 +5,7 @@
      refreshed in the background.
    Bump VERSION when you change css/, js/app.js, js/sound.js, fonts/ or img/ to make every
    player's device drop the old copies on its next visit. */
-const VERSION = "2026-11-16-mobile-motion";
+const VERSION = "2026-11-16-touch-press";
 const CACHE = "barovia-" + VERSION;
 const CORE = [
   "./",
@@ -26,7 +26,9 @@ const CORE = [
 const FRESH_FIRST = [/\/$/, /index\.html$/, /js\/data\.js$/];
 
 self.addEventListener("install", e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
+  // cache:"reload" skips the browser's own HTTP cache, which GitHub Pages lets keep a
+  // file for 10 minutes; without it a new version could be filled with the old CSS/JS
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE.map(u => new Request(u, { cache: "reload" })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", e => {
@@ -56,7 +58,7 @@ self.addEventListener("fetch", e => {
   e.respondWith(
     caches.open(CACHE).then(cache =>
       cache.match(req).then(hit => {
-        const net = fetch(req).then(res => { if (res.ok) cache.put(req, res.clone()); return res; }).catch(() => hit);
+        const net = fetch(req, { cache: "no-cache" }).then(res => { if (res.ok) cache.put(req, res.clone()); return res; }).catch(() => hit);
         return hit || net;
       })
     )
