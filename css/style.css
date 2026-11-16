@@ -820,7 +820,7 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
    VISUAL FIXES (Nov 2026)
    ===================================================================== */
 /* portraits: the silhouette now fills its frame (it had collapsed to 1px, leaving only a red smudge) */
-.sil{width:100%;height:100%}
+.npc-ph>.sil,.villain .sil{width:100%;height:100%}
 .sil::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb,var(--p) 55%,transparent),inset 0 0 calc(18 * var(--u)) rgba(0,0,0,.55)}
 /* Strahd's card: room under the details so the HOSTILE stamp never covers them; the red glow sits behind the head like eyes in the dark */
 .cover .villain .card>.parch,.villain .card>.parch{padding-bottom:calc(72 * var(--u))}
