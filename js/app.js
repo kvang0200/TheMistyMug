@@ -186,7 +186,7 @@ const SX=(()=>{
     const nx=p.nextElementSibling; if(nx&&nx.classList.contains("after-pin")) nx.style.marginTop="";
   }
   function pinRead(p,vh,hdr){
-    const type=p.dataset.pin, active=!reduced&&(type==="cover"||wide.matches);
+    const type=p.dataset.pin, active=!reduced&&wide.matches;
     if(!active) return {p,active};
     const stage=p.querySelector(".sstage"), sh=stage.offsetHeight, room=vh-hdr;
     const stick=sh>room?vh-sh:hdr+(type==="cover"?0:(room-sh)/2);

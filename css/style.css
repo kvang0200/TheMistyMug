@@ -572,7 +572,7 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 .cover-row{margin-top:clamp(24px,4vh,64px)}
 .scene.on .mast{translate:0 calc(var(--pt,0) * -24px + var(--pu,0) * 120px);scale:calc(1 + var(--pt,0) * .06);opacity:calc(1 - var(--pu,0) * .4)}
 .scene.on .metaline{opacity:calc(1 - var(--pt,0) * 1.2)}
-.scene.on .cover-copy{translate:0 calc(var(--pt,0) * -36px + var(--pu,0) * 60px)}
+.scene.on .cover-copy>:not(.tally){translate:0 calc(var(--pt,0) * -36px + var(--pu,0) * 60px)}
 .scene.on .villain{translate:0 calc(var(--pt,0) * -80px + var(--pu,0) * 40px)}
 .scene.on>.cover.sstage::after{content:"";position:absolute;inset:0;background:#000;opacity:calc(var(--pu,0) * .35);pointer-events:none;z-index:5}
 .after-pin{position:relative;z-index:2;background:var(--p);box-shadow:0 -30px 70px rgba(0,0,0,.6)}
@@ -653,3 +653,27 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 .cover .tally{background:var(--s);color:var(--p);border-top:4px solid var(--a);padding:clamp(10px,1.8vh,16px) 18px;justify-content:space-between;justify-self:start;max-width:620px;box-shadow:0 14px 30px rgba(0,0,0,.35)}
 .cover .tally .t{border-right-color:var(--ink-rule)}
 .cover .tally .l{color:var(--p)}
+
+/* ---- title card layout: the beige numbers panel sits flush on the bottom edge,
+   under the headline column, with the red panel running down beside it ---- */
+.cover.sstage>.wrap{flex:1 1 auto;display:flex;flex-direction:column;padding-bottom:0}
+.cover.sstage .cover-row{flex:1 1 auto;align-items:stretch}
+.cover.sstage .cover-copy{align-self:stretch}
+.cover.sstage .villain{align-self:flex-start}
+.cover .tally{margin-top:auto;max-width:none;justify-self:stretch;justify-content:space-between;box-shadow:none;padding:clamp(12px,2vh,18px) 22px;margin-bottom:0}
+.cover .tally{position:relative;top:0}
+@media (min-width:701px){ .cover.sstage .cover-copy{padding-bottom:0} .cover-copy>.tally{margin-top:auto} }
+
+/* ---- phones: nothing overlaps ---- */
+@media (max-width:700px){
+  .cover.sstage{min-height:0}
+  .cover .tally{margin-top:8px}
+  .villain{margin-top:10px}
+  .villain .redpanel{top:-20px;bottom:-40px}
+  /* filter bars: one compact row that scrolls sideways, and no longer sticky */
+  .stickybar,.stickyhead{position:static;-webkit-backdrop-filter:none;backdrop-filter:none}
+  .stickybar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-top:-20px}
+  .stickybar .filters{flex-wrap:nowrap}
+  .stickybar::-webkit-scrollbar{display:none}
+}
+@media (min-width:701px){ .cover.sstage .villain{align-self:stretch} .cover.sstage .villain .redpanel{bottom:-200px} }
