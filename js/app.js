@@ -818,11 +818,14 @@ function fitDice(){
 function fitCover(){
   const cv=$(".cover.sstage"); if(!cv||!cv.offsetParent) return;
   const copy=cv.querySelector(".cover-copy"), vil=cv.querySelector(".villain"), hl=cv.querySelector(".headline");
+  /* measure in the normal layout: clear the previous result first, or a stacked layout would keep itself stacked */
+  cv.classList.remove("stacked"); if(hl) hl.style.fontSize="";
   cv.classList.toggle("stacked",!!(vil&&copy&&vil.offsetTop>copy.offsetTop+40));
-  if(!hl) return; hl.style.fontSize="";
-  if(innerWidth<=700||cv.classList.contains("stacked")) return;
+  if(!hl) return;
+  /* only grow on laptop-sized screens; large monitors keep the normal headline */
+  if(innerWidth<=700||cv.classList.contains("stacked")||innerWidth/unitPx()>1600) return;
   const room=innerHeight-$("#hdr").offsetHeight; if(cv.offsetHeight>room) return;
-  const base=parseFloat(getComputedStyle(hl).fontSize); let lo=base, hi=Math.min(base*1.8,innerHeight*.16);
+  const base=parseFloat(getComputedStyle(hl).fontSize); let lo=base, hi=Math.min(base*1.35,innerHeight*.12);
   for(let k=0;k<7;k++){ const mid=(lo+hi)/2; hl.style.fontSize=mid+"px"; if(cv.offsetHeight<=room&&hl.scrollWidth<=hl.clientWidth+2) lo=mid; else hi=mid; }
   hl.style.fontSize=lo+"px";
 }
