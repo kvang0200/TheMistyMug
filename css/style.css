@@ -733,7 +733,7 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 .cover.sstage{overflow-y:clip}
 .cover.sstage .cover-copy{position:relative;z-index:2}
 .villain>.snap{z-index:2}
-.dice{position:absolute;left:calc(var(--dsz,calc(420 * var(--u))) * -.32);bottom:calc(var(--dsz,calc(420 * var(--u))) * -.1);z-index:1;pointer-events:none;display:block;width:var(--dsz,calc(420 * var(--u)));height:var(--dsz,calc(420 * var(--u)));
+.dice{position:absolute;left:calc(var(--dsz,calc(420 * var(--u))) * -.32);bottom:clamp(calc(24 * var(--u)),5vh,calc(90 * var(--u)));z-index:1;pointer-events:none;display:block;width:var(--dsz,calc(420 * var(--u)));height:var(--dsz,calc(420 * var(--u)));
   mix-blend-mode:difference}
 .dice .roll{position:absolute;display:block}
 .dice .r1{left:0;bottom:0;width:72%;animation:rollIn1 1.5s cubic-bezier(.2,.75,.25,1) calc(var(--base,0s) + 1.4s) both}
@@ -770,3 +770,8 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 .sess-list{border-top:calc(6 * var(--u)) solid var(--a)}
 .sess-list .stickyhead{background:color-mix(in srgb,var(--p) 92%,transparent)}
 .sess-list .subhead{border-bottom-color:var(--rule)}
+
+/* phones: no peeking player photos on the title card */
+@media (max-width:700px){ .peek{display:none} }
+/* hovering anywhere on a player card highlights their name */
+.pslot:hover .name::after,.pslot:focus-within .name::after{transform:skewX(-18deg) scaleX(1)}

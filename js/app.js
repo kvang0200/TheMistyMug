@@ -808,7 +808,7 @@ function fitDice(){
   const dc=$(".dice"); if(!dc||!dc.offsetParent) return;
   const v=dc.parentElement, card=v.querySelector(".card"); if(!card) return;
   const below=v.clientHeight-(card.parentElement.offsetTop+card.offsetTop+card.offsetHeight);
-  dc.style.setProperty("--dsz",Math.round(Math.max(220*unitPx(),Math.min(1000*unitPx(),below*1.1,innerWidth*.3)))+"px");
+  dc.style.setProperty("--dsz",Math.round(Math.max(220*unitPx(),Math.min(1000*unitPx(),below*.92,innerWidth*.3)))+"px");
 }
 function fitPhotos(){ fitDice(); $$(".pslot").forEach(sl=>{ let el=sl.querySelector(".stats"), y=0; if(!el||!el.offsetParent) return; while(el&&el!==sl){ y+=el.offsetTop; el=el.offsetParent; } sl.style.setProperty("--ptop",(y-6)+"px"); }); }
 $("#v-home").addEventListener("pointermove",e=>{ const sl=e.target.closest(".pslot"); if(!sl) return; const r=sl.getBoundingClientRect(); sl.style.setProperty("--mx",((e.clientX-r.left)/r.width*100).toFixed(1)+"%"); sl.style.setProperty("--my",((e.clientY-r.top)/r.height*100).toFixed(1)+"%"); },{passive:true});
