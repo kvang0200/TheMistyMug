@@ -338,6 +338,12 @@ function renderHome(){
         <h2 class="headline snap" ${d(.7)}>We hunt him. <span class="underslash"><i>He watches.</i></span></h2>
         <p class="flavor snap" ${d(.8)}>${esc(D.flavor)}</p>
         <div class="snap" ${d(.9)}><a class="btn" href="#home" data-jump="latest">Read the latest session ${ICON.arrow}</a></div>
+        <div class="tally" role="group" aria-label="The campaign at a glance">
+      <div class="t snap" ${d(1.45)}><span class="n">${esc(LAST)}</span><span class="l">SESSIONS\nPLAYED</span></div>
+      <div class="t snap" ${d(1.52)}><span class="n">${esc(D.party.length)}</span><span class="l">PLAYERS\nAT LEVEL ${esc(D.level)}</span></div>
+      <div class="t snap" ${d(1.59)}><span class="n">${esc(ongoing)}</span><span class="l">ONGOING\nQUESTS</span></div>
+      <div class="t snap" ${d(1.66)}><span class="n">${fulfilled}/${D.tarokka.length}</span><span class="l">TAROKKA CARDS\nFULFILLED</span></div>
+        </div>
       </div>
       ${strahd?`<div class="villain">
         <div class="redpanel rule-draw" aria-hidden="true" ${d(1.0)}></div>
@@ -359,12 +365,6 @@ function renderHome(){
       </div>`:""}
     </div>
   </div>
-  <div class="tally" role="group" aria-label="The campaign at a glance"><div class="wrap">
-    <div class="t snap" ${d(1.45)}><span class="n">${esc(LAST)}</span><span class="l">SESSIONS\nPLAYED</span></div>
-    <div class="t snap" ${d(1.52)}><span class="n">${esc(D.party.length)}</span><span class="l">PLAYERS\nAT LEVEL ${esc(D.level)}</span></div>
-    <div class="t snap" ${d(1.59)}><span class="n">${esc(ongoing)}</span><span class="l">ONGOING\nQUESTS</span></div>
-    <div class="t snap" ${d(1.66)}><span class="n">${fulfilled}/${D.tarokka.length}</span><span class="l">TAROKKA CARDS\nFULFILLED</span></div>
-  </div></div>
   </section></div>
 
   <div class="after-pin">
