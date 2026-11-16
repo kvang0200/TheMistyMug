@@ -941,3 +941,49 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
   .stickybar{margin-bottom:calc(40 * var(--u))}
   .chips{gap:calc(10 * var(--u))}
 }
+
+/* =====================================================================
+   MOBILE MOTION (Nov 2026)
+   Touch screens can't hover, so phones and tablets were missing most of
+   the site's life. These give them their own motion. Everything here is
+   skipped for people who ask their device for reduced motion.
+   ===================================================================== */
+@keyframes sealNudge{0%,84%,100%{transform:none}88%{transform:rotate(-7deg) scale(1.07)}92%{transform:rotate(6deg) scale(1.05)}96%{transform:rotate(-2deg)}}
+@keyframes sheetUp{from{opacity:0;translate:0 calc(70 * var(--u));scale:.97}to{opacity:1;translate:0 0;scale:1}}
+@keyframes tapRing{from{opacity:.55;scale:.6}to{opacity:0;scale:1.5}}
+
+@media (prefers-reduced-motion:no-preference){
+
+  /* touch screens: things you press sink in and spring back, the way hover lifts them on desktop */
+  @media (hover:none){
+    a.card,button.card,.note,.seal-row,.chips>*,.filters button,.btn,.nav a,.pslot>.card{transition:transform .35s cubic-bezier(.3,1.6,.5,1),scale .35s cubic-bezier(.3,1.6,.5,1),filter .2s}
+    a.card:active,button.card:active,.pslot>.card:active{scale:.965;filter:brightness(.93)}
+    .flip:not(.is-open) .sealed-btn:active{scale:.97}
+    .note:active,.seal-row:active,.chips>*:active,.filters button:active,.btn:active{scale:.95}
+    .nav a:active{scale:.9}
+    /* pressing a card also underlines its name, like hovering does */
+    a.card:active .name::after,button.card:active .name::after,.pslot:active .name::after{transform:skewX(-18deg) scaleX(1)}
+
+    /* unbroken seals give a little nudge every few seconds: tap me */
+    .flip:not(.is-open):not(.rewax):not(.instant) .wax .whole,.sealbox:not(.is-open) .seal-row .wax .whole{animation:sealNudge 5.5s ease-in-out infinite}
+    .grid>.flip:nth-child(3n+2) .wax .whole{animation-delay:1.8s}
+    .grid>.flip:nth-child(3n+3) .wax .whole{animation-delay:3.6s}
+    /* a red ring pulses out from each town on the map */
+    .pin.town .seal{position:relative}
+    .pin.town .seal::after{content:"";position:absolute;inset:calc(-6 * var(--u));border:calc(2 * var(--u)) solid var(--a);border-radius:50%;animation:tapRing 2.6s ease-out infinite;animation-delay:var(--pd,0s);pointer-events:none}
+  }
+
+  @media (max-width:700px){
+    /* cards swing into their resting tilt as they scroll in, alternating sides */
+    .grid>.in:nth-child(odd){rotate:calc((1 - var(--sxe,1)) * -7deg)}
+    .grid>.in:nth-child(even){rotate:calc((1 - var(--sxe,1)) * 7deg)}
+    .ptrack>.pslot.in:nth-child(odd){rotate:calc((1 - var(--sxe,1)) * -4deg);translate:calc((1 - var(--sxe,1)) * calc(-40 * var(--u))) calc((1 - var(--sxe,1)) * calc(40 * var(--u)))}
+    .ptrack>.pslot.in:nth-child(even){rotate:calc((1 - var(--sxe,1)) * 4deg);translate:calc((1 - var(--sxe,1)) * calc(40 * var(--u))) calc((1 - var(--sxe,1)) * calc(40 * var(--u)))}
+
+    /* Sessions: the red thread runs down the left margin as you read */
+    .thread-host::before{display:block;left:calc(-14 * var(--u))}
+
+    /* pop-ups rise up from the bottom of the screen like a sheet of paper slid across the table */
+    .modal.on .sheet{animation:sheetUp .55s cubic-bezier(.2,.9,.25,1) .05s both}
+  }
+}
