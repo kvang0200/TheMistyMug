@@ -208,7 +208,7 @@ const PINS=[
   {key:"Death House", x:1712, y:792, side:"t"},
   {key:"Gates of Barovia", x:1905, y:790, label:"Gates"},
   {key:"The Vistani Camp", x:1362, y:852, label:"Vistani Camp", side:"l"},
-  {key:"Old Svalich Road", x:1430, y:912, label:"Ruined Church", side:"r"},
+  {key:"Old Svalich Road", x:1430, y:912, label:"Ruined Church"},
   {key:"Tser Falls", x:1226, y:764, side:"t"},
   {key:"The Windmill", x:986, y:586},
   {key:"Lake Zarovich", x:960, y:360},
