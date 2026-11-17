@@ -495,7 +495,7 @@ function renderQuestList(){
   <section class="section light" id="list"><div class="wrap">
     ${head("Quests",`${questFilter==="done"?"Completed":"Ongoing"} <i>quests</i>`,`<p>What the party has promised to do, and what it has done.</p>`)}
     <div class="stickybar light-bar"><div class="filters" role="group" aria-label="Show">${Q_FILTERS.map(([k,l])=>`<button type="button" data-qf="${k}" aria-pressed="${k===questFilter}">${l}</button>`).join("")}</div><span class="label" style="color:var(--ink-muted)">${on.length} ongoing · ${done.length} completed</span></div>
-    ${showOn?`<ol class="grid g-240" style="margin:0;padding:0;gap:calc(40 * var(--u)) calc(28 * var(--u))">${on.map((q,i)=>`<li class="note in" style="--tilt:${[-2,1.5,-1,2,-1.5,1,-2.5][i%7]}deg"><span class="label">Ongoing · ${esc(q.t)}</span><p style="font-size:calc(22 * var(--u));line-height:1.15">${esc(q.n)}</p><p style="font-size:calc(16 * var(--u));color:color-mix(in srgb,var(--s) 82%,transparent)">${esc(q.p)}</p></li>`).join("")||`<p class="empty">Nothing ongoing.</p>`}</ol>`:""}
+    ${showOn?`<ol class="grid g-240" style="margin:0;padding:0;gap:calc(40 * var(--u)) calc(28 * var(--u))">${on.map((q,i)=>`<li class="note in qnote" style="--tilt:${[-2,1.5,-1,2,-1.5,1,-2.5][i%7]}deg"><button type="button" class="qn" data-qnote aria-expanded="false"><span class="label">Ongoing · ${esc(q.t)}</span><span class="qt">${esc(q.n)}</span></button><p class="qd">${esc(q.p)}</p></li>`).join("")||`<p class="empty">Nothing ongoing.</p>`}</ol>`:""}
     ${showOn&&showDone?`<div class="subhead in"><h3>Completed <i>quests</i></h3></div>`:""}
     ${showDone?`<div class="grid g-210" style="margin-top:${showOn?40:0}px">${done.map((q,i)=>`<div class="card quest in" style="--tilt:${tilt(i+3)}deg"><div class="shade"></div><article class="parch"><span class="label" style="color:var(--ink-muted)">${esc(q.t)} quest</span><span class="t">${esc(q.n)}</span><p>${esc(q.p)}</p><span class="stamp red stamp-view" aria-hidden="true">COMPLETED</span></article></div>`).join("")}</div>`:""}
   </div></section>`;
@@ -662,6 +662,7 @@ document.addEventListener("click",e=>{
   const pc=t.closest("[data-pc]"); if(pc){ openPc(pc.dataset.pc); return; }
   const pl=t.closest("[data-place]:not(.pin)"); if(pl){ e.preventDefault(); if(modal.classList.contains("on")) closeSheet(); openPlace(pl.dataset.place); return; }
   const ss=t.closest("[data-session]"); if(ss){ gotoSession(ss.dataset.session); return; }
+  const qn=t.closest("[data-qnote]"); if(qn){ const li=qn.closest(".qnote"), on=li.classList.toggle("open"); qn.setAttribute("aria-expanded",String(on)); Sound.tick(); return; }
   const nf=t.closest("[data-nf]"); if(nf){ npcFilter=nf.dataset.nf; renderNpcs(); Sound.tick(); $("#v-npcs [data-nf='"+npcFilter+"']").focus(); return; }
   const qf=t.closest("[data-qf]"); if(qf){ questFilter=qf.dataset.qf; renderQuestList(); Sound.tick(); $("#v-quests [data-qf='"+questFilter+"']").focus(); return; }
 });

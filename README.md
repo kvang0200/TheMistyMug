@@ -40,6 +40,7 @@ unmet NPCs, or quests the party hasn't started.
   them out until a player taps "Reveal the details".
 - **Sound** is on by default and starts at a player's first tap (browsers block sound before
   that). The speaker button turns it off, and each device remembers the choice.
+- **Phones** get a minimal layout: cards show only the essentials (name, class, stamp) and the full details are one tap away in the pop-up file. Sealed cards sit two across and spread to full width once broken; ongoing quests open on tap. Section intros and meta lines are hidden.
 - **Motion** is turned off automatically for anyone whose device asks for reduced motion.
 
 No build step. Edit a file, commit, and Pages republishes in a minute or two.
