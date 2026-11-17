@@ -1026,3 +1026,87 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
   .filters button:hover{transform:none}
   .pressing .name::after{transform:skewX(-18deg) scaleX(1)}
 }
+
+/* =====================================================================
+   MINIMAL PHONES (Nov 2026)
+   On phones each card shows only the essentials; the full details are one
+   tap away in the pop-up file. Sealed cards sit two across, and a card
+   spreads to full width once its seal is broken. The motion stays.
+   ===================================================================== */
+/* ongoing quests: the name is a button; the description shows under it
+   (always on bigger screens, on tap on phones) */
+.qnote .qn{all:unset;box-sizing:border-box;display:flex;flex-direction:column;width:100%;cursor:pointer}
+.qnote .qn:focus-visible{outline:calc(2 * var(--u)) solid var(--a);outline-offset:calc(4 * var(--u))}
+.qnote .qt{display:block;margin-top:calc(12 * var(--u));font-family:var(--serif);font-size:calc(22 * var(--u));line-height:1.15}
+.note .qd{font-size:calc(16 * var(--u));color:color-mix(in srgb,var(--s) 82%,transparent)}
+
+@media (max-width:700px){
+  /* fewer words: section intros, meta lines and helper notes go */
+  .head p,.fortune-note,.jumps,.metaline,.teaser .tz-s,.map-foot>span:nth-child(n+2){display:none}
+  .section{padding:calc(56 * var(--u)) 0 calc(64 * var(--u))}
+  .head{margin-bottom:calc(28 * var(--u))}
+  .head h2,.h2{font-size:calc(46 * var(--u))}
+
+  /* title card: BAROVIA, four red numbers in one row, the headline, and Strahd */
+  .cover .mast{margin-top:calc(26 * var(--u))}
+  .cover .cfile{grid-template-columns:repeat(4,1fr);padding:calc(10 * var(--u)) calc(10 * var(--u))}
+  .cover .cfile>.label{display:none}
+  .cover .cfile .t,.cover .cfile .t:nth-child(2),.cover .cfile .t:nth-child(2n){flex-direction:column;gap:calc(4 * var(--u));padding:0 0 0 calc(10 * var(--u));border-left:calc(1 * var(--u)) solid var(--ink-rule);font-size:calc(11 * var(--u));letter-spacing:.06em;line-height:1.2}
+  .cover .cfile .t:nth-child(2){padding-left:0;border-left:0}
+  .cover .cfile b{font-size:calc(28 * var(--u))}
+  .cover .flavor{font-size:calc(17 * var(--u))}
+  .teaser{gap:calc(10 * var(--u))}
+  .villain .card>.parch>.label:first-child,.villain .dl{display:none!important}
+  .cover .villain .card>.parch,.villain .card>.parch{padding:calc(20 * var(--u)) calc(20 * var(--u)) calc(64 * var(--u))}
+
+  /* players: two across, just name and class, a wax seal on the corner */
+  .ptrack{grid-template-columns:1fr 1fr;gap:calc(22 * var(--u)) calc(14 * var(--u))}
+  .ptrack>.pslot:last-child:nth-child(odd){grid-column:1/-1;width:calc(50% - calc(7 * var(--u)));justify-self:center}
+  .ptrack .player .parch{padding:calc(18 * var(--u)) calc(14 * var(--u)) calc(20 * var(--u))}
+  .player .topline,.player .stats,.player .pc-line,.player .pc-note{display:none}
+  .ptrack .player .who{margin-top:0;font-size:calc(23 * var(--u))}
+  .player .cls{font-size:calc(14 * var(--u));line-height:1.35}
+  .player .pc-foot{position:absolute;right:calc(-6 * var(--u));top:calc(-8 * var(--u));margin:0;padding:0}
+  .player .pc-foot .label{font-size:0;letter-spacing:0}
+  .player .pc-foot .seal-dot{width:calc(26 * var(--u));height:calc(26 * var(--u));margin:0;box-shadow:inset 0 0 0 calc(3 * var(--u)) rgba(0,0,0,.18),0 calc(3 * var(--u)) calc(6 * var(--u)) rgba(0,0,0,.45)}
+
+  /* the latest session: the story, the reveal button, nothing else */
+  .latest{gap:calc(22 * var(--u))}
+  .latest .dl,.latest .chips{display:none}
+  .latest .summary{font-size:calc(18 * var(--u));line-height:1.65}
+  #latest .subhead,#latest .grid{display:none}
+
+  /* sealed cards (sessions, Tarokka, fortunes): two across and shorter */
+  .grid.g-240:has(>.flip),.grid.g-210:has(>.flip){grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:calc(22 * var(--u)) calc(14 * var(--u))}
+  .grid>.flip:last-child:nth-child(odd){grid-column:1/-1;width:calc(50% - calc(7 * var(--u)));justify-self:center}
+  .sess .face,.tarot .face.front,.tarot .back,.fcard .face.front,.fcard .back{min-height:calc(220 * var(--u))}
+  .flip .wax{--w:calc(58 * var(--u))!important}
+  .sealed-btn{gap:calc(10 * var(--u));padding:calc(18 * var(--u)) calc(10 * var(--u))!important}
+  .sealed-btn>.label:last-child{letter-spacing:.1em}
+  .sealed-btn .t{font-size:calc(19 * var(--u))!important}
+  .fcard .fname{font-size:calc(21 * var(--u))}
+  .fcard .for{letter-spacing:.1em}
+  /* a broken seal spreads the card across the row so its text has room */
+  .grid>.flip.is-open,.grid>.flip.is-open:last-child:nth-child(odd){grid-column:1/-1;width:auto;justify-self:stretch}
+  /* a sealed card's hidden back would otherwise set its height */
+  .grid>.flip:not(.is-open):not(.rewax) .face.back{display:none}
+  .sess-back .chips{display:none}
+
+  /* NPCs: the stamp says enough */
+  .npc-epi{display:none}
+
+  /* places: name and stamp */
+  .place p{display:none}
+  .place .parch{min-height:0;padding-bottom:calc(56 * var(--u))}
+
+  /* ongoing quests: tap a quest to read what it's about */
+  #v-quests ol.grid{gap:calc(26 * var(--u)) 0!important}
+  .qnote .qd{display:none}
+  .qnote.open .qd{display:block;animation:fadeIn .3s ease both}
+  .qnote .qn::after{content:"+";position:absolute;right:calc(18 * var(--u));top:calc(18 * var(--u));font-family:var(--sans);font-weight:400;font-size:calc(26 * var(--u));line-height:1;color:var(--s);opacity:.75;transition:rotate .25s cubic-bezier(.2,1.6,.4,1)}
+  .qnote.open .qn::after{rotate:45deg}
+  .qnote .label{padding-right:calc(30 * var(--u))}
+  .note{padding:calc(22 * var(--u)) calc(18 * var(--u)) calc(20 * var(--u))}
+  .note p{font-size:calc(17 * var(--u))}
+  .qnote .qt{font-size:calc(20 * var(--u));margin-top:calc(8 * var(--u));padding-right:calc(24 * var(--u))}
+}
