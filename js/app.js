@@ -554,6 +554,8 @@ function openSheet({tab,photo,kicker,name,epi,body,stamp,fx}){
   Sound.open(); fxSounds(kind); clearTimeout(stampTimer); if(stamp&&!reduced) stampTimer=setTimeout(()=>Sound.stamp(),1550);
   const c=modal.querySelector("[data-close]"); if(c) c.focus({preventScroll:true});
 }
+/* the Persona-style exit: two bands slash across and shards fly (see EXITS in style.css) */
+const EXIT_FX=`<div class="fx-out" aria-hidden="true"><i class="o-line"></i><i class="o-red"></i><i class="o-blk"></i><i class="o-sh" style="--x:-34vw;--y:-30vh;--r:-200deg"></i><i class="o-sh s2" style="--x:30vw;--y:-22vh;--r:160deg"></i><i class="o-sh s3" style="--x:22vw;--y:30vh;--r:-120deg"></i></div>`;
 function closeSheet(){
   if(!modal.classList.contains("on")||modal.classList.contains("out")) return;
   closeCS(true);
@@ -561,7 +563,9 @@ function closeSheet(){
   modal.setAttribute("aria-hidden","true");
   /* the file drops out of frame before it's cleared; opening another one cancels this */
   const done=()=>{ modal.classList.remove("on","out"); modal.innerHTML=""; };
-  if(reduced) done(); else { modal.classList.add("out"); clearTimeout(closeT); closeT=setTimeout(done,340);
+  if(reduced) done(); else {
+    modal.insertAdjacentHTML("beforeend",EXIT_FX); modal.classList.add("out"); clearTimeout(closeT); closeT=setTimeout(done,720);
+    fxTimers.push(setTimeout(()=>Sound.slash(.26),110));
     if(modal.dataset.fx==="gate"){ Sound.chains(.22,.7); fxTimers.push(setTimeout(()=>Sound.clang(),250)); } }
   document.documentElement.style.overflow="";
   Sound.close();

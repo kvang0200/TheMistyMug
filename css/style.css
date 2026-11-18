@@ -1421,7 +1421,9 @@ button.cs-save:hover .si,button.cs-save:focus-visible .si,button.cs-save:hover .
 .modal .fx>*{position:absolute;display:block}
 .modal .sheet{isolation:isolate}
 .modal .sheet::before{content:"";position:absolute;inset:0;z-index:-1}
-.modal.out{pointer-events:none;animation:fadeIn .34s ease-in reverse both}
+/* its own keyframe name: reusing fadeIn would just jump the finished entrance fade to its end, hiding the exit */
+@keyframes modalOut{to{opacity:0}}
+.modal.out{pointer-events:none;animation:modalOut .26s ease-in .46s both}
 @keyframes fxFlash{0%{opacity:0}10%{opacity:.9}35%{opacity:0}100%{opacity:0}}
 @keyframes fxFade{to{opacity:0}}
 @keyframes echoIn{0%{opacity:0;transform:translate(calc(-16 * var(--u)),calc(16 * var(--u))) rotate(-2deg) scale(1.3)}40%{opacity:1}}
@@ -1450,7 +1452,7 @@ button.cs-save:hover .si,button.cs-save:focus-visible .si,button.cs-save:hover .
 .tk-front .tk-tag{color:var(--a)}
 .modal[data-fx="card"] .sheet{animation:popIn .5s cubic-bezier(.2,1.3,.35,1) .86s backwards}
 .modal[data-fx="card"] .sheet::before{background:var(--p);outline:calc(1 * var(--u)) solid var(--a);outline-offset:calc(-8 * var(--u));transform:translate(calc(20 * var(--u)),calc(18 * var(--u))) skewX(-4deg);animation:echoIn .5s ease-out 1.05s backwards}
-.modal[data-fx="card"].out .sheet{animation:flipOut .32s cubic-bezier(.7,0,.85,.3) both}
+.modal[data-fx="card"].out .sheet{animation:outToss .52s cubic-bezier(.55,0,.75,.35) both}
 .modal[data-fx="card"].out .fx-bandt,.modal[data-fx="card"].out .fx-bandb{animation:bandsOut .3s ease-in both}
 
 /* ---------- PLAYER · ROLL FOR INITIATIVE ---------- */
@@ -1470,7 +1472,7 @@ button.cs-save:hover .si,button.cs-save:focus-visible .si,button.cs-save:hover .
 .modal[data-fx="init"] .fx-flash{inset:0;background:var(--a);opacity:0;animation:fxFlash .5s ease-out .7s both}
 .modal[data-fx="init"] .sheet{animation:smashIn .55s cubic-bezier(.2,1,.35,1) .74s backwards}
 .modal[data-fx="init"] .sheet::before{background:repeating-linear-gradient(-45deg,var(--a) 0 calc(12 * var(--u)),color-mix(in srgb,var(--a) 75%,var(--p)) calc(12 * var(--u)) calc(24 * var(--u)));transform:translate(calc(-18 * var(--u)),calc(18 * var(--u))) rotate(-1.5deg);animation:echoIn .45s ease-out .98s backwards}
-.modal[data-fx="init"].out .sheet{animation:smashOut .3s ease-in both}
+.modal[data-fx="init"].out .sheet{animation:outCut .5s cubic-bezier(.6,0,.8,.3) both}
 .modal[data-fx="init"].out .fx{animation:fxFade .25s ease-in both}
 
 /* ---------- LOCATION · PORTCULLIS ---------- */
@@ -1488,7 +1490,7 @@ button.cs-save:hover .si,button.cs-save:focus-visible .si,button.cs-save:hover .
 .modal[data-fx="gate"] .fx-dust{left:0;right:0;bottom:0;height:22%;background:radial-gradient(ellipse at 50% 100%,color-mix(in srgb,var(--s) 45%,transparent),transparent 70%);opacity:0;animation:dustPuff .7s ease-out .4s both}
 .modal[data-fx="gate"] .sheet{animation:riseIn .6s cubic-bezier(.2,1.1,.35,1) .7s backwards}
 .modal[data-fx="gate"] .sheet::before{background:var(--a);transform:translate(calc(-14 * var(--u)),calc(-14 * var(--u))) rotate(-1.5deg);animation:echoIn .45s ease-out .98s backwards}
-.modal[data-fx="gate"].out .sheet{animation:dropOut .3s ease-in both}
+.modal[data-fx="gate"].out .sheet{animation:outDrop .5s cubic-bezier(.6,0,.85,.35) both}
 .modal[data-fx="gate"].out .fx-gate{animation:gateDown .3s cubic-bezier(.55,0,.75,.2) both}
 
 @media (max-width:760px){
@@ -1501,4 +1503,24 @@ button.cs-save:hover .si,button.cs-save:focus-visible .si,button.cs-save:hover .
   .tk-front .nm{font-size:calc(18 * var(--u))}
   .fx-band .fx-tag{letter-spacing:.14em}
 }
-@media (prefers-reduced-motion:reduce){ .modal .fx{display:none} .modal .sheet,.modal .sheet::before{animation:none!important} }
+/* ---------- EXITS (Persona-style) ----------
+   The file kicks back for a beat, then is thrown off screen while a red band and a
+   black band slash across it the other way and a few shards fly. Each kind leaves
+   in its own direction: an NPC's card is tossed back up into the deck, a player's
+   file is cut away to the side, a location sinks under the portcullis. No text. */
+@keyframes outToss{0%{transform:none}20%{opacity:1;transform:translate(calc(10 * var(--u)),calc(14 * var(--u))) rotate(2.5deg) scale(1.04)}100%{opacity:0;transform:translate(-70vw,-75vh) rotate(-38deg) scale(.32)}}
+@keyframes outCut{0%{transform:none}20%{opacity:1;transform:translateX(calc(26 * var(--u))) skewX(-4deg) scale(1.03)}100%{opacity:.6;transform:translateX(-150vw) skewX(22deg) scale(.96)}}
+@keyframes outDrop{0%{transform:none}20%{opacity:1;transform:translateY(calc(-18 * var(--u))) rotate(1.5deg) scale(1.03)}100%{opacity:0;transform:translateY(110vh) rotate(-9deg) skewY(5deg)}}
+@keyframes oWipeL{0%{clip-path:inset(0 0 0 100%)}45%,55%{clip-path:inset(0 0 0 0)}100%{clip-path:inset(0 100% 0 0)}}
+@keyframes oWipeR{0%{clip-path:inset(0 100% 0 0)}45%,55%{clip-path:inset(0 0 0 0)}100%{clip-path:inset(0 0 0 100%)}}
+@keyframes oShard{0%{opacity:0;transform:translate(0,0) rotate(0) scale(.4)}20%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(var(--r)) scale(1)}}
+.fx-out{position:fixed;inset:0;z-index:5;pointer-events:none;overflow:hidden}
+.fx-out>i{position:absolute;display:block}
+.fx-out .o-red{left:-20%;right:-20%;top:50%;height:28vh;margin-top:-17vh;background:var(--a);transform:rotate(-12deg);animation:oWipeL .5s cubic-bezier(.7,0,.3,1) .1s both}
+.fx-out .o-blk{left:-20%;right:-20%;top:50%;height:9vh;margin-top:4vh;background:var(--p);border-top:calc(4 * var(--u)) solid var(--s);transform:rotate(-12deg);animation:oWipeR .5s cubic-bezier(.7,0,.3,1) .16s both}
+.fx-out .o-line{left:-20%;right:-20%;top:30%;height:calc(4 * var(--u));background:var(--s);transform:rotate(-12deg);animation:oWipeR .36s cubic-bezier(.7,0,.3,1) .04s both}
+.fx-out .o-sh{left:50%;top:50%;width:min(14vmin,calc(110 * var(--u)));height:min(14vmin,calc(110 * var(--u)));background:var(--a);clip-path:polygon(0 0,100% 38%,22% 100%);animation:oShard .5s cubic-bezier(.2,.7,.3,1) .12s both}
+.fx-out .o-sh.s2{background:var(--s);width:min(9vmin,calc(70 * var(--u)));height:min(9vmin,calc(70 * var(--u)));clip-path:polygon(0 30%,100% 0,64% 100%);animation-delay:.16s}
+.fx-out .o-sh.s3{background:var(--p);outline:calc(2 * var(--u)) solid var(--a);clip-path:polygon(40% 0,100% 100%,0 76%);animation-delay:.2s}
+.modal[data-fx="card"].out .fx-tk{display:none}
+@media (prefers-reduced-motion:reduce){ .modal .fx,.fx-out{display:none} .modal .sheet,.modal .sheet::before{animation:none!important} }
