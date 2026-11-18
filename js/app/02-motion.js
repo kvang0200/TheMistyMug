@@ -2,7 +2,7 @@
 /* =====================================================================
    SCROLL MOTION (SX)
    Writes how far each element has scrolled into view onto it as CSS
-   variables (--sxe, --sxp, --sxq; see css/03-motion.css). Only
+   variables (--sxe, --sxp, --sxq; see SCROLL MOTION in css/01-base.css). Only
    elements on or near the screen are measured, once per frame, and
    only while the page is actually scrolling. Works in every browser.
    ===================================================================== */

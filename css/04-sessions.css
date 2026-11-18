@@ -1,0 +1,95 @@
+/* Sessions: the chronicle bands, redactions and the sticky list heading.
+   Files in css/ load in number order; a later file wins when two rules tie. */
+
+.sess .face {
+  min-height: calc(330 * var(--u));
+}
+/* redactions in session text: [[words]] in data.js */
+.redact {
+  position: relative;
+  white-space: nowrap;
+}
+.redact::after {
+  content: "";
+  position: absolute;
+  inset: 0.06em -0.12em 0;
+  background: var(--p);
+  transform-origin: right;
+  transform: skewX(-8deg);
+  transition: transform 0.4s cubic-bezier(0.2, 1.5, 0.4, 1) var(--d, 0s);
+}
+.declassified .redact::after {
+  transform: skewX(-8deg) scaleX(0);
+}
+.sess-front .t {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: calc(26 * var(--u));
+  line-height: 1.1;
+}
+.sess-back {
+  padding: calc(26 * var(--u)) calc(24 * var(--u));
+  display: flex;
+  flex-direction: column;
+  gap: calc(12 * var(--u));
+}
+.sess-back .t {
+  font-family: var(--serif);
+  font-size: calc(27 * var(--u));
+  line-height: 1.05;
+}
+.sess-back p {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: calc(15.5 * var(--u));
+  line-height: 1.55;
+}
+.sess-back .chips {
+  margin-top: auto;
+  padding-top: calc(6 * var(--u));
+}
+.sess-back .chip {
+  min-height: calc(36 * var(--u));
+  padding: calc(6 * var(--u)) calc(12 * var(--u));
+  font-size: calc(14 * var(--u));
+}
+.stickyhead {
+  position: sticky;
+  top: var(--hdr, calc(66 * var(--u)));
+  z-index: 20;
+  background: color-mix(in srgb, var(--s) 94%, transparent);
+  -webkit-backdrop-filter: blur(calc(8 * var(--u)));
+  backdrop-filter: blur(calc(8 * var(--u)));
+  padding-top: calc(16 * var(--u));
+}
+/* Sessions: colour bands separate the title, the latest session and the sealed list
+   (phones keep the standard section padding from 01-base.css) */
+@media (min-width: 761px) {
+  .sess-top {
+    padding-bottom: clamp(calc(40 * var(--u)), 5vw, calc(64 * var(--u)));
+  }
+}
+.sess-top .head {
+  margin-bottom: 0;
+}
+.sess-mid {
+  border-top: calc(6 * var(--u)) solid var(--a);
+}
+.sess-list {
+  border-top: calc(6 * var(--u)) solid var(--a);
+}
+.sess-list .stickyhead {
+  background: color-mix(in srgb, var(--p) 92%, transparent);
+}
+.sess-list .subhead {
+  border-bottom-color: var(--rule);
+}
+#sesslist {
+  scroll-margin-top: var(--hdr, 66px);
+}
+
+@media (max-width: 760px) {
+  .sess-back .chips {
+    display: none;
+  }
+}

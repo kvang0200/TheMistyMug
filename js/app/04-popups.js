@@ -95,7 +95,7 @@ function openSheet({ tab, photo, kicker, name, epi, body, stamp, fx }) {
   const c = modal.querySelector("[data-close]");
   if (c) c.focus({ preventScroll: true });
 }
-/* the Persona-style exit: two bands slash across and shards fly (see EXITS in css/07-popup-effects.css) */
+/* the Persona-style exit: two bands slash across and shards fly (see EXITS in css/08-popups.css) */
 const EXIT_FX = `<div class="fx-out" aria-hidden="true"><i class="o-line"></i><i class="o-red"></i><i class="o-blk"></i><i class="o-sh" style="--x:-34vw;--y:-30vh;--r:-200deg"></i><i class="o-sh s2" style="--x:30vw;--y:-22vh;--r:160deg"></i><i class="o-sh s3" style="--x:22vw;--y:30vh;--r:-120deg"></i></div>`;
 function closeSheet() {
   if (!modal.classList.contains("on") || modal.classList.contains("out")) return;

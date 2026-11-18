@@ -1,0 +1,1556 @@
+/* Home: the title card (BAROVIA, the tally, Strahd's card, the dice), the players and the latest session.
+   Files in css/ load in number order; a later file wins when two rules tie. */
+
+@keyframes sway {
+  from {
+    rotate: -0.35deg;
+  }
+  to {
+    rotate: 0.35deg;
+  }
+}
+@keyframes glow {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+/* HOME */
+.cover {
+  position: relative;
+  padding-bottom: clamp(calc(72 * var(--u)), 9vw, calc(104 * var(--u)));
+}
+.metaline {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: calc(8 * var(--u)) calc(24 * var(--u));
+  padding: calc(14 * var(--u)) 0;
+  font-family: var(--mono);
+  font-size: calc(12 * var(--u));
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.mast {
+  position: relative;
+  isolation: isolate;
+  margin: calc(20 * var(--u)) 0 0;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(calc(66 * var(--u)), 19vw, calc(256 * var(--u)));
+  line-height: 0.86;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+.mast .bar {
+  position: absolute;
+  left: calc(-60 * var(--u));
+  right: calc(-60 * var(--u));
+  top: 54%;
+  height: 0.2em;
+  background: var(--a);
+  z-index: -1;
+}
+.cover-row {
+  margin-top: clamp(calc(48 * var(--u)), 6vw, calc(72 * var(--u)));
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(56 * var(--u)) calc(72 * var(--u));
+  align-items: flex-start;
+}
+.cover-copy {
+  flex: 999 1 calc(480 * var(--u));
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: calc(26 * var(--u));
+}
+.tag {
+  align-self: flex-start;
+  display: inline-block;
+  background: var(--s);
+  color: var(--p);
+  padding: calc(8 * var(--u)) calc(16 * var(--u));
+  transform: skewX(-14deg);
+  font-size: calc(12 * var(--u));
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+.tag > span {
+  display: inline-block;
+  transform: skewX(14deg);
+}
+.headline {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(calc(48 * var(--u)), 7vw, calc(104 * var(--u)));
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+.underslash {
+  position: relative;
+  isolation: isolate;
+  white-space: nowrap;
+}
+.underslash::before {
+  content: "";
+  position: absolute;
+  left: -0.08em;
+  right: -0.12em;
+  bottom: 0.06em;
+  height: 0.3em;
+  background: var(--a);
+  transform: skewX(-14deg);
+  z-index: -1;
+}
+.flavor {
+  margin: 0;
+  max-width: calc(560 * var(--u));
+  font-family: var(--serif);
+  font-size: calc(21 * var(--u));
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--s) 82%, transparent);
+}
+.villain {
+  flex: 1 1 calc(340 * var(--u));
+  position: relative;
+  max-width: calc(520 * var(--u));
+}
+.villain .redpanel {
+  position: absolute;
+  left: calc(-70 * var(--u));
+  right: calc(-400 * var(--u));
+  top: calc(-70 * var(--u));
+  bottom: calc(-150 * var(--u));
+  background: var(--a);
+  clip-path: polygon(16% 0, 100% 0, 100% 100%, 0 100%);
+  transform-origin: right;
+}
+.villain .card > .parch {
+  --tilt: 1.2deg;
+  padding: calc(26 * var(--u)) calc(26 * var(--u)) calc(28 * var(--u));
+}
+.villain .stamp {
+  right: calc(18 * var(--u));
+  bottom: calc(18 * var(--u));
+  font-size: calc(16 * var(--u));
+}
+.tally {
+  position: relative;
+  background: var(--s);
+  color: var(--p);
+  border-top: calc(6 * var(--u)) solid var(--a);
+}
+.tally .wrap {
+  padding-top: calc(36 * var(--u));
+  padding-bottom: calc(36 * var(--u));
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(200 * var(--u)), 1fr));
+  gap: calc(20 * var(--u)) calc(40 * var(--u));
+}
+.tally .t {
+  display: flex;
+  align-items: baseline;
+  gap: calc(14 * var(--u));
+  padding-left: calc(16 * var(--u));
+  border-left: calc(1 * var(--u)) solid var(--ink-rule);
+}
+.tally .n {
+  font-family: var(--serif);
+  font-size: calc(56 * var(--u));
+  line-height: 1;
+  color: var(--a);
+}
+.tally .l {
+  font-family: var(--mono);
+  font-size: calc(12 * var(--u));
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  white-space: pre-line;
+}
+.latest {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(48 * var(--u)) calc(88 * var(--u));
+}
+.latest .left {
+  flex: 1 1 calc(340 * var(--u));
+  display: flex;
+  flex-direction: column;
+  gap: calc(22 * var(--u));
+}
+.latest .right {
+  flex: 1.3 1 calc(460 * var(--u));
+  display: flex;
+  flex-direction: column;
+  gap: calc(24 * var(--u));
+}
+.latest .summary {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: calc(21 * var(--u));
+  line-height: 1.75;
+}
+.latest .dl {
+  font-size: calc(13 * var(--u));
+}
+.latest .chips .chip {
+  color: var(--p);
+}
+.latest .chips .chip:hover {
+  color: var(--s);
+}
+.player .parch {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(360 * var(--u));
+}
+.player .who {
+  margin-top: calc(10 * var(--u));
+  font-family: var(--serif);
+  font-size: calc(30 * var(--u));
+  line-height: 1;
+}
+.player .cls {
+  margin-top: calc(6 * var(--u));
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: calc(15 * var(--u));
+  color: var(--ink-muted);
+}
+.player .stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: calc(14 * var(--u));
+  border-top: calc(1 * var(--u)) solid var(--ink-rule);
+}
+.player .stats div {
+  padding-top: calc(8 * var(--u));
+}
+.player .stats dt {
+  font-family: var(--mono);
+  font-size: calc(10 * var(--u));
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--ink-muted);
+}
+.player .stats dd {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: calc(22 * var(--u));
+}
+.player .open-sheet {
+  all: unset;
+  cursor: pointer;
+  align-self: flex-start;
+  position: relative;
+  isolation: isolate;
+}
+.player .open-sheet:focus-visible {
+  outline: calc(2 * var(--u)) solid var(--a);
+  outline-offset: calc(3 * var(--u));
+}
+.player .open-sheet:hover .name::after,
+.player .open-sheet:focus-visible .name::after {
+  transform: skewX(-18deg) scaleX(1);
+}
+.player .name {
+  position: relative;
+  isolation: isolate;
+}
+.player .name::after {
+  content: "";
+  position: absolute;
+  left: calc(-6 * var(--u));
+  right: calc(-8 * var(--u));
+  bottom: calc(2 * var(--u));
+  height: calc(11 * var(--u));
+  background: color-mix(in srgb, var(--a) 70%, transparent);
+  z-index: -1;
+  transform: skewX(-18deg) scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+
+@media (max-width: 760px) {
+  .villain .redpanel {
+    left: calc(-30 * var(--u));
+    right: calc(-60 * var(--u));
+  }
+  .mast .bar {
+    left: calc(-20 * var(--u));
+    right: calc(-20 * var(--u));
+  }
+  .tally .n {
+    font-size: calc(44 * var(--u));
+  }
+}
+
+.player[data-pcard] {
+  cursor: pointer;
+}
+.player .topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(10 * var(--u));
+}
+.player[data-pcard] > .parch {
+  transition: translate 0.3s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+.player[data-pcard]:hover > .parch {
+  translate: 0 calc(-6 * var(--u));
+}
+.player[data-pcard]:hover .open-hint svg {
+  translate: calc(4 * var(--u)) 0;
+}
+.player[data-pcard]:hover .name::after {
+  transform: skewX(-18deg) scaleX(1);
+}
+
+@media (min-width: 900px) {
+  /* the latest session's title stays pinned beside the summary while you read it */
+  .latest .left {
+    position: sticky;
+    top: calc(110 * var(--u));
+    align-self: flex-start;
+  }
+}
+
+/* Sessions: a red thread runs down the page as you read */
+.thread-host {
+  position: relative;
+}
+.thread-host::before {
+  content: "";
+  position: absolute;
+  left: calc(-26 * var(--u));
+  top: 0;
+  bottom: 0;
+  width: calc(2 * var(--u));
+  background: var(--a);
+  transform-origin: top;
+  transform: scaleY(var(--sxq, 1));
+  box-shadow: 0 0 calc(10 * var(--u)) var(--a);
+}
+
+@media (max-width: 760px) {
+  .thread-host::before {
+    display: none;
+  }
+}
+
+/* ---- home player cards ---- */
+.pc-line {
+  margin: calc(14 * var(--u)) 0 0;
+  font-family: var(--serif);
+  font-size: calc(15 * var(--u));
+  line-height: 1.4;
+}
+.pc-line .label {
+  margin-right: calc(8 * var(--u));
+  color: var(--ink-muted);
+}
+.pc-note {
+  margin: calc(10 * var(--u)) 0 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: calc(15 * var(--u));
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+.pc-foot {
+  margin-top: auto;
+  padding-top: calc(20 * var(--u));
+}
+.pc-foot .label {
+  display: inline-flex;
+  align-items: center;
+  color: var(--ink-muted);
+}
+/* PINNED SCENES (see PINS in js/app/02-motion.js)
+   The wrapper is made tall; its .sstage sticks while you scroll through it. */
+.scene {
+  position: relative;
+}
+.scene.on > .sstage {
+  position: sticky;
+  top: var(--stick, 0px);
+}
+/* Home title card: fills the screen, holds still while it settles, then the
+   rest of the page slides up over it and it sinks into the dark */
+.cover.sstage {
+  min-height: calc(100vh - var(--hdr, calc(66 * var(--u))));
+  min-height: calc(100svh - var(--hdr, calc(66 * var(--u))));
+  padding-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--p);
+}
+.cover.sstage > .wrap {
+  padding-bottom: clamp(calc(24 * var(--u)), 4vh, calc(56 * var(--u)));
+}
+/* the title card is sized to fit one screen */
+.cover .mast {
+  font-size: clamp(calc(56 * var(--u)), min(19vw, 15vh), calc(256 * var(--u)));
+}
+.cover .headline {
+  font-size: clamp(calc(34 * var(--u)), min(7vw, 6.6vh), calc(104 * var(--u)));
+}
+.cover .villain .card > .parch {
+  padding: calc(20 * var(--u)) calc(22 * var(--u)) calc(22 * var(--u));
+}
+.cover-row {
+  margin-top: clamp(calc(24 * var(--u)), 4vh, calc(64 * var(--u)));
+}
+.scene.on .mast {
+  translate: 0 calc(var(--pt, 0) * calc(-24 * var(--u)) + var(--pu, 0) * calc(120 * var(--u)));
+  scale: calc(1 + var(--pt, 0) * 0.06);
+  opacity: calc(1 - var(--pu, 0) * 0.4);
+}
+.scene.on .metaline {
+  opacity: calc(1 - var(--pt, 0) * 1.2);
+}
+.scene.on .cover-copy > :not(.tally) {
+  translate: 0 calc(var(--pt, 0) * calc(-36 * var(--u)) + var(--pu, 0) * calc(60 * var(--u)));
+}
+.scene.on .villain {
+  translate: 0 calc(var(--pt, 0) * calc(-80 * var(--u)) + var(--pu, 0) * calc(40 * var(--u)));
+}
+.scene.on > .cover.sstage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: calc(var(--pu, 0) * 0.35);
+  pointer-events: none;
+  z-index: 5;
+}
+/* Home players: all five fit on the table at once */
+.ptrack {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(212 * var(--u))), 1fr));
+  gap: calc(30 * var(--u)) calc(22 * var(--u));
+  align-items: stretch;
+}
+.ptrack > .pslot {
+  display: flex;
+  flex-direction: column;
+}
+.ptrack > .pslot > .card {
+  flex: 1 1 auto;
+}
+.ptrack .player .who {
+  font-size: clamp(calc(24 * var(--u)), 2.1vw, calc(30 * var(--u)));
+}
+.ptrack .player .parch {
+  min-height: 0;
+  padding-left: calc(20 * var(--u));
+  padding-right: calc(20 * var(--u));
+}
+
+@media (max-width: 760px) {
+  .scene.on .villain {
+    translate: 0 calc(var(--pu, 0) * calc(30 * var(--u)));
+  }
+  .scene.on .cover-copy {
+    translate: 0 calc(var(--pu, 0) * calc(40 * var(--u)));
+  }
+}
+
+/* ---- player portrait: tucked behind the card, its back peeking over the top
+   edge; on hover it flips over and lands in front of the card, below the name ---- */
+.pslot {
+  position: relative;
+  padding-top: calc(38 * var(--u));
+  cursor: pointer;
+}
+.pslot > .card {
+  position: relative;
+  z-index: 2;
+}
+.pphoto {
+  position: absolute;
+  left: calc(16 * var(--u));
+  right: calc(16 * var(--u));
+  top: var(--ptop, calc(148 * var(--u)));
+  bottom: calc(18 * var(--u));
+  z-index: 1;
+  perspective: calc(1400 * var(--u));
+  pointer-events: none;
+  transition: z-index 0s 0.3s;
+}
+.pp-in {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform-origin: 50% 0;
+  transform: translate(28%, calc(-1 * var(--ptop, calc(148 * var(--u))) + calc(2 * var(--u))))
+    scale(0.44) rotate(var(--r, 7deg)) rotateY(180deg);
+  transition: transform 0.75s cubic-bezier(0.3, 1.25, 0.5, 1);
+}
+.pp-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 0 calc(18 * var(--u)) calc(34 * var(--u)) rgba(0, 0, 0, 0.5);
+}
+.pp-front {
+  background: var(--s);
+  padding: calc(12 * var(--u)) calc(12 * var(--u)) calc(44 * var(--u));
+}
+.pp-front .sil {
+  position: absolute;
+  left: calc(12 * var(--u));
+  right: calc(12 * var(--u));
+  top: calc(12 * var(--u));
+  bottom: calc(44 * var(--u));
+}
+.pp-front .cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(12 * var(--u));
+  text-align: center;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: calc(20 * var(--u));
+  color: var(--p);
+}
+.pp-front .tape {
+  position: absolute;
+  left: 50%;
+  top: calc(-10 * var(--u));
+  width: calc(70 * var(--u));
+  height: calc(22 * var(--u));
+  margin-left: calc(-35 * var(--u));
+  background: color-mix(in srgb, var(--s) 70%, #fff);
+  opacity: 0.8;
+  rotate: -4deg;
+  z-index: 2;
+}
+.pp-back {
+  transform: rotateY(180deg);
+  background: repeating-linear-gradient(
+    45deg,
+    color-mix(in srgb, var(--s) 92%, var(--p)) 0 calc(8 * var(--u)),
+    var(--s) calc(8 * var(--u)) calc(16 * var(--u))
+  );
+  border: calc(8 * var(--u)) solid var(--s);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: calc(22 * var(--u));
+}
+.pp-back .seal-dot {
+  width: calc(34 * var(--u));
+  height: calc(34 * var(--u));
+  margin: 0;
+}
+.pslot:hover .pphoto,
+.pslot:focus-within .pphoto {
+  z-index: 3;
+}
+.pslot:hover .pp-in,
+.pslot:focus-within .pp-in {
+  transform: translate(0, 0) scale(1) rotate(-1.5deg) rotateY(0deg);
+}
+.pslot:hover .card > .parch {
+  translate: 0 calc(-4 * var(--u));
+}
+/* ---- title card: mist that thins as you scroll, and Strahd watching ---- */
+.cover.sstage > .wrap {
+  position: relative;
+  z-index: 1;
+}
+.cfog {
+  position: absolute;
+  inset: -10% -15%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: calc(0.32 * (1 - var(--pt, 0)));
+  -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.6) 35%, transparent 75%);
+  mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.6) 35%, transparent 75%);
+}
+.cfog i {
+  position: absolute;
+  inset: 0;
+  background: url(../img/fog.webp) center/cover no-repeat;
+  mix-blend-mode: screen;
+  opacity: 0.5;
+  animation: fogA 46s ease-in-out infinite alternate;
+}
+.cfog i + i {
+  background-image: url(../img/fog2.webp);
+  opacity: 0.4;
+  animation: fogB 60s ease-in-out infinite alternate;
+}
+@keyframes fogA {
+  from {
+    transform: translate3d(-4%, 0, 0) scale(1.05);
+  }
+  to {
+    transform: translate3d(4%, -2%, 0) scale(1.12);
+  }
+}
+@keyframes fogB {
+  from {
+    transform: translate3d(5%, 2%, 0) scale(1.1);
+  }
+  to {
+    transform: translate3d(-5%, -1%, 0) scale(1.02);
+  }
+}
+.glow.watch {
+  animation: none;
+  opacity: calc((0.25 + var(--pt, 0) * 0.75) * (1 - var(--pu, 0)));
+  scale: calc(0.8 + var(--pt, 0) * 0.4);
+  transition: opacity 0.2s linear;
+}
+/* ---- candlelight: the hovered player is lit, the others fall into shadow ---- */
+.ptrack > .pslot {
+  transition: filter 0.45s ease;
+}
+.ptrack:hover > .pslot:not(:hover) {
+  filter: brightness(0.55) saturate(0.75);
+}
+.pslot .parch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  background: radial-gradient(
+    circle at var(--mx, 50%) var(--my, 35%),
+    rgba(255, 190, 110, 0.42),
+    rgba(255, 160, 80, 0.12) 35%,
+    transparent 62%
+  );
+  mix-blend-mode: soft-light;
+}
+.pslot:hover .parch::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cfog i {
+    animation: none;
+  }
+}
+
+/* campaign numbers sit inside the title card, under the headline, as a quiet row */
+.cover .tally {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  justify-content: start;
+  gap: 0;
+  margin-top: clamp(calc(8 * var(--u)), 2vh, calc(22 * var(--u)));
+  background: none;
+  color: var(--s);
+  border: 0;
+  border-top: calc(1 * var(--u)) solid var(--rule);
+  padding-top: clamp(calc(12 * var(--u)), 2vh, calc(20 * var(--u)));
+}
+.cover .tally .t {
+  display: flex;
+  align-items: baseline;
+  gap: calc(10 * var(--u));
+  padding: 0 calc(22 * var(--u)) 0 0;
+  margin-right: calc(22 * var(--u));
+  border: 0;
+  border-right: calc(1 * var(--u)) solid var(--rule);
+}
+.cover .tally .t:last-child {
+  border-right: 0;
+  margin-right: 0;
+  padding-right: 0;
+}
+.cover .tally .n {
+  font-family: var(--serif);
+  font-size: clamp(calc(30 * var(--u)), 4.6vh, calc(44 * var(--u)));
+  line-height: 1;
+  color: var(--a);
+}
+.cover .tally .l {
+  font-family: var(--mono);
+  font-size: calc(10 * var(--u));
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  white-space: pre-line;
+  color: var(--muted);
+}
+
+@media (max-width: 760px) {
+  .cover .tally {
+    grid-template-columns: repeat(2, auto);
+    gap: calc(14 * var(--u)) 0;
+  }
+  .cover .tally .t:nth-child(2) {
+    border-right: 0;
+    margin-right: 0;
+  }
+}
+
+.cover .tally .l {
+  white-space: pre;
+}
+
+@media (max-width: 1180px) {
+  .cover .tally .t {
+    padding-right: calc(14 * var(--u));
+    margin-right: calc(14 * var(--u));
+  }
+  .cover-copy {
+    gap: calc(18 * var(--u));
+  }
+  .cover .flavor {
+    font-size: calc(18 * var(--u));
+  }
+}
+
+/* the numbers row as a beige strip inside the title card */
+.cover .tally {
+  background: var(--s);
+  color: var(--p);
+  border-top: calc(4 * var(--u)) solid var(--a);
+  padding: clamp(calc(10 * var(--u)), 1.8vh, calc(16 * var(--u))) calc(18 * var(--u));
+  justify-content: space-between;
+  justify-self: start;
+  max-width: calc(620 * var(--u));
+  box-shadow: 0 calc(14 * var(--u)) calc(30 * var(--u)) rgba(0, 0, 0, 0.35);
+}
+.cover .tally .t {
+  border-right-color: var(--ink-rule);
+}
+.cover .tally .l {
+  color: var(--p);
+}
+/* ---- title card layout: the beige numbers panel sits flush on the bottom edge,
+   under the headline column, with the red panel running down beside it ---- */
+.cover.sstage > .wrap {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+}
+.cover-row {
+  margin-top: clamp(calc(16 * var(--u)), 3vh, calc(56 * var(--u)));
+}
+.cover.sstage .cover-row {
+  flex: 1 1 auto;
+  align-items: stretch;
+}
+.cover.sstage .cover-copy {
+  align-self: stretch;
+}
+.cover.sstage .villain {
+  align-self: flex-start;
+}
+.cover .tally {
+  margin-top: auto;
+  max-width: none;
+  justify-self: stretch;
+  justify-content: space-between;
+  box-shadow: none;
+  padding: clamp(calc(12 * var(--u)), 2vh, calc(18 * var(--u))) calc(22 * var(--u));
+  margin-bottom: 0;
+}
+.cover .tally {
+  position: relative;
+  top: 0;
+}
+
+@media (min-width: 761px) {
+  .cover.sstage .cover-copy {
+    padding-bottom: 0;
+  }
+  .cover-copy > .tally {
+    margin-top: auto;
+  }
+}
+
+@media (max-width: 760px) {
+  /* ---- phones: nothing overlaps ---- */
+  .cover.sstage {
+    min-height: 0;
+  }
+  .cover .tally {
+    margin-top: calc(8 * var(--u));
+  }
+  .villain {
+    margin-top: calc(10 * var(--u));
+  }
+  .villain .redpanel {
+    top: calc(-20 * var(--u));
+    bottom: calc(-40 * var(--u));
+  }
+}
+
+@media (min-width: 761px) {
+  .cover.sstage .villain {
+    align-self: stretch;
+  }
+  .cover.sstage .villain .redpanel {
+    bottom: calc(-200 * var(--u));
+  }
+}
+
+/* TITLE CARD (A + teaser + peeking players) */
+.cover .tally {
+  display: none;
+}
+/* campaign numbers live on Strahd's card, like the tally on a case file */
+.vtally {
+  margin: calc(16 * var(--u)) calc(-4 * var(--u)) 0;
+  padding: calc(12 * var(--u)) calc(12 * var(--u)) calc(10 * var(--u));
+  background: color-mix(in srgb, var(--p) 8%, transparent);
+  border-top: calc(3 * var(--u)) solid var(--a);
+}
+.vtally > .label {
+  display: block;
+  margin-bottom: calc(8 * var(--u));
+  color: var(--ink-muted);
+}
+.vt-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: calc(4 * var(--u));
+}
+.vt-row .t {
+  display: flex;
+  flex-direction: column;
+  gap: calc(2 * var(--u));
+  font-family: var(--mono);
+  font-size: calc(9.5 * var(--u));
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--p);
+  padding-left: calc(8 * var(--u));
+  border-left: calc(1 * var(--u)) solid var(--ink-rule);
+}
+.vt-row .t:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+.vt-row b {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: calc(28 * var(--u));
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--a);
+}
+/* the latest session, teased under the headline */
+.teaser {
+  margin-top: clamp(calc(6 * var(--u)), 2.4vh, calc(36 * var(--u)));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(6 * var(--u));
+  max-width: calc(580 * var(--u));
+  padding: calc(12 * var(--u)) 0 0;
+  border-top: calc(1 * var(--u)) solid var(--rule);
+}
+.teaser .label {
+  color: var(--muted);
+}
+.tz-t {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(calc(24 * var(--u)), 3.4vh, calc(32 * var(--u)));
+  line-height: 1.05;
+}
+.tz-s {
+  margin: 0 0 calc(6 * var(--u));
+  font-family: var(--serif);
+  font-size: calc(17 * var(--u));
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--s) 82%, transparent);
+}
+.cover .flavor {
+  font-size: clamp(calc(16 * var(--u)), 2.3vh, calc(20 * var(--u)));
+}
+/* the players' photos peek up from the bottom edge, inviting a scroll */
+.cover.sstage .cover-copy {
+  padding-bottom: calc(72 * var(--u));
+  gap: clamp(calc(12 * var(--u)), 2.2vh, calc(26 * var(--u)));
+}
+.peek {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  height: calc(64 * var(--u));
+  overflow: hidden;
+  display: block;
+  cursor: pointer;
+  text-decoration: none;
+}
+.peek-in {
+  position: absolute;
+  left: var(--pad);
+  bottom: calc(-86 * var(--u));
+  display: flex;
+  gap: calc(16 * var(--u));
+}
+.pk {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: calc(86 * var(--u));
+  height: calc(120 * var(--u));
+  padding-top: calc(12 * var(--u));
+  background: repeating-linear-gradient(
+    45deg,
+    color-mix(in srgb, var(--s) 90%, var(--p)) 0 calc(7 * var(--u)),
+    var(--s) calc(7 * var(--u)) calc(14 * var(--u))
+  );
+  border: calc(6 * var(--u)) solid var(--s);
+  box-shadow: 0 calc(-8 * var(--u)) calc(22 * var(--u)) rgba(0, 0, 0, 0.45);
+  rotate: var(--r, 0deg);
+  translate: 0 var(--y, 0px);
+  transition: translate 0.45s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+.pk .seal-dot {
+  width: calc(20 * var(--u));
+  height: calc(20 * var(--u));
+  margin: 0;
+}
+.pk em {
+  margin-top: calc(6 * var(--u));
+  font-family: var(--serif);
+  font-size: calc(14 * var(--u));
+  color: var(--p);
+}
+.peek:hover .pk,
+.peek:focus-visible .pk {
+  translate: 0 calc(var(--y, 0px) - calc(26 * var(--u)));
+}
+.peek .pk:nth-child(2) {
+  transition-delay: 0.04s;
+}
+.peek .pk:nth-child(3) {
+  transition-delay: 0.08s;
+}
+.peek .pk:nth-child(4) {
+  transition-delay: 0.12s;
+}
+.peek .pk:nth-child(5) {
+  transition-delay: 0.16s;
+}
+.peek-l {
+  position: absolute;
+  left: var(--pad);
+  margin-left: calc(530 * var(--u));
+  bottom: calc(18 * var(--u));
+  color: var(--muted);
+}
+.peek:focus-visible {
+  outline: calc(2 * var(--u)) solid var(--a);
+  outline-offset: calc(-4 * var(--u));
+}
+
+@media (max-width: 760px) {
+  .cover.sstage .cover-copy {
+    padding-bottom: 0;
+  }
+  .peek {
+    position: relative;
+    margin-top: calc(28 * var(--u));
+  }
+  .peek-in {
+    gap: calc(10 * var(--u));
+  }
+  .pk {
+    width: calc(62 * var(--u));
+  }
+  .pk em {
+    font-size: calc(12 * var(--u));
+  }
+  .peek-l {
+    display: none;
+  }
+  .vt-row b {
+    font-size: calc(24 * var(--u));
+  }
+}
+
+@media (min-width: 761px) {
+  .cover.sstage .cover-copy {
+    justify-content: center;
+  }
+}
+
+/* ---- Sessions: more air around the latest session ---- */
+
+/* ---- campaign file: a quiet row between BAROVIA and "Where we stand" ---- */
+.cfile {
+  display: flex;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  align-items: baseline;
+  gap: calc(6 * var(--u)) 0;
+  margin-top: calc(-4 * var(--u));
+}
+.cfile > .label {
+  color: var(--muted);
+  margin-right: calc(20 * var(--u));
+}
+.cfile .t {
+  display: inline-flex;
+  align-items: baseline;
+  gap: calc(8 * var(--u));
+  padding: 0 calc(16 * var(--u));
+  border-left: calc(1 * var(--u)) solid var(--rule);
+  font-family: var(--mono);
+  font-size: calc(10.5 * var(--u));
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.cfile .t:nth-child(2) {
+  padding-left: 0;
+  border-left: 0;
+}
+.cfile b {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(calc(22 * var(--u)), 3vh, calc(30 * var(--u)));
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--a);
+}
+/* ---- two huge d20s, double-exposed against the red panel and the dark:
+   drawn in red with a "difference" blend, so they turn black over the red
+   and red over the black. Facet lines and the numbers are cut-outs. ---- */
+.cover.sstage {
+  overflow-y: clip;
+}
+.cover.sstage .cover-copy {
+  position: relative;
+  z-index: 2;
+}
+.villain > .snap {
+  z-index: 2;
+}
+.dice {
+  position: absolute;
+  left: calc(var(--dsz, calc(420 * var(--u))) * -0.32);
+  bottom: clamp(calc(24 * var(--u)), 5vh, calc(90 * var(--u)));
+  z-index: 1;
+  pointer-events: none;
+  display: block;
+  width: var(--dsz, calc(420 * var(--u)));
+  height: var(--dsz, calc(420 * var(--u)));
+  mix-blend-mode: difference;
+}
+.dice .roll {
+  position: absolute;
+  display: block;
+}
+.dice .r1 {
+  left: 0;
+  bottom: 0;
+  width: 72%;
+  animation: rollIn1 1.5s cubic-bezier(0.2, 0.75, 0.25, 1) calc(var(--base, 0s) + 1.4s) both;
+}
+.dice .r2 {
+  right: -6%;
+  bottom: 46%;
+  width: 44%;
+  animation: rollIn2 1.6s cubic-bezier(0.2, 0.75, 0.25, 1) calc(var(--base, 0s) + 1.65s) both;
+}
+@keyframes rollIn1 {
+  0% {
+    translate: 70vw 0;
+    rotate: 720deg;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  72% {
+    translate: calc(-14 * var(--u)) 0;
+    rotate: -10deg;
+  }
+  88% {
+    translate: calc(5 * var(--u)) 0;
+    rotate: 4deg;
+  }
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+    opacity: 1;
+  }
+}
+@keyframes rollIn2 {
+  0% {
+    translate: 70vw -10vh;
+    rotate: 900deg;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  74% {
+    translate: calc(-10 * var(--u)) 0;
+    rotate: -8deg;
+  }
+  90% {
+    translate: calc(4 * var(--u)) 0;
+    rotate: 3deg;
+  }
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+    opacity: 1;
+  }
+}
+.dice .d20 {
+  display: block;
+  width: 100%;
+  filter: none;
+}
+.dice .d20.big {
+  rotate: -12deg;
+}
+.dice .d20.small {
+  rotate: 20deg;
+}
+.dice svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.dice .f0,
+.dice .f3 {
+  fill: #b3131c;
+}
+.dice .f1 {
+  fill: #9c1018;
+}
+.dice .f2 {
+  fill: #851016;
+}
+.dice .ln {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+.dice text {
+  fill: #000;
+  font-family: var(--serif);
+  font-size: calc(21 * var(--u));
+  font-weight: 600;
+}
+
+@media (max-width: 1099px) {
+  .dice {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dice .r1,
+  .dice .r2 {
+    animation: none;
+  }
+  .dice {
+    translate: none;
+    rotate: none;
+  }
+}
+
+.cover.sstage .cover-row {
+  margin-top: clamp(calc(10 * var(--u)), 2vh, calc(44 * var(--u)));
+}
+.cover.sstage .cover-copy {
+  gap: clamp(calc(10 * var(--u)), 1.8vh, calc(24 * var(--u)));
+}
+.cover .mast {
+  font-size: clamp(calc(56 * var(--u)), min(19vw, 14vh), calc(256 * var(--u)));
+}
+/* campaign row as a slim beige strip */
+.cfile {
+  align-self: flex-start;
+  background: var(--s);
+  color: var(--p);
+  padding: calc(4 * var(--u)) calc(14 * var(--u)) calc(5 * var(--u)) calc(12 * var(--u));
+  border-left: calc(4 * var(--u)) solid var(--a);
+  margin-top: 0;
+}
+.cfile > .label {
+  color: var(--p);
+  margin-right: calc(16 * var(--u));
+}
+.cfile .t {
+  color: var(--p);
+  border-left-color: var(--ink-rule);
+}
+
+@media (min-width: 761px) {
+  /* the red panel always runs to the right edge of the screen, even on very wide monitors */
+  .cover.sstage .villain .redpanel {
+    right: calc(
+      -1 *
+        max(
+          calc(400 * var(--u)),
+          (100vw - var(--wrap, calc(1280 * var(--u)))) / 2 + var(--pad) + calc(20 * var(--u))
+        )
+    );
+  }
+}
+
+@media (max-width: 760px) {
+  /* phones: no peeking player photos on the title card */
+  .peek {
+    display: none;
+  }
+}
+
+/* hovering anywhere on a player card highlights their name */
+.pslot:hover .name::after,
+.pslot:focus-within .name::after {
+  transform: skewX(-18deg) scaleX(1);
+}
+/* ---- campaign strip hangs off the line under BAROVIA ---- */
+.cover .cfile {
+  margin-top: 0;
+  border-top: 0;
+}
+
+@media (min-width: 761px) {
+  .cover .cfile {
+    display: inline-flex;
+    margin-left: 0;
+  }
+  .cover-row {
+    margin-top: clamp(calc(14 * var(--u)), 3vh, calc(56 * var(--u)));
+  }
+}
+
+/* ---- page transitions: the first section rises and inks in ---- */
+@keyframes enterUp {
+  from {
+    opacity: 0;
+    translate: 0 calc(34 * var(--u));
+    filter: blur(calc(4 * var(--u)));
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    filter: none;
+  }
+}
+
+@media (max-width: 760px) {
+  /* ---- phones ---- */
+  .cover .mast {
+    font-size: min(16.5vw, calc(96 * var(--u)));
+  }
+  .cover .cfile {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: calc(8 * var(--u)) 0;
+    white-space: normal;
+    align-self: stretch;
+    margin-top: calc(14 * var(--u));
+    padding: calc(10 * var(--u)) calc(14 * var(--u));
+  }
+  .cover .cfile > .label {
+    grid-column: 1/-1;
+    margin: 0;
+  }
+  .cover .cfile .t,
+  .cover .cfile .t:nth-child(2) {
+    padding: 0 0 0 calc(10 * var(--u));
+    border-left: calc(1 * var(--u)) solid var(--ink-rule);
+  }
+  .cover .cfile .t:nth-child(2n) {
+    padding-left: 0;
+    border-left: 0;
+  }
+  /* Strahd's card sits on a straight red band */
+  .cover.sstage .villain .redpanel {
+    left: calc(-1 * var(--pad));
+    right: calc(-1 * var(--pad));
+    top: calc(36 * var(--u));
+    bottom: calc(-24 * var(--u));
+    clip-path: none;
+  }
+  .villain {
+    max-width: none;
+  }
+  .cover-row,
+  .cover-copy {
+    min-width: 0;
+  }
+}
+
+/* the campaign strip moves with the rest of the title card as you scroll */
+.scene.on .cover .cfile {
+  translate: 0 calc(var(--pt, 0) * calc(-36 * var(--u)) + var(--pu, 0) * calc(60 * var(--u)));
+}
+
+@media (min-width: 761px) {
+  /* BAROVIA's red bar runs to both edges of the screen on wide layouts */
+  .cover .mast .bar {
+    left: calc(-1 * max(calc(60 * var(--u)), (100vw - var(--wrap)) / 2 + var(--pad)));
+    right: calc(-1 * max(calc(60 * var(--u)), (100vw - var(--wrap)) / 2 + var(--pad)));
+  }
+}
+
+/* tablets and narrow windows where Strahd's card drops below the text: a straight red band */
+.cover.stacked .villain {
+  max-width: none;
+  flex-basis: 100%;
+}
+.cover.stacked .villain .redpanel {
+  left: calc(-1 * var(--pad) - 20px);
+  right: calc(-1 * var(--pad) - 20px);
+  top: calc(40 * var(--u));
+  bottom: calc(-30 * var(--u));
+  clip-path: none;
+}
+.cover.stacked .villain > .snap {
+  max-width: calc(520 * var(--u));
+  margin: 0 auto;
+}
+.cover.stacked .dice {
+  display: none;
+}
+.cover.stacked .peek {
+  display: none;
+}
+.cover.stacked .cover-copy {
+  padding-bottom: 0 !important;
+}
+.cover.sstage.stacked {
+  padding-bottom: calc(70 * var(--u));
+}
+.cover.stacked .cover-row {
+  row-gap: calc(30 * var(--u));
+}
+/* Strahd's card: room under the details so the HOSTILE stamp never covers them; the red glow sits behind the head like eyes in the dark */
+.cover .villain .card > .parch,
+.villain .card > .parch {
+  padding-bottom: calc(72 * var(--u));
+}
+.villain .glow.watch {
+  mix-blend-mode: screen;
+}
+
+@media (min-width: 761px) {
+  /* the taller Strahd card would hide the small die: roll it out beside the big one */
+  .dice .r2 {
+    bottom: 8%;
+    right: -30%;
+  }
+}
+
+/* small mono captions: nothing under 11px */
+.player .stats dt,
+.seal-sub {
+  font-size: calc(11 * var(--u));
+}
+
+@media (hover: none), (max-width: 760px) {
+  /* MOBILE: no portrait pop-over, more breathing room */
+  /* touch devices and phones: the player portrait no longer flips up in front
+     of the card on tap/hover, and the other players don't dim */
+  .pslot .pphoto {
+    display: none;
+  }
+  .pslot {
+    padding-top: 0;
+  }
+  .pslot:hover .card > .parch {
+    translate: none;
+  }
+  .ptrack:hover > .pslot:not(:hover) {
+    filter: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .ptrack {
+    gap: calc(32 * var(--u));
+  }
+  /* hero: the tally, tag and headline were stacked almost on top of each other */
+  .cover.sstage .cover-copy,
+  .cover .cover-copy {
+    gap: calc(28 * var(--u));
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @media (hover: none) {
+    a.card.pressing,
+    button.card.pressing,
+    .pslot > .card.pressing {
+      scale: 0.965;
+      filter: brightness(0.93);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @media (max-width: 760px) {
+    .ptrack > .pslot.in:nth-child(odd) {
+      rotate: calc((1 - var(--sxe, 1)) * -4deg);
+      translate: calc((1 - var(--sxe, 1)) * calc(-40 * var(--u)))
+        calc((1 - var(--sxe, 1)) * calc(40 * var(--u)));
+    }
+    .ptrack > .pslot.in:nth-child(even) {
+      rotate: calc((1 - var(--sxe, 1)) * 4deg);
+      translate: calc((1 - var(--sxe, 1)) * calc(40 * var(--u)))
+        calc((1 - var(--sxe, 1)) * calc(40 * var(--u)));
+    }
+    /* Sessions: the red thread runs down the left margin as you read */
+    .thread-host::before {
+      display: block;
+      left: calc(-14 * var(--u));
+    }
+  }
+}
+
+@media (hover: none) {
+  /* touch screens keep :hover "stuck" after a tap, which left red-pink
+     highlight bars under card names, chips and nav links. Only real mice get
+     those now; taps use the .pressing highlight instead. */
+  a.card:hover .name::after,
+  button.card:hover .name::after,
+  .pslot:hover .name::after,
+  .player[data-pcard]:hover .name::after,
+  .player .open-sheet:hover .name::after {
+    transform: skewX(-18deg) scaleX(0);
+  }
+  .latest .chips .chip:hover {
+    color: var(--p);
+  }
+}
+
+@media (max-width: 760px) {
+  /* title card: BAROVIA, four red numbers in one row, the headline, and Strahd */
+  .cover .mast {
+    margin-top: calc(26 * var(--u));
+  }
+  .cover .cfile {
+    grid-template-columns: repeat(4, 1fr);
+    padding: calc(10 * var(--u)) calc(10 * var(--u));
+  }
+  .cover .cfile > .label {
+    display: none;
+  }
+  .cover .cfile .t,
+  .cover .cfile .t:nth-child(2),
+  .cover .cfile .t:nth-child(2n) {
+    flex-direction: column;
+    gap: calc(4 * var(--u));
+    padding: 0 0 0 calc(10 * var(--u));
+    border-left: calc(1 * var(--u)) solid var(--ink-rule);
+    font-size: calc(11 * var(--u));
+    letter-spacing: 0.06em;
+    line-height: 1.2;
+  }
+  .cover .cfile .t:nth-child(2) {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .cover .cfile b {
+    font-size: calc(28 * var(--u));
+  }
+  .cover .flavor {
+    font-size: calc(17 * var(--u));
+  }
+  .teaser {
+    gap: calc(10 * var(--u));
+  }
+  .villain .card > .parch > .label:first-child,
+  .villain .dl {
+    display: none !important;
+  }
+  .cover .villain .card > .parch,
+  .villain .card > .parch {
+    padding: calc(20 * var(--u)) calc(20 * var(--u)) calc(64 * var(--u));
+  }
+  /* players: two across, just name and class, a wax seal on the corner */
+  .ptrack {
+    grid-template-columns: 1fr 1fr;
+    gap: calc(22 * var(--u)) calc(14 * var(--u));
+  }
+  .ptrack > .pslot:last-child:nth-child(odd) {
+    grid-column: 1/-1;
+    width: calc(50% - calc(7 * var(--u)));
+    justify-self: center;
+  }
+  .ptrack .player .parch {
+    padding: calc(18 * var(--u)) calc(14 * var(--u)) calc(20 * var(--u));
+  }
+  .player .topline,
+  .player .stats,
+  .player .pc-line,
+  .player .pc-note {
+    display: none;
+  }
+  .ptrack .player .who {
+    margin-top: 0;
+    font-size: calc(23 * var(--u));
+  }
+  .player .cls {
+    font-size: calc(14 * var(--u));
+    line-height: 1.35;
+  }
+  .player .pc-foot {
+    position: absolute;
+    right: calc(-6 * var(--u));
+    top: calc(-8 * var(--u));
+    margin: 0;
+    padding: 0;
+  }
+  .player .pc-foot .label {
+    font-size: 0;
+    letter-spacing: 0;
+  }
+  .player .pc-foot .seal-dot {
+    width: calc(26 * var(--u));
+    height: calc(26 * var(--u));
+    margin: 0;
+    box-shadow:
+      inset 0 0 0 calc(3 * var(--u)) rgba(0, 0, 0, 0.18),
+      0 calc(3 * var(--u)) calc(6 * var(--u)) rgba(0, 0, 0, 0.45);
+  }
+  /* the latest session: the story, the reveal button, nothing else */
+  .latest {
+    gap: calc(22 * var(--u));
+  }
+  .latest .dl,
+  .latest .chips {
+    display: none;
+  }
+  .latest .summary {
+    font-size: calc(18 * var(--u));
+    line-height: 1.65;
+  }
+  #latest .subhead,
+  #latest .grid {
+    display: none;
+  }
+}
