@@ -528,9 +528,9 @@ function fxSounds(kind){
   fxTimers.forEach(clearTimeout); fxTimers=[];
   if(reduced) return;
   const at=(ms,f)=>fxTimers.push(setTimeout(f,ms));
-  if(kind==="init"){ Sound.slash(); at(260,()=>Sound.tick()); at(700,()=>Sound.stamp()); }
-  else if(kind==="gate"){ at(330,()=>Sound.stamp()); at(640,()=>Sound.shutter()); }
-  else { at(380,()=>Sound.flip()); at(820,()=>Sound.slash()); }
+  if(kind==="init"){ Sound.slash(); at(200,()=>Sound.dice()); at(720,()=>Sound.drum()); }
+  else if(kind==="gate"){ Sound.chains(); at(380,()=>Sound.clang()); at(640,()=>Sound.winch()); }
+  else { at(470,()=>Sound.cardSnap()); at(860,()=>Sound.slash(.3)); }
 }
 function openSheet({tab,photo,kicker,name,epi,body,stamp,fx}){
   lastFocus=document.activeElement;
@@ -561,7 +561,8 @@ function closeSheet(){
   modal.setAttribute("aria-hidden","true");
   /* the file drops out of frame before it's cleared; opening another one cancels this */
   const done=()=>{ modal.classList.remove("on","out"); modal.innerHTML=""; };
-  if(reduced) done(); else { modal.classList.add("out"); clearTimeout(closeT); closeT=setTimeout(done,340); }
+  if(reduced) done(); else { modal.classList.add("out"); clearTimeout(closeT); closeT=setTimeout(done,340);
+    if(modal.dataset.fx==="gate"){ Sound.chains(.22,.7); fxTimers.push(setTimeout(()=>Sound.clang(),250)); } }
   document.documentElement.style.overflow="";
   Sound.close();
   if(lastFocus&&document.contains(lastFocus)) lastFocus.focus({preventScroll:true});
@@ -869,7 +870,7 @@ function throwDice(r,again){
     const x=from*(1-e)*Math.min(innerWidth*.4,size*2.4), hop=Math.abs(Math.sin(t*Math.PI*3.2))*Math.pow(1-t,1.6)*size*1.6;
     thr.style.transform=`translate(${x.toFixed(1)}px,${(-hop).toFixed(1)}px) scale(${(.55+.45*Math.min(1,t*2.2)).toFixed(3)})`;
     sh.style.transform=`translateX(${x.toFixed(1)}px) scale(${(1-hop/(size*3)).toFixed(3)})`; sh.style.opacity=(.55-hop/(size*5)).toFixed(3);
-    if(bounces.length&&t>=bounces[0]){ bounces.shift(); Sound.tick&&Sound.tick(); }
+    if(bounces.length&&t>=bounces[0]){ bounces.shift(); Sound.dieHit(.9-(3-bounces.length)*.2); }
     if(t<1) diceRAF=requestAnimationFrame(step); else finish();
   };
   diceRAF=requestAnimationFrame(step);
