@@ -508,10 +508,13 @@ function renderQuestList(){
 const modal=$("#modal");
 let lastFocus=null, stampTimer=null, closeT=0;
 function nameLines(name){ const w=String(name).split(" "); const last=w.length>1?w.pop():""; return `<span class="ln">${letters(w.join(" "),.85,.05)}</span>${last?`<span class="ln it">${letters(last,1.05,.05)}</span>`:""}`; }
+/* which pop-up entrance to use (0-5); ?fx=N in the address previews another one */
+const POPFX=(()=>{ const m=/[?&]fx=([0-5])\b/.exec(location.search); return m?m[1]:"0"; })();
 function openSheet({tab,photo,kicker,name,epi,body,stamp}){
   lastFocus=document.activeElement;
   clearTimeout(closeT); modal.classList.remove("out");
-  modal.innerHTML=`<div class="burst" aria-hidden="true"><i class="flash"></i><i class="rays"></i><i class="dots"></i></div><div class="mist" aria-hidden="true"></div>
+  modal.dataset.fx=POPFX;
+  modal.innerHTML=`<div class="fx" aria-hidden="true"><i data-n="${esc(name)}"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="mist" aria-hidden="true"></div>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetName"><div class="shade"></div><div class="parch" aria-hidden="true"></div>
     <span class="label tab" style="color:var(--ink-muted)">${tab}</span>
     <div class="photo"><span class="tape" aria-hidden="true"></span><div class="frame">${photo}</div></div>
