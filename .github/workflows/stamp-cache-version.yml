@@ -1,0 +1,49 @@
+# Keeps players' offline copies fresh without anyone remembering to bump sw.js.
+# When code, styles, fonts or images change on main, this writes a new VERSION
+# (date + commit) into sw.js and commits it. Devices then drop their old cached
+# files on their next visit. Session updates (js/data.js) don't need this: the
+# service worker always fetches data.js fresh.
+name: Stamp cache version
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "manifest.webmanifest"
+      - "css/**"
+      - "js/app/**"
+      - "js/sound.js"
+      - "fonts/**"
+      - "img/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stamp-cache-version
+  cancel-in-progress: false
+
+jobs:
+  stamp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Write the new version into sw.js
+        run: |
+          v="$(date -u +%Y-%m-%d)-$(git rev-parse --short HEAD)"
+          sed -i -E "s/^const VERSION = \".*\";/const VERSION = \"$v\";/" sw.js
+          grep -q "^const VERSION = \"$v\";" sw.js || { echo "VERSION line not found in sw.js"; exit 1; }
+          echo "VERSION=$v" >> "$GITHUB_ENV"
+
+      - name: Commit and push
+        run: |
+          git diff --quiet && { echo "Already stamped"; exit 0; }
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Stamp offline cache version $VERSION"
+          git push
