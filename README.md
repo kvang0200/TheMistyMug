@@ -79,6 +79,9 @@ second pop-up that slams in over the NPC's file, laid out like the D&D 2024 shee
 abilities with their saves and skills, weapons, features, lessons, spells and equipment.
 An **In battle** panel (`actions` in `data.js`) shows what the NPC can do on their turn as cards,
 sorted into Action, Bonus Action and Reaction.
+**Dice:** tapping an attack card throws a 3D d20 (attack roll, then damage, doubled dice on a natural 20);
+a damage-only card (like a smite) rolls its damage; every save, skill and Initiative rolls d20 + its bonus.
+The die is built from 20 CSS triangles in `app.js`, so there's no dice library or image to load.
 **Lessons** (Ireena) list what she has learned and from whom; unlearned ones show only a wax seal
 (`{sealed:true}`, no name, so players can't read ahead in the code). Enter the scores
 and proficiencies; the modifiers and bonuses are worked out for you. Anything left out shows a dash.
