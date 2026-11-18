@@ -722,7 +722,7 @@ const D20=(()=>{
 })();
 function d20Html(size){
   const W=size, H=size*Math.sqrt(3)/2, k=size/2;
-  return `<div class="d20" style="--s:${W}px">${D20.F.map((f,i)=>{ const T=f.v0.map((x,j)=>x*k-f.A[j]*W/2);
+  return `<div class="d20" style="--ds:${W}px">${D20.F.map((f,i)=>{ const T=f.v0.map((x,j)=>x*k-f.A[j]*W/2);
     return `<div class="d20f" data-f="${i}" style="width:${W}px;height:${H.toFixed(2)}px;transform:matrix3d(${f.A.join(",")},0,${f.B.join(",")},0,${f.n.join(",")},0,${T.join(",")},1)"><b class="${f.num===6||f.num===9?"u":""}">${f.num}</b></div>`; }).join("")}</div>`;
 }
 function parseDice(str){
@@ -767,14 +767,14 @@ function throwDice(r,again){
   const signed=b=>b>=0?`+ ${b}`:`− ${Math.abs(b)}`;
   const tokens=dmg?`<div class="dt-dmg"><span class="label">${crit?"Damage · critical, dice doubled":"Damage"}</span><div class="dt-toks">${dmg.rolls.map((v,i)=>`<span class="tok" style="--i:${i}"><small>d${dmg.d}</small>${v}</span>`).join("")}${dmg.mod?`<span class="tokmod">${signed(dmg.mod)}</span>`:""}<span class="tokeq">=</span><span class="toktot">${dmg.total}</span><span class="toktype">${esc(dmg.type)}</span></div></div>`:"";
   const altBtns=r.kind==="damage"&&r.alt?`<div class="dt-alt"><button type="button" class="chip${r.useAlt?"":" on"}" data-alt="0" aria-pressed="${!r.useAlt}">Normal · ${esc(parseDice(r.dmg)?.n+"d"+parseDice(r.dmg)?.d)}</button><button type="button" class="chip${r.useAlt?" on":""}" data-alt="1" aria-pressed="${!!r.useAlt}">${esc(r.alt.label)} · ${esc(parseDice(r.alt.dmg)?.n+"d"+parseDice(r.alt.dmg)?.d)}</button></div>`:"";
-  const head=d20!=null?`<div class="dt-total"><span class="big">${total}</span><span class="calc">d20 <b>${d20}</b> ${signed(r.b||0)}</span></div>${crit?`<span class="stamp red dt-stamp">CRITICAL HIT</span>`:fumble?`<span class="stamp ink dt-stamp">NATURAL 1</span>`:""}`:"";
+  const head=crit?`<span class="stamp red dt-stamp">CRITICAL HIT</span>`:fumble?`<span class="stamp ink dt-stamp">NATURAL 1</span>`:"";
   const sayRes=d20!=null?`${r.label}: rolled ${d20}, total ${total}.${crit?" Critical hit.":fumble?" Natural 1.":""}${dmg?` Damage ${dmg.total} ${dmg.type}.`:""}`:`${r.label}: ${dmg?dmg.total+" "+dmg.type:""} damage.`;
   tray.innerHTML=`<div class="dt-back" aria-hidden="true"><i></i><i></i></div>
   <div class="dt-panel" role="dialog" aria-modal="true" aria-label="${esc(r.label)} roll">
     <button type="button" class="close" data-dclose aria-label="Close the dice">${ICON.close}</button>
     <span class="label dt-kick">${kick} · ${esc(r.who)}</span>
     <span class="dt-name">${esc(r.label)}</span>
-    ${d20!=null?`<div class="dt-stage" style="--s:${size}px"><div class="dt-throw">${d20Html(size)}</div><div class="dt-shadow"></div></div>`:`<div class="dt-stage dmg-only"><div class="dt-spin">${(dmg?dmg.rolls:[]).map((v,i)=>`<span class="tok big" style="--i:${i}"><small>d${dmg.d}</small><b>${v}</b></span>`).join("")}</div></div>`}
+    ${d20!=null?`<div class="dt-stage" style="--ds:${size}px"><div class="dt-throw">${d20Html(size)}</div><div class="dt-shadow"></div>${r.b?`<span class="dt-bonus" aria-hidden="true">${r.b>0?"+":"−"}${Math.abs(r.b)}<small>${r.kind==="attack"?"to hit":r.label==="Initiative"?"initiative":"bonus"}</small></span>`:""}</div>`:`<div class="dt-stage dmg-only"><div class="dt-spin">${(dmg?dmg.rolls:[]).map((v,i)=>`<span class="tok big" style="--i:${i}"><small>d${dmg.d}</small><b>${v}</b></span>`).join("")}</div></div>`}
     <div class="dt-out${d20!=null?" wait":""}">${head}${tokens}${altBtns}
       ${r.kind==="attack"?`<p class="dt-note">Compare the total to the target's AC.</p>`:r.label==="Initiative"?`<p class="dt-note">Highest total acts first.</p>`:r.kind==="check"?`<p class="dt-note">Compare the total to the DC.</p>`:""}
       <div class="dt-btns"><button type="button" class="btn dark" data-reroll><span>Roll again</span>${CSI.d20}</button></div>
@@ -783,7 +783,23 @@ function throwDice(r,again){
   </div>`;
   tray.classList.remove("out"); tray.classList.add("on"); tray.setAttribute("aria-hidden","false");
   csModal.querySelector(".cs-card")?.setAttribute("aria-hidden","true");
-  const finish=()=>{ const o=tray.querySelector(".dt-out"); if(o) o.classList.remove("wait"); const say=$("#diceSay"); if(say) say.textContent=sayRes; if(crit||fumble) Sound.stamp(); else Sound.tick&&Sound.tick(); };
+  const reveal=()=>{ const o=tray.querySelector(".dt-out"); if(o) o.classList.remove("wait"); const say=$("#diceSay"); if(say) say.textContent=sayRes; if(crit||fumble) Sound.stamp(); };
+  /* BG3-style: the die lands on its natural roll, the bonus flies into it, and the face counts up to the total */
+  const finish=()=>{
+    if(d20==null){ reveal(); return; }
+    const stage=tray.querySelector(".dt-stage"), fe=tray.querySelectorAll(".d20f")[D20.F.findIndex(f=>f.num===d20)], num=fe&&fe.querySelector("b"), chip=tray.querySelector(".dt-bonus");
+    if(fe) fe.classList.add("lit");
+    if(!chip||reduced){ if(num) num.textContent=total; reveal(); return; }
+    diceT=setTimeout(()=>{ chip.classList.add("pop"); Sound.tick&&Sound.tick();
+      diceT=setTimeout(()=>{ chip.classList.remove("pop"); chip.classList.add("fly");
+        diceT=setTimeout(()=>{ let v=d20; const dir=total>d20?1:-1, steps=Math.abs(total-d20), gap=Math.max(35,Math.min(90,420/steps));
+          stage.classList.add("merge");
+          const tick=()=>{ v+=dir; if(num){ num.textContent=v; num.classList.remove("bump"); void num.offsetWidth; num.classList.add("bump"); } Sound.tick&&Sound.tick();
+            if(v!==total) diceT=setTimeout(tick,gap); else diceT=setTimeout(reveal,260); };
+          tick(); },360);
+      },650);
+    },220);
+  };
   tray.querySelector("[data-reroll]").focus({preventScroll:true});
   Sound.shutter&&Sound.shutter();
   if(d20==null){ diceT=setTimeout(finish,reduced?0:650); return; }

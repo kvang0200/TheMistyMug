@@ -1300,14 +1300,14 @@ button.cs-act:hover,button.cs-act:focus-visible{transform:translate(calc(-3 * va
 .dt-panel .close svg{width:calc(16 * var(--u));height:calc(16 * var(--u))}
 .dt-kick{display:inline-block;padding:calc(4 * var(--u)) calc(12 * var(--u));background:var(--a);color:var(--s);transform:skewX(-12deg)}
 .dt-name{display:block;margin-top:calc(10 * var(--u));font-family:var(--serif);font-style:italic;font-size:calc(32 * var(--u));line-height:1.05}
-.dt-stage{position:relative;height:calc(var(--s,100px) * 2.5);perspective:calc(var(--s,100px) * 9);display:flex;align-items:center;justify-content:center}
+.dt-stage{position:relative;height:calc(var(--ds,100px) * 2.5);perspective:calc(var(--ds,100px) * 9);display:flex;align-items:center;justify-content:center}
 .dt-throw{position:relative;width:0;height:0;transform-style:preserve-3d}
 .d20{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d}
 .d20f{position:absolute;left:0;top:0;transform-origin:0 0;backface-visibility:hidden;-webkit-backface-visibility:hidden;clip-path:polygon(50% 0,0 100%,100% 100%);background:color-mix(in srgb,var(--a) 45%,var(--p))}
 .d20f::before{content:"";position:absolute;inset:0;clip-path:polygon(50% 6%,5% 97%,95% 97%);background:linear-gradient(165deg,color-mix(in srgb,var(--a) 82%,#fff) 0%,var(--a) 45%,color-mix(in srgb,var(--a) 70%,var(--p)) 100%)}
-.d20f b{position:absolute;left:0;right:0;top:44%;font-family:var(--serif);font-weight:700;font-size:calc(var(--s) * .3);line-height:1;color:var(--s);text-shadow:0 1px 0 color-mix(in srgb,var(--p) 50%,transparent)}
+.d20f b{position:absolute;left:0;right:0;top:44%;font-family:var(--serif);font-weight:700;font-size:calc(var(--ds) * .3);line-height:1;color:var(--s);text-shadow:0 1px 0 color-mix(in srgb,var(--p) 50%,transparent)}
 .d20f b.u{text-decoration:underline;text-underline-offset:.08em}
-.dt-shadow{position:absolute;left:50%;top:calc(50% + var(--s,100px) * .95);width:calc(var(--s,100px) * 1.7);height:calc(var(--s,100px) * .32);margin-left:calc(var(--s,100px) * -.85);border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.75),transparent);opacity:.55}
+.dt-shadow{position:absolute;left:50%;top:calc(50% + var(--ds,100px) * .95);width:calc(var(--ds,100px) * 1.7);height:calc(var(--ds,100px) * .32);margin-left:calc(var(--ds,100px) * -.85);border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.75),transparent);opacity:.55}
 .dt-stage.dmg-only{height:auto;padding:calc(22 * var(--u)) 0 calc(6 * var(--u))}
 .dt-spin{display:flex;justify-content:center;gap:calc(14 * var(--u))}
 .dt-out{transition:opacity .25s ease,transform .35s cubic-bezier(.2,1.4,.4,1)}
@@ -1335,3 +1335,17 @@ button.cs-act:hover,button.cs-act:focus-visible{transform:translate(calc(-3 * va
 .dt-btns{display:flex;justify-content:center;margin-top:calc(16 * var(--u))}
 .dt-btns .btn.dark{background:var(--s);color:var(--p)}
 @media (prefers-reduced-motion:reduce){ .dice-tray *{animation:none!important;transition:none!important} }
+
+/* ---------- BG3-style bonus: flies into the die, the face counts up to the total ---------- */
+@keyframes bonusPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0) rotate(-40deg)}70%{opacity:1;transform:translate(-50%,-50%) scale(1.2) rotate(-2deg)}100%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-6deg)}}
+@keyframes numBump{0%{transform:scale(1.55)}100%{transform:scale(1)}}
+@keyframes mergeFlash{0%{opacity:.9;transform:scale(.4)}100%{opacity:0;transform:scale(1.5)}}
+.dt-bonus{position:absolute;left:calc(50% + var(--ds) * 1.15);top:calc(50% - var(--ds) * .85);z-index:2;display:flex;flex-direction:column;align-items:center;padding:calc(6 * var(--u)) calc(14 * var(--u)) calc(5 * var(--u));background:var(--s);color:var(--p);font-family:var(--serif);font-size:calc(34 * var(--u));line-height:1;opacity:0;transform:translate(-50%,-50%) scale(1) rotate(-6deg);box-shadow:calc(4 * var(--u)) calc(4 * var(--u)) 0 var(--a);transition:left .36s cubic-bezier(.6,0,.9,.5),top .36s cubic-bezier(.6,0,.9,.5),transform .36s ease-in,opacity .3s ease-in .06s}
+.dt-bonus small{font-family:var(--mono);font-size:calc(9 * var(--u));font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--a);margin-top:calc(3 * var(--u))}
+.dt-bonus.pop{animation:bonusPop .42s cubic-bezier(.2,1.5,.4,1) both}
+.dt-bonus.fly{left:50%;top:50%;opacity:0;transform:translate(-50%,-50%) scale(.15) rotate(0deg)}
+.d20f.lit::before{background:linear-gradient(165deg,color-mix(in srgb,var(--a) 70%,#fff) 0%,color-mix(in srgb,var(--a) 88%,#fff) 50%,var(--a) 100%)}
+.d20f.lit b{color:#fff;text-shadow:0 0 calc(10 * var(--u)) color-mix(in srgb,var(--s) 90%,transparent)}
+.d20f b.bump{animation:numBump .28s cubic-bezier(.2,1.4,.4,1)}
+.dt-stage.merge::before{content:"";position:absolute;left:50%;top:50%;width:calc(var(--ds) * 2.2);height:calc(var(--ds) * 2.2);margin:calc(var(--ds) * -1.1);border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--s) 55%,transparent),transparent);pointer-events:none;animation:mergeFlash .6s ease-out both}
+@media (max-width:760px){ .dt-bonus{left:calc(50% + var(--ds) * 1.05)} }
