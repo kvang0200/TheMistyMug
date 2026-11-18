@@ -561,7 +561,12 @@ const CSI=(()=>{ const g=b=>`<svg viewBox="0 0 24 24" fill="none" stroke="curren
     con:g('<path d="M12 21c-4 0-6.5-2.6-6.5-6 0-4 3.5-5.5 4-10 2.5 1.5 3.5 4 3 6.5 1-1 1.7-2.2 2-3.5 2 2 4 4.2 4 7 0 3.4-2.5 6-6.5 6z"/>'),
     int:g('<path d="M12 6.5C10 5 6.5 4.5 3.5 5v13c3-.5 6.5 0 8.5 1.5 2-1.5 5.5-2 8.5-1.5V5c-3-.5-6.5 0-8.5 1.5zM12 6.5v13"/>'),
     wis:g('<path d="M19 14.5A8 8 0 0 1 9.5 5a8 8 0 1 0 9.5 9.5z"/><path d="M16.5 3.5v3M15 5h3"/>'),
-    cha:g('<path d="M3.5 8.5 7 15.5h10l3.5-7-5 3L12 5l-3.5 6.5z"/><path d="M7 18.5h10"/>')
+    cha:g('<path d="M3.5 8.5 7 15.5h10l3.5-7-5 3L12 5l-3.5 6.5z"/><path d="M7 18.5h10"/>'),
+    sword:g('<path d="M14.5 4.5h5v5L10 19l-5-5z"/><path d="m3.5 15.5 5 5M5 20l-1.5 1.5"/>'),
+    fire:g('<path d="M12 21.5c-4 0-6.5-2.5-6.5-6 0-3.8 3.4-5.6 4-10 2.4 1.6 3.6 4 3.1 6.6 1-.9 1.8-2.1 2.1-3.4 2.1 1.8 3.8 4.3 3.8 6.8 0 3.5-2.5 6-6.5 6z"/><path d="M12 21.5c-1.7 0-2.8-1.1-2.8-2.6 0-1.7 1.4-2.4 1.7-4.3 1.7 1 2.7 2.4 2.7 4 0 1.6-.9 2.9-1.6 2.9z"/>'),
+    hand:g('<path d="M8 12.5V5.5a1.5 1.5 0 0 1 3 0v6M11 11V4a1.5 1.5 0 0 1 3 0v7M14 11V5.5a1.5 1.5 0 0 1 3 0V13M8 12.5 6.6 11a1.6 1.6 0 0 0-2.4 2.1L8 18.5c1.2 1.6 2.8 2.5 5 2.5 2.4 0 4-1.8 4-4.5V13"/>'),
+    smite:g('<circle cx="12" cy="12" r="3.5"/><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4M5.3 5.3l2.8 2.8M15.9 15.9l2.8 2.8M18.7 5.3l-2.8 2.8M8.1 15.9l-2.8 2.8"/>'),
+    shieldup:g('<path d="M12 3 4.5 6v5.5c0 4.6 3.2 8 7.5 9.5 4.3-1.5 7.5-4.9 7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/>')
   }; })();
 const ABIL_TAG={str:"Power",dex:"Agility",con:"Endurance",int:"Reasoning",wis:"Awareness",cha:"Presence"};
 const sgn=n=>n==null||isNaN(n)?"—":(n>=0?"+":"−")+Math.abs(n);
@@ -586,6 +591,13 @@ function npcSheet(n,t0=1.75){
   const list=(title,items,fn)=>items&&items.length?`<div class="cs-sec cs-in" style="--d:6"><h4>${title}</h4>${items.map(fn).join("")}</div>`:"";
   const atk=(S.attacks||[]).length?`<div class="cs-sec cs-in" style="--d:5"><h4>Weapons &amp; Damage Cantrips</h4><table class="cs-atk"><thead><tr><th>Name</th><th>Atk / DC</th><th>Damage &amp; Type</th><th>Notes</th></tr></thead><tbody>${S.attacks.map(a=>`<tr><td>${esc(a.n)}</td><td>${esc(a.hit||"—")}</td><td>${esc(a.dmg||"—")}</td><td>${esc(a.note||"")}</td></tr>`).join("")}</tbody></table></div>`:"";
   const sp=S.spells, spell=sp&&(sp.list||[]).length?`<div class="cs-sec cs-in" style="--d:7"><h4>Spellcasting${sp.ability?` · ${esc(sp.ability)}`:""}${sp.dc?` · Save DC ${esc(sp.dc)}`:""}${sp.atk?` · Attack ${esc(sp.atk)}`:""}</h4>${sp.list.map(l=>`<p class="cs-p"><b>${esc(l.lvl)}.</b> ${esc((l.s||[]).join(", ")||"—")}</p>`).join("")}</div>`:"";
+  const ACT={action:["Action","Pick one on her turn"],bonus:["Bonus Action","Can add one on top"],reaction:["Reaction","On someone else's turn"]};
+  const acts=S.actions||[];
+  const battle=acts.length?`<div class="cs-battle cs-in" style="--d:2"><h4>In battle · on her turn</h4>${Object.keys(ACT).filter(t=>acts.some(a=>a.t===t)).map(t=>`<div class="cs-acts t-${t}"><div class="cs-acthead"><span class="tag">${ACT[t][0]}</span><span class="hint">${ACT[t][1]}</span></div><div class="cs-actrow">${acts.filter(a=>a.t===t).map((a,i)=>`<div class="cs-act" style="--i:${i}">
+      <span class="ai">${CSI[a.ic]||CSI.sword}</span>
+      <div class="ab"><span class="an">${esc(a.n)}</span>
+        <span class="chips2">${[a.hit?`<b>${esc(a.hit)}</b> to hit`:"",a.dmg?`<b>${esc(a.dmg)}</b>`:"",a.range?esc(a.range):"",a.uses?`<i class="uses">${esc(a.uses)}</i>`:""].filter(Boolean).map(x=>`<span>${x}</span>`).join("")}</span>
+        ${a.p?`<span class="ap">${esc(a.p)}</span>`:""}${a.from?`<span class="af">${esc(a.from)}</span>`:""}</div></div>`).join("")}</div></div>`).join("")}</div>`:"";
   const L=S.lessons||[], learned=L.filter(l=>!l.sealed).length;
   const lessons=L.length?`<div class="cs-sec cs-in" style="--d:7"><h4>Lessons · ${learned} of ${L.length} learned</h4><div class="cs-lessons">${L.map((l,i)=>l.sealed
     ?`<div class="cs-lesson sealed" style="--i:${i}">${wax("key",46)}<span class="label">Lesson · Sealed</span></div>`
@@ -593,6 +605,7 @@ function npcSheet(n,t0=1.75){
   const tops=[["Armor Class",S.ac,"ac","shield"],["Hit Points",S.hp,"hp","heart"],["Initiative",init,"init"],["Speed",S.speed,"speed"],["Prof. Bonus",pb==null?null:sgn(pb),"pb"],["Passive Perception",pp,"pp"]];
   return `${line?`<p class="cs-line cs-in" style="--d:0">${line}</p>`:""}
     <div class="cs-top">${tops.map(([k,v,ic,c],i)=>box(k,v,ic,c,i)).join("")}</div>
+    ${battle}
     <p class="cs-legend cs-in" style="--d:3"><span><i class="pdot on"></i>Proficient</span><span><i class="pdot ex"></i>Expertise</span><span><i class="meter-key"></i>Score out of 20</span></p>
     <div class="cs-abils">${abil}</div>
     ${(S.senses||(S.langs||[]).length)?`<dl class="dl cs-dl cs-in" style="--d:5">${S.senses?`<dt>Senses</dt><dd>${esc(S.senses)}</dd>`:""}${(S.langs||[]).length?`<dt>Languages</dt><dd>${esc(S.langs.join(", "))}</dd>`:""}</dl>`:""}

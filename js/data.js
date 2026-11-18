@@ -15,7 +15,10 @@
        saves:["int","wis"],                    // proficient saving throws
        skills:["Arcana","Perception"],         // proficient skills ("expert" for expertise)
        senses:"Darkvision 60 ft.", langs:["Elvish"],   // don't list Common
-       attacks:[{n:"Dagger", hit:"+4", dmg:"1d4+2 piercing", note:"Finesse, light, thrown"}],
+       attacks:[{n:"Dagger", hit:"+4", dmg:"1d4+2 piercing", note:"Finesse, light, thrown"}],   // a plain weapons table
+       actions:[{t:"action", ic:"sword", n:"Dagger", hit:"+4", dmg:"1d4+2 piercing", range:"Melee", p:"What it does.", from:"Lesson name"}],
+                                               // "In battle" cards. t: action | bonus | reaction
+                                               // ic: sword | fire | hand | smite | shieldup
        traits:[{n:"Name", p:"What it does."}],
        spells:{ability:"Intelligence", dc:13, atk:"+5", list:[{lvl:"Cantrips", s:["Fire Bolt"]},{lvl:"1st", s:["Shield"]}]},
        lessons:[{from:"Aoife", n:"Smite", p:"What it does."}, {sealed:true}],   // sealed = not learned yet (no name, so it can't be peeked at)
@@ -62,8 +65,12 @@ const DATA = {
      sheet:{sp:"Human", lvl:5, size:"Medium", speed:"30 ft.", ac:"15", hp:32,
        abil:{str:14, dex:12, con:12, int:12, wis:10, cha:15},
        saves:["wis","cha"], skills:["History","Insight","Persuasion"],
-       attacks:[{n:"Longsword", hit:"+5", dmg:"1d8+2 slashing", note:"Versatile (1d10+2). Mastery: Sap"},
-                {n:"Fire Bolt", hit:"+4", dmg:"1d10 fire", note:"Range 120 ft. The Evoker's First Sparks"}],
+       actions:[
+         {t:"action", ic:"sword", n:"Longsword", hit:"+5", dmg:"1d8+2 slashing", range:"Melee", p:"On a hit, Sap: the target has disadvantage on its next attack roll. Two hands: 1d10+2."},
+         {t:"action", ic:"fire", n:"Fire Bolt", hit:"+4", dmg:"1d10 fire", range:"120 ft.", p:"A mote of fire. Sets unattended flammable objects alight.", from:"Alir's lesson · The Evoker's First Sparks"},
+         {t:"action", ic:"hand", n:"Mage Hand", range:"30 ft.", p:"A spectral hand for 1 minute. It can lift 10 lb., open doors and fetch things, but can't attack.", from:"Alir's lesson · The Evoker's First Sparks"},
+         {t:"bonus", ic:"smite", n:"Red Knight's Reckoning", dmg:"+2d8 radiant", range:"After a melee hit", uses:"1 / long rest", p:"Right after her sword hits, she pours the oath into the blow. 3d8 against Fiends and Undead.", from:"Aoife's lesson"}
+       ],
        traits:[{n:"One blade", p:"Ireena never makes more than one attack on her turn. She fights best beside her friends, not ahead of them."}],
        lessons:[
          {from:"Aoife", n:"Red Knight's Reckoning", p:"Once per long rest, right after she hits with a melee weapon, she can use a bonus action to deal an extra 2d8 radiant damage (3d8 against Fiends and Undead)."},
