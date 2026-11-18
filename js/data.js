@@ -4,6 +4,27 @@
    d: a 1–3 sentence description shown on the NPC and player cards and pop-ups.
    In a session summary, wrap words in [[double brackets]] to black them out
    until a player taps "Reveal the details" (works on the latest session).
+
+   NPC CHARACTER SHEETS: give an NPC a `sheet` and its pop-up shows a sheet laid out like the
+   D&D 2024 character sheet. Leave out anything you don't know and it shows a dash.
+     sheet:{
+       sp:"Human", cl:"Wizard", lvl:5,        // species, class, level (level sets the proficiency bonus)
+       pb:3,                                   // optional: proficiency bonus if there's no class level
+       size:"Medium", speed:"30 ft.", ac:15, hp:38,
+       abil:{str:10, dex:14, con:12, int:16, wis:13, cha:8},
+       saves:["int","wis"],                    // proficient saving throws
+       skills:["Arcana","Perception"],         // proficient skills ("expert" for expertise)
+       senses:"Darkvision 60 ft.", langs:["Elvish"],   // don't list Common
+       attacks:[{n:"Dagger", hit:"+4", dmg:"1d4+2 piercing", note:"Finesse, light, thrown"}],   // a plain weapons table
+       actions:[{t:"action", ic:"sword", n:"Dagger", hit:"+4", dmg:"1d4+2 piercing", range:"Melee", p:"What it does.", from:"Lesson name"}],
+                                               // "In battle" cards. t: action | bonus | reaction
+                                               // ic: sword | fire | hand | smite | shieldup
+       traits:[{n:"Name", p:"What it does."}],
+       spells:{ability:"Intelligence", dc:13, atk:"+5", list:[{lvl:"Cantrips", s:["Fire Bolt"]},{lvl:"1st", s:["Shield"]}]},
+       lessons:[{from:"Aoife", n:"Smite", p:"What it does."}, {sealed:true}],   // sealed = not learned yet (no name, so it can't be peeked at)
+       gear:["Spellbook"]
+     }
+     Modifiers, saves, skills, initiative and passive Perception are worked out from the scores.
    ===================================================================== */
 const DATA = {
   lastSession: 18,
@@ -41,7 +62,23 @@ const DATA = {
   // side: ally | unsure | foe ; fate: alive | dead | unknown
   npcs: [
     {id:"ireena", d:"The adopted daughter of the late burgomaster of the Village of Barovia, and the woman Strahd has his eye on. She travels with the party on and off, and Alir is teaching her magic.", name:"Ireena Kolyana", epi:"Daughter of the late burgomaster", side:"ally", fate:"alive", where:"Traveling with the party", met:"7", img:null,
-     facts:["Adopted daughter of Kolyan, the late burgomaster of the Village of Barovia, and sister to Ismark.","The party agreed to escort her to St. Andral's Church in Vallaki (Session 9). Strahd has shown open interest in her.","Gave her bracelet to Namroc and a flower and charm to Lala at Argynvost Hill.","Asked Alir to teach her magic after watching him fight. She is learning a cantrip and a 1st-level spell.","Comes and goes from the party. She left just before the winery and rejoined in Session 17."]},
+     sheet:{sp:"Human", lvl:5, size:"Medium", speed:"30 ft.", ac:"15", hp:32,
+       abil:{str:14, dex:12, con:12, int:12, wis:10, cha:15},
+       saves:["wis","cha"], skills:["History","Insight","Persuasion"],
+       actions:[
+         {t:"action", ic:"sword", n:"Longsword", hit:"+5", dmg:"1d8+2 slashing", range:"Melee", p:"On a hit, Sap: the target has disadvantage on its next attack roll. Two hands: 1d10+2."},
+         {t:"action", ic:"fire", n:"Fire Bolt", hit:"+4", dmg:"1d10 fire", range:"120 ft.", p:"A mote of fire. Sets unattended flammable objects alight.", from:"Alir's lesson · The Evoker's First Sparks"},
+         {t:"action", ic:"hand", n:"Mage Hand", range:"30 ft.", p:"A spectral hand for 1 minute. It can lift 10 lb., open doors and fetch things, but can't attack.", from:"Alir's lesson · The Evoker's First Sparks"},
+         {t:"bonus", ic:"smite", n:"Red Knight's Reckoning", dmg:"+2d8 radiant", range:"After a melee hit", uses:"1 / long rest", p:"Right after her sword hits, she pours the oath into the blow. 3d8 against Fiends and Undead.", from:"Aoife's lesson"}
+       ],
+       traits:[{n:"One blade", p:"Ireena never makes more than one attack on her turn. She fights best beside her friends, not ahead of them."}],
+       lessons:[
+         {from:"Aoife", n:"Red Knight's Reckoning", p:"Once per long rest, right after she hits with a melee weapon, she can use a bonus action to deal an extra 2d8 radiant damage (3d8 against Fiends and Undead)."},
+         {from:"Alir", n:"The Evoker's First Sparks", p:"She knows the Fire Bolt and Mage Hand cantrips, and casts them with Intelligence (+4 to hit)."},
+         {sealed:true}, {sealed:true}, {sealed:true}
+       ],
+       gear:["Breastplate","Longsword"]},
+     facts:["Adopted daughter of Kolyan, the late burgomaster of the Village of Barovia, and sister to Ismark.","The party agreed to escort her to St. Andral's Church in Vallaki (Session 9). Strahd has shown open interest in her.","Gave her bracelet to Namroc and a flower and charm to Lala at Argynvost Hill.","Asked Alir to teach her magic after watching him fight. He has taught her Fire Bolt and Mage Hand, and Aoife has taught her to smite.","Comes and goes from the party. She left just before the winery and rejoined in Session 17."]},
     {id:"ismark", d:"Ireena's protective older brother. He asked the party to keep his sister safe after Rahadin killed their father.", name:"Ismark Kolyanovich", epi:"Ireena's brother", side:"ally", fate:"alive", where:"Burgomaster's manor, Village of Barovia", met:"6", img:null,
      facts:["Met the party in the Blood of the Vine Tavern and told them Rahadin killed his father, the Burgomaster.","Asked the party for help protecting his sister."]},
     {id:"arabelle", d:"The young Vistana Madam Eva named as the party's fated ally, and Luna reborn. She can see the dead, and is trying to reach Stella's lost soul.", name:"Arabelle", epi:"The fated ally", side:"ally", fate:"alive", where:"Scouting the Reformation Center with Ezmerelda", met:"14", img:null,

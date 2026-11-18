@@ -72,6 +72,19 @@ until you add that site to the policy.
    (same holes in both; coordinates are on the 2000×1364 map).
 3. Check for spoilers, commit, push.
 
+## NPC character sheets
+
+Give an NPC a `sheet` in `js/data.js` and its pop-up gets a **Character sheet** button. It opens a
+second pop-up that slams in over the NPC's file, laid out like the D&D 2024 sheet: AC, HP, initiative, speed, proficiency bonus, passive Perception, the six
+abilities with their saves and skills, weapons, features, lessons, spells and equipment.
+An **In battle** panel (`actions` in `data.js`) shows what the NPC can do on their turn as cards,
+sorted into Action, Bonus Action and Reaction.
+**Lessons** (Ireena) list what she has learned and from whom; unlearned ones show only a wax seal
+(`{sealed:true}`, no name, so players can't read ahead in the code). Enter the scores
+and proficiencies; the modifiers and bonuses are worked out for you. Anything left out shows a dash.
+The field list is at the top of `data.js`. Sheets are public like everything else, so keep
+🔒 abilities off them.
+
 ## Portraits
 
 Each NPC/PC in `data.js` has an `img` field (`null` shows the silhouette). It takes a path
