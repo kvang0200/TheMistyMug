@@ -539,6 +539,47 @@ function closeSheet(){
 const factList=(items,start=1.7)=>`<ol>${items.map((t,i)=>`<li class="snap" style="animation-delay:${(start+i*.08).toFixed(2)}s"><span class="n">${i+1}</span><span>${esc(t)}</span></li>`).join("")}</ol>`;
 const sessionChips=list=>list.length?`<div class="chips-row snap" style="animation-delay:2.2s"><span class="label" style="color:var(--ink-muted);margin-right:calc(6 * var(--u))">Appears in sessions</span>${list.map(s=>`<button type="button" class="chip" data-session="${esc(s.n)}">Session ${esc(s.n)}</button>`).join("")}</div>`:"";
 const portraitFrame=n=>`${sil(n)}<div class="glowdot glow" aria-hidden="true"></div><span class="label cap">Portrait</span>`;
+/* ---------- NPC character sheet (laid out like the D&D 2024 character sheet) ----------
+   Filled from an NPC's `sheet` in data.js. Modifiers, saves, skills, initiative and passive
+   Perception are worked out from the ability scores, so only scores and proficiencies are entered.
+   Anything left out shows a dash. */
+const ABIL=[["str","Strength",["Athletics"]],["dex","Dexterity",["Acrobatics","Sleight of Hand","Stealth"]],["con","Constitution",[]],
+  ["int","Intelligence",["Arcana","History","Investigation","Nature","Religion"]],["wis","Wisdom",["Animal Handling","Insight","Medicine","Perception","Survival"]],
+  ["cha","Charisma",["Deception","Intimidation","Performance","Persuasion"]]];
+const sgn=n=>n==null||isNaN(n)?"—":(n>=0?"+":"−")+Math.abs(n);
+function npcSheet(n,t0=1.75){
+  const S=n.sheet; if(!S) return "";
+  const A=S.abil||{}, has=v=>v!=null&&v!=="";
+  const mod=k=>has(A[k])?Math.floor((+A[k]-10)/2):null;
+  const pb=has(S.pb)?+S.pb:has(S.lvl)?2+Math.floor((+S.lvl-1)/4):null;
+  const lower=a=>(a||[]).map(x=>String(x).toLowerCase());
+  const saves=lower(S.saves), skills=lower(S.skills), expert=lower(S.expert);
+  const bonus=(m,prof,ex)=>m==null?null:m+(prof?(pb||0)*(ex?2:1):0);
+  const skill=name=>{ const k=name.toLowerCase(), ab=ABIL.find(a=>a[2].includes(name))[0]; return {p:skills.includes(k)||expert.includes(k),e:expert.includes(k),v:bonus(mod(ab),skills.includes(k)||expert.includes(k),expert.includes(k))}; };
+  const per=skill("Perception");
+  const pp=has(S.pp)?S.pp:per.v==null?null:10+per.v;
+  const init=has(S.init)?S.init:sgn(mod("dex"));
+  const dot=(on,ex)=>`<i class="pdot${on?" on":""}${ex?" ex":""}" aria-hidden="true"></i>`;
+  const box=(k,v,cls="")=>`<div class="cs-box${cls}"><span class="v">${esc(has(v)?v:"—")}</span><span class="k">${k}</span></div>`;
+  const line=[S.sp,S.cl?S.cl+(has(S.lvl)?" "+S.lvl:""):null,S.size].filter(Boolean).map(esc).join(" · ");
+  const abil=ABIL.map(([k,name,sk])=>{ const m=mod(k), sv=bonus(m,saves.includes(k));
+    return `<div class="cs-ab"><span class="nm">${name}</span><span class="md">${sgn(m)}</span><span class="sc">${has(A[k])?esc(A[k]):"—"}</span>
+      <ul><li class="sv">${dot(saves.includes(k))}<span>${sgn(sv)}</span>Saving Throw</li>${sk.map(s=>{const x=skill(s); return `<li>${dot(x.p,x.e)}<span>${sgn(x.v)}</span>${s}</li>`;}).join("")}</ul></div>`; }).join("");
+  const list=(title,items,fn)=>items&&items.length?`<div class="cs-sec"><h4>${title}</h4>${items.map(fn).join("")}</div>`:"";
+  const atk=(S.attacks||[]).length?`<div class="cs-sec"><h4>Weapons &amp; Damage Cantrips</h4><table class="cs-atk"><thead><tr><th>Name</th><th>Atk / DC</th><th>Damage &amp; Type</th><th>Notes</th></tr></thead><tbody>${S.attacks.map(a=>`<tr><td>${esc(a.n)}</td><td>${esc(a.hit||"—")}</td><td>${esc(a.dmg||"—")}</td><td>${esc(a.note||"")}</td></tr>`).join("")}</tbody></table></div>`:"";
+  const sp=S.spells, spell=sp&&(sp.list||[]).length?`<div class="cs-sec"><h4>Spellcasting${sp.ability?` · ${esc(sp.ability)}`:""}${sp.dc?` · Save DC ${esc(sp.dc)}`:""}${sp.atk?` · Attack ${esc(sp.atk)}`:""}</h4>${sp.list.map(l=>`<p class="cs-p"><b>${esc(l.lvl)}.</b> ${esc((l.s||[]).join(", ")||"—")}</p>`).join("")}</div>`:"";
+  return `<div class="npc-sheet snap" style="animation-delay:${t0.toFixed(2)}s">
+    <h3>CHARACTER SHEET</h3>
+    ${line?`<p class="cs-line">${line}</p>`:""}
+    <div class="cs-top">${box("Armor Class",S.ac," shield")}${box("Hit Points",S.hp)}${box("Initiative",init)}${box("Speed",S.speed)}${box("Prof. Bonus",pb==null?null:sgn(pb))}${box("Passive Perception",pp)}</div>
+    <div class="cs-abils">${abil}</div>
+    ${(S.senses||S.langs)?`<dl class="dl cs-dl">${S.senses?`<dt>Senses</dt><dd>${esc(S.senses)}</dd>`:""}${(S.langs||[]).length?`<dt>Languages</dt><dd>${esc(S.langs.join(", "))}</dd>`:""}</dl>`:""}
+    ${atk}
+    ${list("Features &amp; Traits",S.traits,f=>`<p class="cs-p">${f.n?`<b>${esc(f.n)}.</b> `:""}${esc(f.p||"")}</p>`)}
+    ${spell}
+    ${list("Equipment",S.gear,g=>`<p class="cs-p">${esc(g)}</p>`)}
+  </div>`;
+}
 function openNpc(id){
   const n=npcById[id]; if(!n) return;
   const st=standing(n);
@@ -547,6 +588,7 @@ function openNpc(id){
     name:n.name,epi:n.epi,stamp:{text:st.stamp,tone:st.tone},
     body:`${n.d?`<p class="lede snap" style="animation-delay:1.4s">${esc(n.d)}</p>`:""}<dl class="dl snap" style="animation-delay:1.45s"><dt>Status</dt><dd>${statusWord(n)}</dd><dt>Last seen</dt><dd>${esc(where(n))}</dd></dl>
       ${n.facts&&n.facts.length?`<h3 class="snap" style="animation-delay:1.6s">WHAT THE PARTY KNOWS</h3>${factList(n.facts)}`:""}
+      ${npcSheet(n,1.75+((n.facts||[]).length*.08))}
       ${sessionChips(sessionsWith(n.id))}`});
 }
 function openPc(id){

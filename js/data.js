@@ -4,6 +4,23 @@
    d: a 1–3 sentence description shown on the NPC and player cards and pop-ups.
    In a session summary, wrap words in [[double brackets]] to black them out
    until a player taps "Reveal the details" (works on the latest session).
+
+   NPC CHARACTER SHEETS: give an NPC a `sheet` and its pop-up shows a sheet laid out like the
+   D&D 2024 character sheet. Leave out anything you don't know and it shows a dash.
+     sheet:{
+       sp:"Human", cl:"Wizard", lvl:5,        // species, class, level (level sets the proficiency bonus)
+       pb:3,                                   // optional: proficiency bonus if there's no class level
+       size:"Medium", speed:"30 ft.", ac:15, hp:38,
+       abil:{str:10, dex:14, con:12, int:16, wis:13, cha:8},
+       saves:["int","wis"],                    // proficient saving throws
+       skills:["Arcana","Perception"],         // proficient skills ("expert" for expertise)
+       senses:"Darkvision 60 ft.", langs:["Elvish"],   // don't list Common
+       attacks:[{n:"Dagger", hit:"+4", dmg:"1d4+2 piercing", note:"Finesse, light, thrown"}],
+       traits:[{n:"Name", p:"What it does."}],
+       spells:{ability:"Intelligence", dc:13, atk:"+5", list:[{lvl:"Cantrips", s:["Fire Bolt"]},{lvl:"1st", s:["Shield"]}]},
+       gear:["Spellbook"]
+     }
+     Modifiers, saves, skills, initiative and passive Perception are worked out from the scores.
    ===================================================================== */
 const DATA = {
   lastSession: 18,
@@ -41,14 +58,20 @@ const DATA = {
   // side: ally | unsure | foe ; fate: alive | dead | unknown
   npcs: [
     {id:"ireena", d:"The adopted daughter of the late burgomaster of the Village of Barovia, and the woman Strahd has his eye on. She travels with the party on and off, and Alir is teaching her magic.", name:"Ireena Kolyana", epi:"Daughter of the late burgomaster", side:"ally", fate:"alive", where:"Traveling with the party", met:"7", img:null,
+     sheet:{sp:"Human", size:"Medium", speed:"30 ft.",
+       traits:[{n:"Learning magic", p:"Alir is teaching her one cantrip and one 1st-level spell. Her spells aren't chosen yet."}]},
      facts:["Adopted daughter of Kolyan, the late burgomaster of the Village of Barovia, and sister to Ismark.","The party agreed to escort her to St. Andral's Church in Vallaki (Session 9). Strahd has shown open interest in her.","Gave her bracelet to Namroc and a flower and charm to Lala at Argynvost Hill.","Asked Alir to teach her magic after watching him fight. She is learning a cantrip and a 1st-level spell.","Comes and goes from the party. She left just before the winery and rejoined in Session 17."]},
     {id:"ismark", d:"Ireena's protective older brother. He asked the party to keep his sister safe after Rahadin killed their father.", name:"Ismark Kolyanovich", epi:"Ireena's brother", side:"ally", fate:"alive", where:"Burgomaster's manor, Village of Barovia", met:"6", img:null,
      facts:["Met the party in the Blood of the Vine Tavern and told them Rahadin killed his father, the Burgomaster.","Asked the party for help protecting his sister."]},
     {id:"arabelle", d:"The young Vistana Madam Eva named as the party's fated ally, and Luna reborn. She can see the dead, and is trying to reach Stella's lost soul.", name:"Arabelle", epi:"The fated ally", side:"ally", fate:"alive", where:"Scouting the Reformation Center with Ezmerelda", met:"14", img:null,
+     sheet:{sp:"Human (Vistana)", cl:"Warlock", speed:"30 ft.",
+       traits:[{n:"Sees the dead", p:"Arabelle can see the dead. She is using this to try to reach Stella's lost soul."}]},
      facts:["The Vistana girl named in Madam Eva's reading as the party's fated ally.","Rescued from a cult at Lake Zarovich (Session 14).","The party knows she is the reincarnation of Luna, Barlow's daughter.","Revealed in Session 18 that she sees the dead. She took Stella's journal to try to reach her.","Left the Blue Water Inn with Ezmerelda to scout the Reformation Center."]},
     {id:"ezmerelda", d:"Found by the party at the cabin outside Vallaki, along with Kasimir and the missing children. She is now scouting the Reformation Center with Arabelle.", name:"Ezmerelda d'Avenir", epi:"Found at the cabin", side:"ally", fate:"alive", where:"Scouting the Reformation Center with Arabelle", met:"15", img:null,
+     sheet:{sp:"Human", size:"Medium", speed:"30 ft."},
      facts:["Found at the cabin outside Vallaki, along with Kasimir and the missing children (Session 15).","Left the Blue Water Inn with Arabelle to scout the Reformation Center (Session 18)."]},
     {id:"kasimir", d:"A dusk elf found at the cabin with Ezmerelda and the missing children. He gave Barlow wolfsbane for his curse and left the party a raven, Sir Loin.", name:"Kasimir Velikov", epi:"Dusk elf", side:"ally", fate:"alive", where:"Last seen after Session 16", met:"15", img:null,
+     sheet:{sp:"Elf (dusk elf)", size:"Medium", speed:"30 ft.", senses:"Darkvision 60 ft."},
      facts:["Found at the cabin with Ezmerelda and the children (Session 15).","Gave Barlow a vial of wolfsbane for his lycanthropy and left the party a raven familiar, Sir Loin (Session 16)."]},
     {id:"eva", d:"The ancient Vistani seer who read the party's Tarokka. She told them the only way out of Barovia is to kill Strahd.", name:"Madam Eva", epi:"Seer of the Vistani", side:"ally", fate:"alive", where:"The Vistani camp", met:"5", img:null,
      facts:["Told the party the only way out of Barovia is to kill Strahd.","Read the Tarokka for the party and gave each of them a personal fortune, in exchange for delivering a package to her granddaughter."]},
@@ -86,6 +109,7 @@ const DATA = {
     {id:"ella", d:"A sick girl the party found while tracking St. Andral's bones. Her mother is dead.", name:"Ella", epi:"A sick child", side:"unsure", fate:"alive", where:"Vallaki", met:"12", img:null,
      facts:["Found sick while following the trail of St. Andral's bones. Her mother was dead (Session 12).","Her mother's Dream Pastry addiction had led her to sell children."]},
     {id:"scarlet", d:"A living doll who once swapped souls with Aoife. Now an ally, she lives inside Alir's bag of holding.", name:"Scarlet", epi:"The living doll", side:"ally", fate:"alive", where:"Alir's bag of holding", met:"13", img:null,
+     sheet:{sp:"Living doll"},
      facts:["Swapped souls with Aoife at the orphanage (Session 13).","Brought to Blinsky's for repairs.","The party learned her origins in Session 14, and that souls recycle through Barovia.","Now an ally of the party. She lives in Alir's bag of holding."]},
     {id:"jason", d:"A source on Vallaki's werewolves. He told the party about the fight between Kiril and the Captain to become Alpha.", name:"Jason Jr.", epi:"Source on the werewolves", side:"unsure", fate:"alive", where:"Outskirts of Vallaki", met:"15", img:null,
      facts:["Told the party about the struggle for Alpha between Kiril and the Captain (Session 15)."]},
