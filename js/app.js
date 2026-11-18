@@ -508,13 +508,35 @@ function renderQuestList(){
 const modal=$("#modal");
 let lastFocus=null, stampTimer=null, closeT=0;
 function nameLines(name){ const w=String(name).split(" "); const last=w.length>1?w.pop():""; return `<span class="ln">${letters(w.join(" "),.85,.05)}</span>${last?`<span class="ln it">${letters(last,1.05,.05)}</span>`:""}`; }
-/* which pop-up entrance to use (0-5); ?fx=N in the address previews another one */
-const POPFX=(()=>{ const m=/[?&]fx=([0-5])\b/.exec(location.search); return m?m[1]:"0"; })();
-function openSheet({tab,photo,kicker,name,epi,body,stamp}){
+/* ---------- pop-up entrances, one per kind of file ----------
+   npc: a Tarokka card flips and bursts into the file · pc: a "roll for initiative" cut-in
+   place: a portcullis slams down and lifts. (The character sheet slides in through shards.) */
+const toRoman=n=>{ const t=[[10,"X"],[9,"IX"],[5,"V"],[4,"IV"],[1,"I"]]; let r=""; for(const [v,c] of t) while(n>=v){ r+=c; n-=v; } return r; };
+let fxTimers=[];
+function fxLayer(kind,name,o){
+  const initial=String(name||"").replace(/^(the|lady|father|madam|sir|headmistress|baron|baroness)\s+/i,"").trim().charAt(0);
+  if(kind==="init") return `<div class="fx" aria-hidden="true"><i class="fx-lines"></i>
+    <div class="fx-band"><span class="fx-die">${CSI.d20}</span><span class="fx-txt"><span class="fx-nm">${esc(name)}</span><span class="fx-tag">Roll for initiative${o.tag?` · ${esc(o.tag)}`:""}</span></span></div><i class="fx-flash"></i></div>`;
+  if(kind==="gate") return `<div class="fx" aria-hidden="true"><div class="fx-gate">${Array.from({length:9},(_,k)=>`<i class="bar" style="--k:${k}"></i>`).join("")}<i class="cross c1"></i><i class="cross c2"></i></div><i class="fx-dust"></i></div>`;
+  return `<div class="fx" aria-hidden="true"><i class="fx-bandt"></i><i class="fx-bandb"></i>
+    <div class="fx-tk"><div class="fx-tkin">
+      <div class="tk-back"><span class="rn">${o.no?toRoman(Math.min(o.no,39)):""}</span><svg viewBox="0 0 40 40"><path d="M27 6a15 15 0 1 0 0 28A12 12 0 1 1 27 6z"/><circle cx="20" cy="20" r="18.5"/></svg><span class="nm">Tarokka</span></div>
+      <div class="tk-front"><span class="rn">${o.no?toRoman(Math.min(o.no,39)):""}</span><span class="ini">${esc(initial)}</span><span class="nm">${esc(name)}</span>${o.tag?`<span class="tk-tag">${esc(o.tag)}</span>`:""}</div>
+    </div></div></div>`;
+}
+function fxSounds(kind){
+  fxTimers.forEach(clearTimeout); fxTimers=[];
+  if(reduced) return;
+  const at=(ms,f)=>fxTimers.push(setTimeout(f,ms));
+  if(kind==="init"){ Sound.slash(); at(260,()=>Sound.tick()); at(700,()=>Sound.stamp()); }
+  else if(kind==="gate"){ at(330,()=>Sound.stamp()); at(640,()=>Sound.shutter()); }
+  else { at(380,()=>Sound.flip()); at(820,()=>Sound.slash()); }
+}
+function openSheet({tab,photo,kicker,name,epi,body,stamp,fx}){
   lastFocus=document.activeElement;
   clearTimeout(closeT); modal.classList.remove("out");
-  modal.dataset.fx=POPFX;
-  modal.innerHTML=`<div class="fx" aria-hidden="true"><i data-n="${esc(name)}"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="mist" aria-hidden="true"></div>
+  const kind=(fx&&fx.kind)||"card"; modal.dataset.fx=kind;
+  modal.innerHTML=`${fxLayer(kind,name,fx||{})}<div class="mist" aria-hidden="true"></div>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetName"><div class="shade"></div><div class="parch" aria-hidden="true"></div>
     <span class="label tab" style="color:var(--ink-muted)">${tab}</span>
     <div class="photo"><span class="tape" aria-hidden="true"></span><div class="frame">${photo}</div></div>
@@ -529,13 +551,13 @@ function openSheet({tab,photo,kicker,name,epi,body,stamp}){
   </div>`;
   modal.classList.add("on"); modal.setAttribute("aria-hidden","false");
   document.documentElement.style.overflow="hidden";
-  Sound.open(); clearTimeout(stampTimer); if(stamp&&!reduced) stampTimer=setTimeout(()=>Sound.stamp(),1550);
+  Sound.open(); fxSounds(kind); clearTimeout(stampTimer); if(stamp&&!reduced) stampTimer=setTimeout(()=>Sound.stamp(),1550);
   const c=modal.querySelector("[data-close]"); if(c) c.focus({preventScroll:true});
 }
 function closeSheet(){
   if(!modal.classList.contains("on")||modal.classList.contains("out")) return;
   closeCS(true);
-  clearTimeout(stampTimer);
+  clearTimeout(stampTimer); fxTimers.forEach(clearTimeout); fxTimers=[];
   modal.setAttribute("aria-hidden","true");
   /* the file drops out of frame before it's cleared; opening another one cancels this */
   const done=()=>{ modal.classList.remove("on","out"); modal.innerHTML=""; };
@@ -631,7 +653,7 @@ function npcSheet(n,t0=1.75){
 function openNpc(id){
   const n=npcById[id]; if(!n) return;
   const st=standing(n);
-  openSheet({tab:`NPC · ${esc(n.name.toUpperCase())}`,photo:portraitFrame(n),
+  openSheet({fx:{kind:"card",no:D.npcs.indexOf(n)+1,tag:standing(n).label},tab:`NPC · ${esc(n.name.toUpperCase())}`,photo:portraitFrame(n),
     kicker:`${esc(st.label.toUpperCase())} · ${n.met&&n.met!=="—"?"FIRST MET IN "+esc(metLabel(n.met).toUpperCase()):"NOT YET MET"}`,
     name:n.name,epi:n.epi,stamp:{text:st.stamp,tone:st.tone},
     body:`${n.d?`<p class="lede snap" style="animation-delay:1.4s">${esc(n.d)}</p>`:""}<dl class="dl snap" style="animation-delay:1.45s"><dt>Status</dt><dd>${statusWord(n)}</dd><dt>Last seen</dt><dd>${esc(where(n))}</dd></dl>
@@ -643,7 +665,7 @@ function openPc(id){
   const p=pcById[id]; if(!p) return;
   const v=visionFor(p.n);
   const row=(k,x)=>x==null||x===""?"":`<dt>${k}</dt><dd>${esc(x)}</dd>`;
-  openSheet({tab:`PLAYER CHARACTER · LEVEL ${esc(D.level)}`,photo:portraitFrame({...p,name:p.n}),
+  openSheet({fx:{kind:"init",tag:`${p.cl} · Level ${D.level}`},tab:`PLAYER CHARACTER · LEVEL ${esc(D.level)}`,photo:portraitFrame({...p,name:p.n}),
     kicker:`${esc(p.sp.toUpperCase())} · ${esc(p.cl.toUpperCase())}`,name:p.n,epi:"",stamp:{text:"THE PARTY",tone:"ink"},
     body:`${p.d?`<p class="lede snap" style="animation-delay:1.4s">${esc(p.d)}</p>`:""}<dl class="dl snap" style="animation-delay:1.45s">${row("Armor Class",p.ac+(p.acx?` (${p.acx})`:""))}${row("Hit Points",p.hp)}${row("Passive Perception",p.pp)}${row("Passive Insight",p.pi)}${row("Save DC",p.dc)}${row("Languages",(p.langs||[]).join(", "))}</dl>
       ${p.notes&&p.notes.length?`<h3 class="snap" style="animation-delay:1.6s">NOTES</h3>${factList(p.notes)}`:""}
@@ -656,7 +678,7 @@ function openPlace(name){
   const photo=pin?`<div class="mapcrop" role="img" aria-label="Map around ${esc(p.n)}" style="background-image:url(img/barovia-map-1000.webp);background-size:calc(1000 * var(--u)) auto;background-position:calc(50% - ${(+pin.x*.5-500).toFixed(0)} * var(--u)) calc(50% - ${(+pin.y*.5-341).toFixed(0)} * var(--u))"></div><span class="label cap" style="color:var(--s);background:var(--p);padding:calc(3 * var(--u)) calc(8 * var(--u))">On the map</span>`
     :`${sil({name:p.n})}<span class="label cap">Not on the map yet</span>`;
   const inside=pin&&pin.key===p.n&&pin.places?pin.places.map(n=>placeByName[n]).filter(Boolean):[];
-  openSheet({tab:`LOCATION · ${esc(p.r.toUpperCase())}`,photo,
+  openSheet({fx:{kind:"gate"},tab:`LOCATION · ${esc(p.r.toUpperCase())}`,photo,
     kicker:visited?`VISITED · ${esc(metLabel(p.s).toUpperCase())}`:"HEARD OF · NOT VISITED YET",
     name:p.n,epi:p.r,stamp:{text:visited?"VISITED":"NOT VISITED",tone:visited?"ink":"red"},
     body:`<h3 class="snap" style="animation-delay:1.5s">WHAT WE KNOW</h3><p class="text snap" style="animation-delay:1.6s">${esc(p.p)}</p>
