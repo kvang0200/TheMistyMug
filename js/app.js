@@ -506,11 +506,12 @@ function renderQuestList(){
    POP-UP SHEETS
    ===================================================================== */
 const modal=$("#modal");
-let lastFocus=null, stampTimer=null;
+let lastFocus=null, stampTimer=null, closeT=0;
 function nameLines(name){ const w=String(name).split(" "); const last=w.length>1?w.pop():""; return `<span class="ln">${letters(w.join(" "),.85,.05)}</span>${last?`<span class="ln it">${letters(last,1.05,.05)}</span>`:""}`; }
 function openSheet({tab,photo,kicker,name,epi,body,stamp}){
   lastFocus=document.activeElement;
-  modal.innerHTML=`<div class="pass" aria-hidden="true"></div><div class="mist" aria-hidden="true"></div>
+  clearTimeout(closeT); modal.classList.remove("out");
+  modal.innerHTML=`<div class="burst" aria-hidden="true"><i class="flash"></i><i class="rays"></i><i class="dots"></i></div><div class="mist" aria-hidden="true"></div>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetName"><div class="shade"></div><div class="parch" aria-hidden="true"></div>
     <span class="label tab" style="color:var(--ink-muted)">${tab}</span>
     <div class="photo"><span class="tape" aria-hidden="true"></span><div class="frame">${photo}</div></div>
@@ -529,10 +530,13 @@ function openSheet({tab,photo,kicker,name,epi,body,stamp}){
   const c=modal.querySelector("[data-close]"); if(c) c.focus({preventScroll:true});
 }
 function closeSheet(){
-  if(!modal.classList.contains("on")) return;
+  if(!modal.classList.contains("on")||modal.classList.contains("out")) return;
   closeCS(true);
   clearTimeout(stampTimer);
-  modal.classList.remove("on"); modal.setAttribute("aria-hidden","true"); modal.innerHTML="";
+  modal.setAttribute("aria-hidden","true");
+  /* the file drops out of frame before it's cleared; opening another one cancels this */
+  const done=()=>{ modal.classList.remove("on","out"); modal.innerHTML=""; };
+  if(reduced) done(); else { modal.classList.add("out"); clearTimeout(closeT); closeT=setTimeout(done,340); }
   document.documentElement.style.overflow="";
   Sound.close();
   if(lastFocus&&document.contains(lastFocus)) lastFocus.focus({preventScroll:true});
