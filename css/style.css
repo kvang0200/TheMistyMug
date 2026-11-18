@@ -1349,3 +1349,20 @@ button.cs-act:hover,button.cs-act:focus-visible{transform:translate(calc(-3 * va
 .d20f b.bump{animation:numBump .28s cubic-bezier(.2,1.4,.4,1)}
 .dt-stage.merge::before{content:"";position:absolute;left:50%;top:50%;width:calc(var(--ds) * 2.2);height:calc(var(--ds) * 2.2);margin:calc(var(--ds) * -1.1);border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--s) 55%,transparent),transparent);pointer-events:none;animation:mergeFlash .6s ease-out both}
 @media (max-width:760px){ .dt-bonus{left:calc(50% + var(--ds) * 1.05)} }
+
+/* ---------- damage: one big number, the dice as a small footnote ---------- */
+@keyframes dmgPop{0%{opacity:0;transform:skewX(-8deg) scale(.3) rotate(-10deg)}70%{opacity:1;transform:skewX(-8deg) scale(1.12) rotate(2deg)}100%{opacity:1;transform:skewX(-8deg)}}
+.dt-dmgbig{display:inline-flex;align-items:baseline;gap:calc(10 * var(--u));margin-top:calc(8 * var(--u));padding:calc(6 * var(--u)) calc(22 * var(--u)) calc(8 * var(--u));background:var(--a);color:var(--s);transform:skewX(-8deg);box-shadow:calc(5 * var(--u)) calc(5 * var(--u)) 0 color-mix(in srgb,var(--s) 25%,transparent)}
+.dt-dmgbig .n{display:inline-block;min-width:1ch;font-family:var(--serif);font-size:calc(62 * var(--u));line-height:.95}
+.dt-dmgbig .n.bump{animation:numBump .3s cubic-bezier(.2,1.4,.4,1)}
+.dt-dmgbig .ty{font-family:var(--serif);font-style:italic;font-size:calc(21 * var(--u))}
+.dt-dmgbig.crit{outline:calc(2 * var(--u)) solid var(--s);outline-offset:calc(3 * var(--u))}
+.dt-out:not(.wait) .dt-dmgbig{animation:dmgPop .45s cubic-bezier(.2,1.4,.4,1) both}
+.dt-break{display:block;margin-top:calc(10 * var(--u));font-family:var(--mono);font-size:calc(11 * var(--u));letter-spacing:.04em;color:color-mix(in srgb,var(--s) 45%,transparent)}
+.dt-stage.dmg-only{position:relative;min-height:calc(150 * var(--u))}
+.dt-stage.gather .dt-spin .tok{transition:transform .32s cubic-bezier(.6,0,.9,.5),opacity .28s ease-in .05s;transform:translateX(var(--gx,0)) scale(.2) rotate(180deg);opacity:0;animation:none}
+.dt-gathered{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);display:none}
+.dt-stage.gathered .dt-gathered{display:block}
+.dt-stage.gathered .dt-dmgbig{animation:dmgPop .45s cubic-bezier(.2,1.4,.4,1) both}
+.dt-stage.gathered .dt-dmgbig .n{font-size:calc(78 * var(--u))}
+.dt-dmg>.label{display:block}

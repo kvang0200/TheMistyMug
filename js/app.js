@@ -765,7 +765,9 @@ function throwDice(r,again){
   const dmg=r.kind!=="check"&&dspec&&!(r.kind==="attack"&&fumble)?rollDamage(dspec,crit):null;
   const kick=r.kind==="check"?(/saving/i.test(r.label)?"Saving throw":r.label==="Initiative"?"Initiative":"Ability check"):r.kind==="attack"?"Attack roll":"Damage roll";
   const signed=b=>b>=0?`+ ${b}`:`− ${Math.abs(b)}`;
-  const tokens=dmg?`<div class="dt-dmg"><span class="label">${crit?"Damage · critical, dice doubled":"Damage"}</span><div class="dt-toks">${dmg.rolls.map((v,i)=>`<span class="tok" style="--i:${i}"><small>d${dmg.d}</small>${v}</span>`).join("")}${dmg.mod?`<span class="tokmod">${signed(dmg.mod)}</span>`:""}<span class="tokeq">=</span><span class="toktot">${dmg.total}</span><span class="toktype">${esc(dmg.type)}</span></div></div>`:"";
+  const brk=dmg?`${dmg.rolls.map(v=>`d${dmg.d}: ${v}`).join(" + ")}${dmg.mod?` ${signed(dmg.mod)}`:""}`:"";
+  const big=dmg?`<div class="dt-dmgbig${crit?" crit":""}"><span class="n" data-count="${dmg.total}">${dmg.total}</span><span class="ty">${esc(dmg.type||"damage")}</span></div>`:"";
+  const tokens=dmg&&r.kind!=="damage"?`<div class="dt-dmg"><span class="label">${crit?"Critical damage":"Damage, if it hits"}</span>${big}<span class="dt-break">${brk}</span></div>`:"";
   const altBtns=r.kind==="damage"&&r.alt?`<div class="dt-alt"><button type="button" class="chip${r.useAlt?"":" on"}" data-alt="0" aria-pressed="${!r.useAlt}">Normal · ${esc(parseDice(r.dmg)?.n+"d"+parseDice(r.dmg)?.d)}</button><button type="button" class="chip${r.useAlt?" on":""}" data-alt="1" aria-pressed="${!!r.useAlt}">${esc(r.alt.label)} · ${esc(parseDice(r.alt.dmg)?.n+"d"+parseDice(r.alt.dmg)?.d)}</button></div>`:"";
   const head=crit?`<span class="stamp red dt-stamp">CRITICAL HIT</span>`:fumble?`<span class="stamp ink dt-stamp">NATURAL 1</span>`:"";
   const sayRes=d20!=null?`${r.label}: rolled ${d20}, total ${total}.${crit?" Critical hit.":fumble?" Natural 1.":""}${dmg?` Damage ${dmg.total} ${dmg.type}.`:""}`:`${r.label}: ${dmg?dmg.total+" "+dmg.type:""} damage.`;
@@ -774,7 +776,7 @@ function throwDice(r,again){
     <button type="button" class="close" data-dclose aria-label="Close the dice">${ICON.close}</button>
     <span class="label dt-kick">${kick} · ${esc(r.who)}</span>
     <span class="dt-name">${esc(r.label)}</span>
-    ${d20!=null?`<div class="dt-stage" style="--ds:${size}px"><div class="dt-throw">${d20Html(size)}</div><div class="dt-shadow"></div>${r.b?`<span class="dt-bonus" aria-hidden="true">${r.b>0?"+":"−"}${Math.abs(r.b)}<small>${r.kind==="attack"?"to hit":r.label==="Initiative"?"initiative":"bonus"}</small></span>`:""}</div>`:`<div class="dt-stage dmg-only"><div class="dt-spin">${(dmg?dmg.rolls:[]).map((v,i)=>`<span class="tok big" style="--i:${i}"><small>d${dmg.d}</small><b>${v}</b></span>`).join("")}</div></div>`}
+    ${d20!=null?`<div class="dt-stage" style="--ds:${size}px"><div class="dt-throw">${d20Html(size)}</div><div class="dt-shadow"></div>${r.b?`<span class="dt-bonus" aria-hidden="true">${r.b>0?"+":"−"}${Math.abs(r.b)}<small>${r.kind==="attack"?"to hit":r.label==="Initiative"?"initiative":"bonus"}</small></span>`:""}</div>`:`<div class="dt-stage dmg-only"><div class="dt-spin">${(dmg?dmg.rolls:[]).map((v,i)=>`<span class="tok big" style="--i:${i}"><small>d${dmg.d}</small><b>${v}</b></span>`).join("")}</div><div class="dt-gathered">${big}<span class="dt-break">${brk}</span></div></div>`}
     <div class="dt-out${d20!=null?" wait":""}">${head}${tokens}${altBtns}
       ${r.kind==="attack"?`<p class="dt-note">Compare the total to the target's AC.</p>`:r.label==="Initiative"?`<p class="dt-note">Highest total acts first.</p>`:r.kind==="check"?`<p class="dt-note">Compare the total to the DC.</p>`:""}
       <div class="dt-btns"><button type="button" class="btn dark" data-reroll><span>Roll again</span>${CSI.d20}</button></div>
@@ -783,7 +785,9 @@ function throwDice(r,again){
   </div>`;
   tray.classList.remove("out"); tray.classList.add("on"); tray.setAttribute("aria-hidden","false");
   csModal.querySelector(".cs-card")?.setAttribute("aria-hidden","true");
-  const reveal=()=>{ const o=tray.querySelector(".dt-out"); if(o) o.classList.remove("wait"); const say=$("#diceSay"); if(say) say.textContent=sayRes; if(crit||fumble) Sound.stamp(); };
+  const countUp=el=>{ if(!el) return; const to=+el.dataset.count; if(reduced||!to){ el.textContent=to; return; } const t0=performance.now(), dur=Math.min(600,200+to*25);
+    const f=now=>{ const t=Math.min(1,(now-t0)/dur); el.textContent=Math.round(to*(1-Math.pow(1-t,3))); if(t<1) requestAnimationFrame(f); else { el.classList.add("bump"); Sound.tick&&Sound.tick(); } }; el.textContent="0"; requestAnimationFrame(f); };
+  const reveal=()=>{ const o=tray.querySelector(".dt-out"); if(o) o.classList.remove("wait"); if(o) countUp(o.querySelector("[data-count]")); const say=$("#diceSay"); if(say) say.textContent=sayRes; if(crit||fumble) Sound.stamp(); };
   /* BG3-style: the die lands on its natural roll, the bonus flies into it, and the face counts up to the total */
   const finish=()=>{
     if(d20==null){ reveal(); return; }
@@ -802,7 +806,13 @@ function throwDice(r,again){
   };
   tray.querySelector("[data-reroll]").focus({preventScroll:true});
   Sound.shutter&&Sound.shutter();
-  if(d20==null){ diceT=setTimeout(finish,reduced?0:650); return; }
+  if(d20==null){
+    const gather=()=>{ const st=tray.querySelector(".dt-stage"), toks=[...tray.querySelectorAll(".dt-spin .tok")], g=tray.querySelector(".dt-gathered"); if(!st||!g){ reveal(); return; }
+      const sr=st.getBoundingClientRect();
+      toks.forEach(t=>{ const b=t.getBoundingClientRect(); t.style.setProperty("--gx",(sr.left+sr.width/2-(b.left+b.width/2)).toFixed(1)+"px"); });
+      st.classList.add("gather"); if(!reduced) Sound.tick&&Sound.tick();
+      diceT=setTimeout(()=>{ st.classList.add("gathered"); countUp(g.querySelector("[data-count]")); reveal(); },reduced?0:330); };
+    diceT=setTimeout(gather,reduced?0:900); return; }
   /* the throw: tumble about a random axis that unwinds to zero, so the die lands on its rolled face */
   const face=D20.F.find(f=>f.num===d20), R=[face.A,face.B,face.n];
   const die=tray.querySelector(".d20"), thr=tray.querySelector(".dt-throw"), sh=tray.querySelector(".dt-shadow"), faces=[...die.children];

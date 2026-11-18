@@ -5,7 +5,7 @@
      refreshed in the background.
    Bump VERSION when you change css/, js/app.js, js/sound.js, fonts/ or img/ to make every
    player's device drop the old copies on its next visit. */
-const VERSION = "2026-11-18-d20-bg3";
+const VERSION = "2026-11-18-dmg-total";
 const CACHE = "barovia-" + VERSION;
 const CORE = [
   "./",
