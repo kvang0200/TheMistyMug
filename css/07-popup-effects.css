@@ -1,0 +1,733 @@
+/* =====================================================================
+   NPC / PLAYER / PLACE POP-UP ENTRANCES (Persona speed, D&D objects)
+   modal[data-fx]: card = NPC (a Tarokka card flips and bursts into the file)
+   init = player (a "roll for initiative" cut-in) · gate = location (portcullis)
+   ===================================================================== */
+.modal .fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.modal .fx > * {
+  position: absolute;
+  display: block;
+}
+.modal .sheet {
+  isolation: isolate;
+}
+.modal .sheet::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+/* its own keyframe name: reusing fadeIn would just jump the finished entrance fade to its end, hiding the exit */
+@keyframes modalOut {
+  to {
+    opacity: 0;
+  }
+}
+.modal.out {
+  pointer-events: none;
+  animation: modalOut 0.26s ease-in 0.46s both;
+}
+@keyframes fxFlash {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  35% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes fxFade {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes echoIn {
+  0% {
+    opacity: 0;
+    transform: translate(calc(-16 * var(--u)), calc(16 * var(--u))) rotate(-2deg) scale(1.3);
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+/* ---------- NPC · TAROKKA CARD ---------- */
+@keyframes bandTop {
+  from {
+    transform: translateY(-130%) skewY(-6deg);
+  }
+  to {
+    transform: skewY(-6deg);
+  }
+}
+@keyframes bandBot {
+  from {
+    transform: translateY(130%) skewY(-6deg);
+  }
+  to {
+    transform: skewY(-6deg);
+  }
+}
+@keyframes bandsOut {
+  to {
+    opacity: 0;
+    transform: scaleY(0) skewY(-6deg);
+  }
+}
+@keyframes tkMove {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translate(-55vw, -25vh) rotate(-40deg) scale(0.55);
+  }
+  30% {
+    transform: translate(-50%, -50%) rotate(-5deg) scale(1);
+  }
+  72% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(-3deg) scale(1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(0deg) scale(3.3);
+  }
+}
+@keyframes tkFlip {
+  0%,
+  34% {
+    transform: rotateY(0deg);
+  }
+  54% {
+    transform: rotateY(195deg);
+  }
+  62%,
+  100% {
+    transform: rotateY(180deg);
+  }
+}
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.55) rotate(-6deg);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.05) rotate(1deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes flipOut {
+  to {
+    opacity: 0;
+    transform: perspective(1400px) rotateY(80deg) scale(0.9);
+  }
+}
+.modal[data-fx="card"] .fx-bandt {
+  left: -10%;
+  right: -10%;
+  top: -6%;
+  height: 24%;
+  background: var(--p);
+  border-bottom: calc(8 * var(--u)) solid var(--a);
+  animation: bandTop 0.38s cubic-bezier(0.2, 1.2, 0.35, 1) both;
+}
+.modal[data-fx="card"] .fx-bandb {
+  left: -10%;
+  right: -10%;
+  bottom: -6%;
+  height: 24%;
+  background: var(--a);
+  border-top: calc(8 * var(--u)) solid var(--p);
+  animation: bandBot 0.38s cubic-bezier(0.2, 1.2, 0.35, 1) 0.06s both;
+}
+.modal[data-fx="card"] .fx-tk {
+  left: 50%;
+  top: 50%;
+  width: min(36vmin, calc(270 * var(--u)));
+  height: min(56vmin, calc(420 * var(--u)));
+  perspective: calc(1100 * var(--u));
+  opacity: 0;
+  animation: tkMove 1.08s cubic-bezier(0.3, 0.9, 0.4, 1) 0.08s both;
+  z-index: 2;
+}
+.fx-tkin {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  animation: tkFlip 1.08s cubic-bezier(0.5, 0, 0.3, 1) 0.08s both;
+}
+.tk-back,
+.tk-front {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(18 * var(--u)) calc(14 * var(--u));
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: calc(14 * var(--u)) calc(14 * var(--u)) 0 var(--a);
+}
+.tk-back {
+  background: radial-gradient(
+    circle at 50% 50%,
+    color-mix(in srgb, var(--a) 35%, var(--p)),
+    var(--p) 70%
+  );
+  color: var(--s);
+  border: calc(1.5 * var(--u)) solid color-mix(in srgb, var(--s) 55%, transparent);
+  outline: calc(1 * var(--u)) solid color-mix(in srgb, var(--s) 25%, transparent);
+  outline-offset: calc(-10 * var(--u));
+}
+.tk-back svg {
+  width: 46%;
+  height: auto;
+  fill: none;
+  stroke: var(--s);
+  stroke-width: 1.2;
+}
+.tk-back svg path {
+  fill: var(--a);
+  stroke: none;
+}
+.tk-front {
+  transform: rotateY(180deg);
+  background: var(--s);
+  color: var(--p);
+  border: calc(6 * var(--u)) solid var(--p);
+  outline: calc(1 * var(--u)) solid var(--a);
+  outline-offset: calc(-14 * var(--u));
+}
+.tk-back .rn,
+.tk-front .rn {
+  font-family: var(--serif);
+  font-size: calc(22 * var(--u));
+  line-height: 1;
+}
+.tk-back .nm,
+.tk-front .tk-tag {
+  font-family: var(--mono);
+  font-size: calc(10 * var(--u));
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+.tk-front .ini {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: calc(130 * var(--u));
+  line-height: 0.8;
+  color: var(--a);
+}
+.tk-front .nm {
+  font-family: var(--serif);
+  font-size: calc(21 * var(--u));
+  line-height: 1.05;
+  text-align: center;
+}
+.tk-front .tk-tag {
+  color: var(--a);
+}
+.modal[data-fx="card"] .sheet {
+  animation: popIn 0.5s cubic-bezier(0.2, 1.3, 0.35, 1) 0.86s backwards;
+}
+.modal[data-fx="card"] .sheet::before {
+  background: var(--p);
+  outline: calc(1 * var(--u)) solid var(--a);
+  outline-offset: calc(-8 * var(--u));
+  transform: translate(calc(20 * var(--u)), calc(18 * var(--u))) skewX(-4deg);
+  animation: echoIn 0.5s ease-out 1.05s backwards;
+}
+.modal[data-fx="card"].out .sheet {
+  animation: outToss 0.52s cubic-bezier(0.55, 0, 0.75, 0.35) both;
+}
+.modal[data-fx="card"].out .fx-bandt,
+.modal[data-fx="card"].out .fx-bandb {
+  animation: bandsOut 0.3s ease-in both;
+}
+
+/* ---------- PLAYER · ROLL FOR INITIATIVE ---------- */
+@keyframes cutBand {
+  0% {
+    transform: translateX(-130%) rotate(-7deg);
+  }
+  26% {
+    transform: translateX(0) rotate(-7deg);
+  }
+  64% {
+    transform: translateX(0) rotate(-7deg);
+  }
+  100% {
+    transform: translateX(130%) rotate(-7deg);
+  }
+}
+@keyframes cutDrift {
+  from {
+    transform: translateX(-6%);
+  }
+  to {
+    transform: translateX(6%);
+  }
+}
+@keyframes dieRoll {
+  0% {
+    transform: rotate(-720deg) scale(0.3);
+  }
+  35% {
+    transform: rotate(15deg) scale(1.1);
+  }
+  45%,
+  100% {
+    transform: rotate(0) scale(1);
+  }
+}
+@keyframes speed {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.8;
+  }
+  70% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes smashIn {
+  0% {
+    opacity: 0;
+    transform: scale(1.7);
+    filter: blur(calc(6 * var(--u)));
+  }
+  55% {
+    opacity: 1;
+    transform: scale(0.97);
+    filter: none;
+  }
+  70% {
+    transform: scale(1.01) translateX(calc(-6 * var(--u)));
+  }
+  82% {
+    transform: translateX(calc(5 * var(--u)));
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes smashOut {
+  to {
+    opacity: 0;
+    transform: scale(0.85) translateY(calc(40 * var(--u)));
+  }
+}
+.modal[data-fx="init"] .fx-lines {
+  inset: 0;
+  background: repeating-linear-gradient(
+    -7deg,
+    transparent 0 calc(26 * var(--u)),
+    color-mix(in srgb, var(--s) 35%, transparent) calc(26 * var(--u)) calc(28 * var(--u))
+  );
+  animation: speed 0.85s ease-out both;
+}
+.modal[data-fx="init"] .fx-band {
+  left: -15%;
+  right: -15%;
+  top: calc(50% - 16vh);
+  height: 32vh;
+  display: flex;
+  align-items: center;
+  gap: clamp(calc(14 * var(--u)), 3vw, calc(40 * var(--u)));
+  padding-left: 22%;
+  background: var(--p);
+  border-top: calc(10 * var(--u)) solid var(--a);
+  border-bottom: calc(10 * var(--u)) solid var(--a);
+  overflow: hidden;
+  z-index: 2;
+  animation: cutBand 0.85s cubic-bezier(0.7, 0, 0.25, 1) 0.05s both;
+}
+.fx-band .fx-die {
+  flex: none;
+  display: flex;
+  width: min(17vh, calc(150 * var(--u)));
+  height: min(17vh, calc(150 * var(--u)));
+  color: var(--a);
+  animation: dieRoll 0.85s cubic-bezier(0.2, 0.9, 0.3, 1) 0.05s both;
+}
+.fx-band .fx-die svg {
+  width: 100%;
+  height: 100%;
+  stroke-width: 1.3;
+}
+.fx-band .fx-txt {
+  display: flex;
+  flex-direction: column;
+  gap: calc(6 * var(--u));
+  animation: cutDrift 0.85s linear 0.05s both;
+}
+.fx-band .fx-nm {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: min(15vh, 11vw);
+  line-height: 0.95;
+  color: var(--s);
+  white-space: nowrap;
+}
+.fx-band .fx-tag {
+  font-family: var(--mono);
+  font-size: clamp(calc(11 * var(--u)), 1.6vh, calc(15 * var(--u)));
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--a);
+  white-space: nowrap;
+}
+.modal[data-fx="init"] .fx-flash {
+  inset: 0;
+  background: var(--a);
+  opacity: 0;
+  animation: fxFlash 0.5s ease-out 0.7s both;
+}
+.modal[data-fx="init"] .sheet {
+  animation: smashIn 0.55s cubic-bezier(0.2, 1, 0.35, 1) 0.74s backwards;
+}
+.modal[data-fx="init"] .sheet::before {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--a) 0 calc(12 * var(--u)),
+    color-mix(in srgb, var(--a) 75%, var(--p)) calc(12 * var(--u)) calc(24 * var(--u))
+  );
+  transform: translate(calc(-18 * var(--u)), calc(18 * var(--u))) rotate(-1.5deg);
+  animation: echoIn 0.45s ease-out 0.98s backwards;
+}
+.modal[data-fx="init"].out .sheet {
+  animation: outCut 0.5s cubic-bezier(0.6, 0, 0.8, 0.3) both;
+}
+.modal[data-fx="init"].out .fx {
+  animation: fxFade 0.25s ease-in both;
+}
+
+/* ---------- LOCATION · PORTCULLIS ---------- */
+@keyframes barDrop {
+  0% {
+    transform: translateY(-105%);
+  }
+  78% {
+    transform: translateY(1.2%);
+  }
+  88% {
+    transform: translateY(-0.6%);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes gateUp {
+  0% {
+    transform: none;
+  }
+  100% {
+    transform: translateY(-108%);
+  }
+}
+@keyframes gateDown {
+  0% {
+    transform: translateY(-108%);
+  }
+  85% {
+    transform: translateY(1%);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes dustPuff {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.4);
+  }
+  30% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1.25) translateY(calc(-30 * var(--u)));
+  }
+}
+@keyframes riseIn {
+  0% {
+    opacity: 0;
+    transform: translateY(45%) rotate(4deg) scale(0.92);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-2%) rotate(-1deg) scale(1.01);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes dropOut {
+  to {
+    opacity: 0;
+    transform: translateY(60%) rotate(-4deg);
+  }
+}
+.modal[data-fx="gate"] .fx-gate {
+  inset: 0;
+  display: flex;
+  justify-content: space-evenly;
+  animation: gateUp 0.55s cubic-bezier(0.65, 0, 0.35, 1) 0.62s both;
+}
+.fx-gate .bar {
+  position: relative;
+  width: clamp(calc(14 * var(--u)), 2.4vw, calc(34 * var(--u)));
+  height: 104%;
+  margin-top: -2%;
+  background: linear-gradient(90deg, #0f0c0c, #4b4242 38%, #2b2424 58%, #0b0909);
+  box-shadow: inset calc(-2 * var(--u)) 0 0 color-mix(in srgb, var(--a) 55%, transparent);
+  clip-path: polygon(0 0, 100% 0, 100% 95%, 50% 100%, 0 95%);
+  animation: barDrop 0.42s cubic-bezier(0.55, 0, 0.75, 0.2) both;
+  animation-delay: calc(0.04s + var(--k) * 0.025s);
+}
+.fx-gate .cross {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: clamp(calc(12 * var(--u)), 2.2vh, calc(24 * var(--u)));
+  background: linear-gradient(180deg, #0f0c0c, #4b4242 40%, #2b2424 60%, #0b0909);
+  box-shadow: 0 calc(3 * var(--u)) 0 color-mix(in srgb, var(--a) 50%, transparent);
+  animation: barDrop 0.42s cubic-bezier(0.55, 0, 0.75, 0.2) 0.16s both;
+}
+.fx-gate .cross.c1 {
+  top: 24%;
+}
+.fx-gate .cross.c2 {
+  top: 62%;
+}
+.modal[data-fx="gate"] .fx-dust {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 22%;
+  background: radial-gradient(
+    ellipse at 50% 100%,
+    color-mix(in srgb, var(--s) 45%, transparent),
+    transparent 70%
+  );
+  opacity: 0;
+  animation: dustPuff 0.7s ease-out 0.4s both;
+}
+.modal[data-fx="gate"] .sheet {
+  animation: riseIn 0.6s cubic-bezier(0.2, 1.1, 0.35, 1) 0.7s backwards;
+}
+.modal[data-fx="gate"] .sheet::before {
+  background: var(--a);
+  transform: translate(calc(-14 * var(--u)), calc(-14 * var(--u))) rotate(-1.5deg);
+  animation: echoIn 0.45s ease-out 0.98s backwards;
+}
+.modal[data-fx="gate"].out .sheet {
+  animation: outDrop 0.5s cubic-bezier(0.6, 0, 0.85, 0.35) both;
+}
+.modal[data-fx="gate"].out .fx-gate {
+  animation: gateDown 0.3s cubic-bezier(0.55, 0, 0.75, 0.2) both;
+}
+
+@media (max-width: 760px) {
+  .modal .sheet::before {
+    transform: translate(calc(-6 * var(--u)), calc(8 * var(--u))) rotate(-1deg);
+  }
+  .modal[data-fx="init"] .fx-band {
+    padding-left: 8%;
+  }
+  .fx-band .fx-nm {
+    font-size: min(8vh, 9.5vw);
+  }
+  .fx-band .fx-die {
+    width: min(11vh, calc(70 * var(--u)));
+    height: min(11vh, calc(70 * var(--u)));
+  }
+  .modal[data-fx="card"] .fx-tk {
+    width: 56vw;
+    height: 84vw;
+  }
+  .tk-front .ini {
+    font-size: calc(96 * var(--u));
+  }
+  .tk-front .nm {
+    font-size: calc(18 * var(--u));
+  }
+  .fx-band .fx-tag {
+    letter-spacing: 0.14em;
+  }
+}
+/* ---------- EXITS (Persona-style) ----------
+   The file kicks back for a beat, then is thrown off screen while a red band and a
+   black band slash across it the other way and a few shards fly. Each kind leaves
+   in its own direction: an NPC's card is tossed back up into the deck, a player's
+   file is cut away to the side, a location sinks under the portcullis. No text. */
+@keyframes outToss {
+  0% {
+    transform: none;
+  }
+  20% {
+    opacity: 1;
+    transform: translate(calc(10 * var(--u)), calc(14 * var(--u))) rotate(2.5deg) scale(1.04);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-70vw, -75vh) rotate(-38deg) scale(0.32);
+  }
+}
+@keyframes outCut {
+  0% {
+    transform: none;
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(calc(26 * var(--u))) skewX(-4deg) scale(1.03);
+  }
+  100% {
+    opacity: 0.6;
+    transform: translateX(-150vw) skewX(22deg) scale(0.96);
+  }
+}
+@keyframes outDrop {
+  0% {
+    transform: none;
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(calc(-18 * var(--u))) rotate(1.5deg) scale(1.03);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(110vh) rotate(-9deg) skewY(5deg);
+  }
+}
+@keyframes oWipeL {
+  0% {
+    clip-path: inset(0 0 0 100%);
+  }
+  45%,
+  55% {
+    clip-path: inset(0 0 0 0);
+  }
+  100% {
+    clip-path: inset(0 100% 0 0);
+  }
+}
+@keyframes oWipeR {
+  0% {
+    clip-path: inset(0 100% 0 0);
+  }
+  45%,
+  55% {
+    clip-path: inset(0 0 0 0);
+  }
+  100% {
+    clip-path: inset(0 0 0 100%);
+  }
+}
+@keyframes oShard {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0) scale(0.4);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(1);
+  }
+}
+.fx-out {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  overflow: hidden;
+}
+.fx-out > i {
+  position: absolute;
+  display: block;
+}
+.fx-out .o-red {
+  left: -20%;
+  right: -20%;
+  top: 50%;
+  height: 28vh;
+  margin-top: -17vh;
+  background: var(--a);
+  transform: rotate(-12deg);
+  animation: oWipeL 0.5s cubic-bezier(0.7, 0, 0.3, 1) 0.1s both;
+}
+.fx-out .o-blk {
+  left: -20%;
+  right: -20%;
+  top: 50%;
+  height: 9vh;
+  margin-top: 4vh;
+  background: var(--p);
+  border-top: calc(4 * var(--u)) solid var(--s);
+  transform: rotate(-12deg);
+  animation: oWipeR 0.5s cubic-bezier(0.7, 0, 0.3, 1) 0.16s both;
+}
+.fx-out .o-line {
+  left: -20%;
+  right: -20%;
+  top: 30%;
+  height: calc(4 * var(--u));
+  background: var(--s);
+  transform: rotate(-12deg);
+  animation: oWipeR 0.36s cubic-bezier(0.7, 0, 0.3, 1) 0.04s both;
+}
+.fx-out .o-sh {
+  left: 50%;
+  top: 50%;
+  width: min(14vmin, calc(110 * var(--u)));
+  height: min(14vmin, calc(110 * var(--u)));
+  background: var(--a);
+  clip-path: polygon(0 0, 100% 38%, 22% 100%);
+  animation: oShard 0.5s cubic-bezier(0.2, 0.7, 0.3, 1) 0.12s both;
+}
+.fx-out .o-sh.s2 {
+  background: var(--s);
+  width: min(9vmin, calc(70 * var(--u)));
+  height: min(9vmin, calc(70 * var(--u)));
+  clip-path: polygon(0 30%, 100% 0, 64% 100%);
+  animation-delay: 0.16s;
+}
+.fx-out .o-sh.s3 {
+  background: var(--p);
+  outline: calc(2 * var(--u)) solid var(--a);
+  clip-path: polygon(40% 0, 100% 100%, 0 76%);
+  animation-delay: 0.2s;
+}
+.modal[data-fx="card"].out .fx-tk {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .modal .fx,
+  .fx-out {
+    display: none;
+  }
+  .modal .sheet,
+  .modal .sheet::before {
+    animation: none !important;
+  }
+}
