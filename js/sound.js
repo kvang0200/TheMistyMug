@@ -85,6 +85,36 @@ const Sound=(()=>{
   const stamp=play(()=>{ tone(115,46,.24,{gain:.7,wet:.35}); hiss(.07,{type:"lowpass",f0:700,f1:300,gain:.45,attack:.002,wet:.3}); tone(250,205,.05,{type:"triangle",gain:.12,wet:.2}); });
   const tear=play(()=>{ hiss(.42,{type:"highpass",f0:1300,f1:3200,gain:.42,attack:.01,flutter:true,wet:.2,pan:-.4,pan1:.4}); slash(.3); });
 
+  /* ---- the D&D pop-up entrances ---- */
+  /* a Tarokka card snapping over */
+  /* a Tarokka card: a crunchy riffle as it spins in, a thick crackling snap as it flips, a crumple as it bursts.
+     Grains of filtered noise kept in the low-mid range so it's crunchy, not shrill */
+  const grains=(n,span,{f=700,fr=1300,Q=2.2,g=.2,gr=.14,delay=0,len=.014,lr=.022,wet=.18}={})=>{ for(let i=0;i<n;i++) hiss(len+Math.random()*lr,{f0:f+Math.random()*fr,Q,gain:g+Math.random()*gr,attack:.001,delay:delay+Math.random()*span,wet,pan:Math.random()*.8-.4}); };
+  const cardRiffle=play(()=>{ for(let i=0;i<9;i++){ const dl=i*.032; hiss(.02,{f0:850+i*55,Q:2.2,gain:.44-i*.025,attack:.001,delay:dl,wet:.12,pan:-.3+i*.07}); } grains(12,.28,{g:.2,gr:.14,f:600,fr:900}); });
+  const cardSnap=play(()=>{ tone(150,70,.12,{gain:.34,wet:.25}); hiss(.035,{f0:1500,Q:1.6,gain:.5,attack:.001,wet:.12}); hiss(.09,{type:"lowpass",f0:1200,f1:400,gain:.32,attack:.002,wet:.2}); grains(22,.1,{g:.3,gr:.24}); });
+  /* one soft, muffled crunch as the card becomes the file */
+  const cardBurst=play(()=>{ hiss(.17,{f0:900,f1:520,Q:.9,gain:.2,attack:.012,flutter:true,wet:.3}); tone(120,70,.16,{gain:.16,wet:.3}); });
+  /* a die on a table: hard little knocks, closer together as it settles */
+  const dieHit=play((g=1,dl=0)=>{ const f=1500+Math.random()*900; hiss(.022,{f0:f,Q:3.5,gain:.3*g,attack:.001,delay:dl,wet:.12,pan:Math.random()*.6-.3}); tone(f*.62,f*.5,.03,{type:"triangle",gain:.06*g,delay:dl,wet:.1}); tone(230,190,.05,{gain:.12*g,delay:dl,wet:.15}); });
+  const dice=play(()=>{ [0,.11,.2,.27,.32,.36,.39,.41].forEach((dl,i)=>dieHit(Math.max(.28,1-i*.11),dl)); });
+  /* a war drum on the initiative flash */
+  const drum=play(()=>{ tone(96,44,.42,{gain:.62,wet:.4}); hiss(.09,{type:"lowpass",f0:900,f1:250,gain:.35,attack:.002,wet:.3}); tone(190,150,.06,{type:"triangle",gain:.08,wet:.2}); });
+  /* portcullis: crunchy, low and short, never a long metal ring or squeal */
+  const chains=play((len=.42,g=1)=>{
+    for(let i=0;i<22;i++){ const dl=Math.random()*len; hiss(.018+Math.random()*.03,{f0:500+Math.random()*1100,Q:2.4,gain:(.24+Math.random()*.2)*g,attack:.001,delay:dl,wet:.18,pan:Math.random()*.8-.4}); }
+    for(let i=0;i<5;i++){ const dl=Math.random()*len; tone(420+Math.random()*160,380,.05,{type:"triangle",gain:.06*g,delay:dl,wet:.25}); }
+  });
+  const clang=play(()=>{
+    tone(78,50,.55,{gain:.68,wet:.45}); tone(150,128,.22,{type:"triangle",gain:.1,wet:.3});
+    tone(312,296,.13,{type:"triangle",gain:.13,wet:.35}); tone(468,445,.09,{type:"triangle",gain:.07,wet:.35});
+    hiss(.14,{type:"lowpass",f0:1100,f1:280,gain:.5,attack:.002,wet:.3});
+    for(let i=0;i<9;i++) hiss(.012+Math.random()*.02,{f0:700+Math.random()*900,Q:2,gain:.2+Math.random()*.12,attack:.001,delay:.01+Math.random()*.16,wet:.2,pan:Math.random()*.6-.3});
+  });
+  const winch=play(()=>{
+    hiss(.6,{type:"lowpass",f0:340,f1:220,gain:.13,attack:.06,wet:.3});
+    for(let i=0;i<9;i++){ const dl=.03+i*.058; hiss(.02,{f0:850-i*20,Q:2.2,gain:.15,attack:.001,delay:dl,wet:.15}); tone(150,128,.035,{gain:.1,delay:dl,wet:.15}); }
+  });
+
   function setOn(v){
     if(v&&!init()) return false;
     on=v; session(v); if(!ctx) return v;
@@ -101,5 +131,5 @@ const Sound=(()=>{
      engine is ready before the click that triggered it asks for a sound. */
   const wake=()=>{ if(!on) return; if(!started){ setOn(true); return; } if(ctx.state!=="running") ctx.resume(); };
   ["click","touchend","keydown"].forEach(ev=>addEventListener(ev,wake,{capture:true,passive:true}));
-  return {setOn,isOn:()=>on,tick,slash,page,open,close,crack,flip,stamp,tear,reseal,shutter};
+  return {setOn,isOn:()=>on,tick,slash,page,open,close,crack,flip,stamp,tear,reseal,shutter,cardRiffle,cardSnap,cardBurst,dieHit,dice,drum,chains,clang,winch};
 })();
