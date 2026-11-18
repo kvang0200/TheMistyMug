@@ -5,7 +5,7 @@
      refreshed in the background.
    Bump VERSION when you change css/, js/app.js, js/sound.js, fonts/ or img/ to make every
    player's device drop the old copies on its next visit. */
-const VERSION = "2026-11-18-npc-sheet-modal";
+const VERSION = "2026-11-18-sheet-icons";
 const CACHE = "barovia-" + VERSION;
 const CORE = [
   "./",

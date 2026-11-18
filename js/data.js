@@ -63,11 +63,11 @@ const DATA = {
        abil:{str:14, dex:12, con:12, int:12, wis:10, cha:15},
        saves:["wis","cha"], skills:["History","Insight","Persuasion"],
        attacks:[{n:"Longsword", hit:"+5", dmg:"1d8+2 slashing", note:"Versatile (1d10+2). Mastery: Sap"},
-                {n:"Fire Bolt", hit:"+4", dmg:"1d10 fire", note:"Range 120 ft. Alir's lesson"}],
+                {n:"Fire Bolt", hit:"+4", dmg:"1d10 fire", note:"Range 120 ft. The Evoker's First Sparks"}],
        traits:[{n:"One blade", p:"Ireena never makes more than one attack on her turn. She fights best beside her friends, not ahead of them."}],
        lessons:[
-         {from:"Aoife", n:"Smite", p:"Once per long rest, right after she hits with a melee weapon, she can use a bonus action to deal an extra 2d8 radiant damage (3d8 against Fiends and Undead)."},
-         {from:"Alir", n:"Arcane Basics", p:"She knows the Fire Bolt and Mage Hand cantrips, and casts them with Intelligence (+4 to hit)."},
+         {from:"Aoife", n:"Red Knight's Reckoning", p:"Once per long rest, right after she hits with a melee weapon, she can use a bonus action to deal an extra 2d8 radiant damage (3d8 against Fiends and Undead)."},
+         {from:"Alir", n:"The Evoker's First Sparks", p:"She knows the Fire Bolt and Mage Hand cantrips, and casts them with Intelligence (+4 to hit)."},
          {sealed:true}, {sealed:true}, {sealed:true}
        ],
        gear:["Breastplate","Longsword"]},

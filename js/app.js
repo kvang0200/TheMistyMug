@@ -547,6 +547,23 @@ const portraitFrame=n=>`${sil(n)}<div class="glowdot glow" aria-hidden="true"></
 const ABIL=[["str","Strength",["Athletics"]],["dex","Dexterity",["Acrobatics","Sleight of Hand","Stealth"]],["con","Constitution",[]],
   ["int","Intelligence",["Arcana","History","Investigation","Nature","Religion"]],["wis","Wisdom",["Animal Handling","Insight","Medicine","Perception","Survival"]],
   ["cha","Charisma",["Deception","Intimidation","Performance","Persuasion"]]];
+/* small line icons for the sheet, so each stat reads at a glance */
+const CSI=(()=>{ const g=b=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${b}</svg>`;
+  return {
+    ac:g('<path d="M12 3 4.5 6v5.5c0 4.6 3.2 8 7.5 9.5 4.3-1.5 7.5-4.9 7.5-9.5V6z"/>'),
+    hp:g('<path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2z"/>'),
+    init:g('<path d="M13 2.5 5 13.5h6l-1 8 8-11h-6z"/>'),
+    speed:g('<path d="M5 6l6 6-6 6M12 6l6 6-6 6"/>'),
+    pb:g('<path d="m12 3 2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/>'),
+    pp:g('<path d="M2.5 12C6 6.5 18 6.5 21.5 12 18 17.5 6 17.5 2.5 12z"/><circle cx="12" cy="12" r="3"/>'),
+    str:g('<path d="M6.5 7.5v9M3.5 9.5v5M17.5 7.5v9M20.5 9.5v5M6.5 12h11"/>'),
+    dex:g('<path d="M19.5 4.5C12 4.5 6.5 9 5.5 18.5L4 20"/><path d="M19.5 4.5c0 7-4.5 12-11.5 13M9 11.5h6M7.5 15h4.5"/>'),
+    con:g('<path d="M12 21c-4 0-6.5-2.6-6.5-6 0-4 3.5-5.5 4-10 2.5 1.5 3.5 4 3 6.5 1-1 1.7-2.2 2-3.5 2 2 4 4.2 4 7 0 3.4-2.5 6-6.5 6z"/>'),
+    int:g('<path d="M12 6.5C10 5 6.5 4.5 3.5 5v13c3-.5 6.5 0 8.5 1.5 2-1.5 5.5-2 8.5-1.5V5c-3-.5-6.5 0-8.5 1.5zM12 6.5v13"/>'),
+    wis:g('<path d="M19 14.5A8 8 0 0 1 9.5 5a8 8 0 1 0 9.5 9.5z"/><path d="M16.5 3.5v3M15 5h3"/>'),
+    cha:g('<path d="M3.5 8.5 7 15.5h10l3.5-7-5 3L12 5l-3.5 6.5z"/><path d="M7 18.5h10"/>')
+  }; })();
+const ABIL_TAG={str:"Power",dex:"Agility",con:"Endurance",int:"Reasoning",wis:"Awareness",cha:"Presence"};
 const sgn=n=>n==null||isNaN(n)?"—":(n>=0?"+":"−")+Math.abs(n);
 function npcSheet(n,t0=1.75){
   const S=n.sheet; if(!S) return "";
@@ -561,10 +578,10 @@ function npcSheet(n,t0=1.75){
   const pp=has(S.pp)?S.pp:per.v==null?null:10+per.v;
   const init=has(S.init)?S.init:sgn(mod("dex"));
   const dot=(on,ex)=>`<i class="pdot${on?" on":""}${ex?" ex":""}" aria-hidden="true"></i>`;
-  const box=(k,v,cls="")=>`<div class="cs-box${cls}"><span class="v">${esc(has(v)?v:"—")}</span><span class="k">${k}</span></div>`;
+  const box=(k,v,ic,cls,i)=>`<div class="cs-box ${cls||""}" style="--i:${i}"><span class="ic">${CSI[ic]}</span><span class="v">${esc(has(v)?v:"—")}</span><span class="k">${k}</span></div>`;
   const line=[S.sp,S.cl?S.cl+(has(S.lvl)?" "+S.lvl:""):null,S.size].filter(Boolean).map(esc).join(" · ");
   const abil=ABIL.map(([k,name,sk])=>{ const m=mod(k), sv=bonus(m,saves.includes(k));
-    return `<div class="cs-ab" style="--i:${ABIL.findIndex(a=>a[0]===k)}"><span class="nm">${name}</span><span class="md">${sgn(m)}</span><span class="sc">${has(A[k])?esc(A[k]):"—"}</span>
+    return `<div class="cs-ab ab-${k}${has(A[k])&&+A[k]>=15?" hi":""}" style="--i:${ABIL.findIndex(a=>a[0]===k)};--fill:${has(A[k])?Math.max(0,Math.min(1,+A[k]/20)):0}"><span class="ab-ic">${CSI[k]}</span><span class="nm">${name}<small>${ABIL_TAG[k]}</small></span><span class="md">${sgn(m)}</span><span class="sc">${has(A[k])?esc(A[k]):"—"}</span><span class="meter" aria-hidden="true"><i></i></span>
       <ul><li class="sv">${dot(saves.includes(k))}<span>${sgn(sv)}</span>Saving Throw</li>${sk.map(s=>{const x=skill(s); return `<li>${dot(x.p,x.e)}<span>${sgn(x.v)}</span>${s}</li>`;}).join("")}</ul></div>`; }).join("");
   const list=(title,items,fn)=>items&&items.length?`<div class="cs-sec cs-in" style="--d:6"><h4>${title}</h4>${items.map(fn).join("")}</div>`:"";
   const atk=(S.attacks||[]).length?`<div class="cs-sec cs-in" style="--d:5"><h4>Weapons &amp; Damage Cantrips</h4><table class="cs-atk"><thead><tr><th>Name</th><th>Atk / DC</th><th>Damage &amp; Type</th><th>Notes</th></tr></thead><tbody>${S.attacks.map(a=>`<tr><td>${esc(a.n)}</td><td>${esc(a.hit||"—")}</td><td>${esc(a.dmg||"—")}</td><td>${esc(a.note||"")}</td></tr>`).join("")}</tbody></table></div>`:"";
@@ -573,9 +590,10 @@ function npcSheet(n,t0=1.75){
   const lessons=L.length?`<div class="cs-sec cs-in" style="--d:7"><h4>Lessons · ${learned} of ${L.length} learned</h4><div class="cs-lessons">${L.map((l,i)=>l.sealed
     ?`<div class="cs-lesson sealed" style="--i:${i}">${wax("key",46)}<span class="label">Lesson · Sealed</span></div>`
     :`<div class="cs-lesson" style="--i:${i}"><span class="label">Taught by ${esc(l.from)}</span><span class="t">${esc(l.n)}</span><p>${esc(l.p)}</p></div>`).join("")}</div></div>`:"";
-  const tops=[["Armor Class",S.ac," shield"],["Hit Points",S.hp],["Initiative",init],["Speed",S.speed],["Prof. Bonus",pb==null?null:sgn(pb)],["Passive Perception",pp]];
+  const tops=[["Armor Class",S.ac,"ac","shield"],["Hit Points",S.hp,"hp","heart"],["Initiative",init,"init"],["Speed",S.speed,"speed"],["Prof. Bonus",pb==null?null:sgn(pb),"pb"],["Passive Perception",pp,"pp"]];
   return `${line?`<p class="cs-line cs-in" style="--d:0">${line}</p>`:""}
-    <div class="cs-top">${tops.map(([k,v,c],i)=>box(k,v,(c||"")+`" style="--i:${i}`)).join("")}</div>
+    <div class="cs-top">${tops.map(([k,v,ic,c],i)=>box(k,v,ic,c,i)).join("")}</div>
+    <p class="cs-legend cs-in" style="--d:3"><span><i class="pdot on"></i>Proficient</span><span><i class="pdot ex"></i>Expertise</span><span><i class="meter-key"></i>Score out of 20</span></p>
     <div class="cs-abils">${abil}</div>
     ${(S.senses||(S.langs||[]).length)?`<dl class="dl cs-dl cs-in" style="--d:5">${S.senses?`<dt>Senses</dt><dd>${esc(S.senses)}</dd>`:""}${(S.langs||[]).length?`<dt>Languages</dt><dd>${esc(S.langs.join(", "))}</dd>`:""}</dl>`:""}
     ${atk}
