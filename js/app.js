@@ -508,11 +508,10 @@ function renderQuestList(){
 const modal=$("#modal");
 let lastFocus=null, stampTimer=null, closeT=0;
 function nameLines(name){ const w=String(name).split(" "); const last=w.length>1?w.pop():""; return `<span class="ln">${letters(w.join(" "),.85,.05)}</span>${last?`<span class="ln it">${letters(last,1.05,.05)}</span>`:""}`; }
-function openSheet({tab,photo,kicker,name,epi,body,stamp,no}){
+function openSheet({tab,photo,kicker,name,epi,body,stamp}){
   lastFocus=document.activeElement;
   clearTimeout(closeT); modal.classList.remove("out");
-  const initial=String(name||"").replace(/^(the|lady|father|madam|sir|headmistress)\s+/i,"").trim().charAt(0);
-  modal.innerHTML=`<div class="ed" aria-hidden="true"><i class="ed-vig"></i><span class="ed-init">${esc(initial)}</span><i class="ed-rule t"></i><i class="ed-rule b"></i><span class="ed-mast t"><b>The Barovian Archive</b><em>${no?`No. ${String(no).padStart(2,"0")}`:"Dossier"}</em></span><span class="ed-mast b"><b>${tab}</b><em>Updated after Session ${esc(D.lastSession)}</em></span><i class="ed-cut"></i></div><div class="mist" aria-hidden="true"></div>
+  modal.innerHTML=`<div class="burst" aria-hidden="true"><i class="flash"></i><i class="rays"></i><i class="dots"></i></div><div class="mist" aria-hidden="true"></div>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetName"><div class="shade"></div><div class="parch" aria-hidden="true"></div>
     <span class="label tab" style="color:var(--ink-muted)">${tab}</span>
     <div class="photo"><span class="tape" aria-hidden="true"></span><div class="frame">${photo}</div></div>
@@ -629,7 +628,7 @@ function npcSheet(n,t0=1.75){
 function openNpc(id){
   const n=npcById[id]; if(!n) return;
   const st=standing(n);
-  openSheet({no:D.npcs.indexOf(n)+1,tab:`NPC · ${esc(n.name.toUpperCase())}`,photo:portraitFrame(n),
+  openSheet({tab:`NPC · ${esc(n.name.toUpperCase())}`,photo:portraitFrame(n),
     kicker:`${esc(st.label.toUpperCase())} · ${n.met&&n.met!=="—"?"FIRST MET IN "+esc(metLabel(n.met).toUpperCase()):"NOT YET MET"}`,
     name:n.name,epi:n.epi,stamp:{text:st.stamp,tone:st.tone},
     body:`${n.d?`<p class="lede snap" style="animation-delay:1.4s">${esc(n.d)}</p>`:""}<dl class="dl snap" style="animation-delay:1.45s"><dt>Status</dt><dd>${statusWord(n)}</dd><dt>Last seen</dt><dd>${esc(where(n))}</dd></dl>
@@ -641,7 +640,7 @@ function openPc(id){
   const p=pcById[id]; if(!p) return;
   const v=visionFor(p.n);
   const row=(k,x)=>x==null||x===""?"":`<dt>${k}</dt><dd>${esc(x)}</dd>`;
-  openSheet({no:p.i+1,tab:`PLAYER CHARACTER · LEVEL ${esc(D.level)}`,photo:portraitFrame({...p,name:p.n}),
+  openSheet({tab:`PLAYER CHARACTER · LEVEL ${esc(D.level)}`,photo:portraitFrame({...p,name:p.n}),
     kicker:`${esc(p.sp.toUpperCase())} · ${esc(p.cl.toUpperCase())}`,name:p.n,epi:"",stamp:{text:"THE PARTY",tone:"ink"},
     body:`${p.d?`<p class="lede snap" style="animation-delay:1.4s">${esc(p.d)}</p>`:""}<dl class="dl snap" style="animation-delay:1.45s">${row("Armor Class",p.ac+(p.acx?` (${p.acx})`:""))}${row("Hit Points",p.hp)}${row("Passive Perception",p.pp)}${row("Passive Insight",p.pi)}${row("Save DC",p.dc)}${row("Languages",(p.langs||[]).join(", "))}</dl>
       ${p.notes&&p.notes.length?`<h3 class="snap" style="animation-delay:1.6s">NOTES</h3>${factList(p.notes)}`:""}
@@ -654,7 +653,7 @@ function openPlace(name){
   const photo=pin?`<div class="mapcrop" role="img" aria-label="Map around ${esc(p.n)}" style="background-image:url(img/barovia-map-1000.webp);background-size:calc(1000 * var(--u)) auto;background-position:calc(50% - ${(+pin.x*.5-500).toFixed(0)} * var(--u)) calc(50% - ${(+pin.y*.5-341).toFixed(0)} * var(--u))"></div><span class="label cap" style="color:var(--s);background:var(--p);padding:calc(3 * var(--u)) calc(8 * var(--u))">On the map</span>`
     :`${sil({name:p.n})}<span class="label cap">Not on the map yet</span>`;
   const inside=pin&&pin.key===p.n&&pin.places?pin.places.map(n=>placeByName[n]).filter(Boolean):[];
-  openSheet({no:D.places.indexOf(p)+1,tab:`LOCATION · ${esc(p.r.toUpperCase())}`,photo,
+  openSheet({tab:`LOCATION · ${esc(p.r.toUpperCase())}`,photo,
     kicker:visited?`VISITED · ${esc(metLabel(p.s).toUpperCase())}`:"HEARD OF · NOT VISITED YET",
     name:p.n,epi:p.r,stamp:{text:visited?"VISITED":"NOT VISITED",tone:visited?"ink":"red"},
     body:`<h3 class="snap" style="animation-delay:1.5s">WHAT WE KNOW</h3><p class="text snap" style="animation-delay:1.6s">${esc(p.p)}</p>
