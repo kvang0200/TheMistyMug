@@ -73,6 +73,15 @@ narrower** everywhere (`@media (max-width: 760px)`; desktop-only rules use `min-
 | `07-map.js` | The map of Barovia |
 | `08-start.js` | Search, sound toggle, and starting everything up |
 
+### Smoke test
+
+`tests/smoke.mjs` opens the site in a real browser at phone, small-tablet and desktop size: every
+tab, NPC / player / place pop-ups, a character sheet with a dice roll, a wax seal and search. It
+fails on script errors, missing files, pages wider than a phone, or pieces that don't show up.
+It runs automatically on every pull request and push to `main` (the "Smoke test" check on
+GitHub; screenshots are attached to each run). To run it yourself: `npm install`,
+`npx playwright install chromium`, then `npm test`.
+
 Code is formatted with Prettier (`.prettierrc.json`). The `js/app/` files are plain scripts, not
 modules: they share one scope, so a file can use anything defined in a file before it.
 
