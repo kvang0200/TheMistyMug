@@ -1366,3 +1366,29 @@ button.cs-act:hover,button.cs-act:focus-visible{transform:translate(calc(-3 * va
 .dt-stage.gathered .dt-dmgbig{animation:dmgPop .45s cubic-bezier(.2,1.4,.4,1) both}
 .dt-stage.gathered .dt-dmgbig .n{font-size:calc(78 * var(--u))}
 .dt-dmg>.label{display:block}
+
+/* ---------- natural 20 and natural 1 ---------- */
+@keyframes panelShake{0%,100%{translate:0 0}15%{translate:calc(-9 * var(--u)) calc(3 * var(--u))}30%{translate:calc(8 * var(--u)) calc(-4 * var(--u))}45%{translate:calc(-6 * var(--u)) calc(2 * var(--u))}60%{translate:calc(4 * var(--u)) 0}80%{translate:calc(-2 * var(--u)) 0}}
+@keyframes spark{0%{opacity:1;transform:rotate(var(--ang)) translateY(calc(var(--ds) * -.5)) scaleY(1.6)}60%{opacity:1}100%{opacity:0;transform:rotate(var(--ang)) translateY(calc(var(--ds) * -1.9 * var(--d))) scaleY(.4)}}
+@keyframes nat20Glow{0%{opacity:0;transform:scale(.3)}40%{opacity:1;transform:scale(1.1)}100%{opacity:.55;transform:scale(1)}}
+@keyframes crackDraw{to{stroke-dashoffset:0}}
+.dt-panel.shake{animation:panelShake .45s ease-out both}
+.dt-stage.nat20::after{content:"";position:absolute;left:50%;top:50%;width:calc(var(--ds) * 2.6);height:calc(var(--ds) * 2.6);margin:calc(var(--ds) * -1.3);border-radius:50%;background:radial-gradient(closest-side,rgba(255,250,235,.9),color-mix(in srgb,var(--s) 45%,transparent) 45%,transparent);pointer-events:none;z-index:-1;animation:nat20Glow .7s ease-out both}
+.dt-stage.nat20 .d20f::before{background:linear-gradient(165deg,#fffaf0 0%,color-mix(in srgb,var(--s) 80%,#fff) 45%,color-mix(in srgb,var(--s) 60%,var(--a)) 100%)}
+.dt-stage.nat20 .d20f b{color:var(--a);text-shadow:none}
+.dt-stage.nat20 .d20f.lit b{color:var(--a);text-shadow:0 0 calc(10 * var(--u)) #fff}
+.dt-sparks{position:absolute;left:50%;top:50%;width:0;height:0;pointer-events:none}
+.dt-sparks{z-index:3}
+.dt-sparks i{position:absolute;left:calc(var(--w) * var(--u) * -.5);top:0;width:calc(var(--w) * var(--u));height:calc(var(--w) * var(--u) * 4);background:linear-gradient(#fff,#fff6d8 60%,var(--a));border-radius:40%;box-shadow:0 0 calc(8 * var(--u)) #fff;transform-origin:50% 0;animation:spark .95s cubic-bezier(.15,.7,.3,1) both}
+.dt-sparks i:nth-child(3n){background:linear-gradient(#fff,var(--a));box-shadow:0 0 calc(8 * var(--u)) var(--a)}
+.dt-stage.nat1 .d20f{filter:grayscale(.9) brightness(.42)!important;transition:filter .4s}
+.dt-stage.nat1 .d20f.lit{filter:grayscale(.9) brightness(1.05)!important}
+.dt-stage.nat1 .d20f.lit b{color:#fff;text-shadow:0 0 calc(6 * var(--u)) rgba(0,0,0,.8)}
+.dt-crack{position:absolute;left:50%;top:50%;width:calc(var(--ds) * 1.7);height:calc(var(--ds) * 1.7);margin:calc(var(--ds) * -.85);overflow:visible;pointer-events:none}
+.dt-crack polyline{fill:none;stroke:var(--p);stroke-width:2.6;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;animation:crackDraw .35s ease-out both}
+.dt-crack polyline+polyline{stroke-width:1.8;animation-delay:.15s}
+.dt-nat{display:inline-block;margin-top:calc(4 * var(--u));padding:calc(3 * var(--u)) calc(10 * var(--u));font-family:var(--mono);font-size:calc(11 * var(--u));font-weight:700;letter-spacing:.16em;text-transform:uppercase;transform:skewX(-10deg)}
+.dt-nat.n20{background:var(--s);color:var(--p)}
+.dt-nat.n1{border:calc(1 * var(--u)) solid var(--rule);color:var(--muted)}
+@media (prefers-reduced-motion:reduce){ .dt-panel.shake{animation:none} }
+.dt-stage{isolation:isolate}

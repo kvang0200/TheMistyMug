@@ -696,7 +696,7 @@ tray.className="dice-tray"; tray.id="diceTray"; tray.setAttribute("aria-hidden",
 document.body.appendChild(tray);
 const diceOn=()=>tray.classList.contains("on");
 let diceFrom=null, diceRAF=0, diceT=0, lastRoll=null;
-const rnd=n=>{ try{ const a=new Uint32Array(1); crypto.getRandomValues(a); return 1+a[0]%n; }catch(e){ return 1+Math.floor(Math.random()*n); } };
+const rnd=n=>{ try{ const a=new Uint32Array(1), lim=Math.floor(4294967296/n)*n; do{ crypto.getRandomValues(a); }while(a[0]>=lim); return 1+a[0]%n; }catch(e){ return 1+Math.floor(Math.random()*n); } };
 const D20=(()=>{
   const P=(1+Math.sqrt(5))/2;
   const V=[[-1,P,0],[1,P,0],[-1,-P,0],[1,-P,0],[0,-1,P],[0,1,P],[0,-1,-P],[0,1,-P],[P,0,-1],[P,0,1],[-P,0,-1],[-P,0,1]];
@@ -732,7 +732,7 @@ function parseDice(str){
 function rollDamage(spec,crit){
   const p=parseDice(spec); if(!p) return null;
   const rolls=Array.from({length:p.n*(crit?2:1)},()=>rnd(p.d));
-  return {...p, rolls, total:rolls.reduce((a,b)=>a+b,0)+p.mod};
+  return {...p, rolls, total:Math.max(0,rolls.reduce((a,b)=>a+b,0)+p.mod)};
 }
 function rollFrom(btn){
   const n=csNpc; if(!n) return;
@@ -759,7 +759,8 @@ function throwDice(r,again){
   cancelAnimationFrame(diceRAF); clearTimeout(diceT);
   const size=Math.round(Math.max(64,Math.min(130,Math.min(innerWidth,innerHeight)*.15)));
   const d20=r.kind!=="damage"?rnd(20):null;
-  const crit=d20===20, fumble=d20===1;
+  const nat20=d20===20, nat1=d20===1, atk=r.kind==="attack";
+  const crit=atk&&nat20, fumble=atk&&nat1;
   const total=d20!=null?d20+(r.b||0):null;
   const dspec=r.kind==="damage"&&r.useAlt&&r.alt?r.alt.dmg:r.dmg;
   const dmg=r.kind!=="check"&&dspec&&!(r.kind==="attack"&&fumble)?rollDamage(dspec,crit):null;
@@ -769,8 +770,9 @@ function throwDice(r,again){
   const big=dmg?`<div class="dt-dmgbig${crit?" crit":""}"><span class="n" data-count="${dmg.total}">${dmg.total}</span><span class="ty">${esc(dmg.type||"damage")}</span></div>`:"";
   const tokens=dmg&&r.kind!=="damage"?`<div class="dt-dmg"><span class="label">${crit?"Critical damage":"Damage, if it hits"}</span>${big}<span class="dt-break">${brk}</span></div>`:"";
   const altBtns=r.kind==="damage"&&r.alt?`<div class="dt-alt"><button type="button" class="chip${r.useAlt?"":" on"}" data-alt="0" aria-pressed="${!r.useAlt}">Normal · ${esc(parseDice(r.dmg)?.n+"d"+parseDice(r.dmg)?.d)}</button><button type="button" class="chip${r.useAlt?" on":""}" data-alt="1" aria-pressed="${!!r.useAlt}">${esc(r.alt.label)} · ${esc(parseDice(r.alt.dmg)?.n+"d"+parseDice(r.alt.dmg)?.d)}</button></div>`:"";
-  const head=crit?`<span class="stamp red dt-stamp">CRITICAL HIT</span>`:fumble?`<span class="stamp ink dt-stamp">NATURAL 1</span>`:"";
-  const sayRes=d20!=null?`${r.label}: rolled ${d20}, total ${total}.${crit?" Critical hit.":fumble?" Natural 1.":""}${dmg?` Damage ${dmg.total} ${dmg.type}.`:""}`:`${r.label}: ${dmg?dmg.total+" "+dmg.type:""} damage.`;
+  /* attacks get the big stamps; checks and saves just get a "natural" tag, since a 20 or 1 has no special rule there */
+  const head=crit?`<span class="stamp red dt-stamp">CRITICAL HIT</span>`:fumble?`<span class="stamp ink dt-stamp">AUTOMATIC MISS</span>`:nat20?`<span class="dt-nat n20">Natural 20</span>`:nat1?`<span class="dt-nat n1">Natural 1</span>`:"";
+  const sayRes=d20!=null?(crit?`${r.label}: natural 20, critical hit.`:fumble?`${r.label}: natural 1, automatic miss.`:`${r.label}: rolled ${d20}, total ${total}.${nat20?" Natural 20.":nat1?" Natural 1.":""}`)+(dmg?` Damage ${dmg.total} ${dmg.type}.`:""):`${r.label}: ${dmg?dmg.total+" "+(dmg.type||"damage"):""} damage.`;
   tray.innerHTML=`<div class="dt-back" aria-hidden="true"><i></i><i></i></div>
   <div class="dt-panel" role="dialog" aria-modal="true" aria-label="${esc(r.label)} roll">
     <button type="button" class="close" data-dclose aria-label="Close the dice">${ICON.close}</button>
@@ -778,7 +780,7 @@ function throwDice(r,again){
     <span class="dt-name">${esc(r.label)}</span>
     ${d20!=null?`<div class="dt-stage" style="--ds:${size}px"><div class="dt-throw">${d20Html(size)}</div><div class="dt-shadow"></div>${r.b?`<span class="dt-bonus" aria-hidden="true">${r.b>0?"+":"−"}${Math.abs(r.b)}<small>${r.kind==="attack"?"to hit":r.label==="Initiative"?"initiative":"bonus"}</small></span>`:""}</div>`:`<div class="dt-stage dmg-only"><div class="dt-spin">${(dmg?dmg.rolls:[]).map((v,i)=>`<span class="tok big" style="--i:${i}"><small>d${dmg.d}</small><b>${v}</b></span>`).join("")}</div><div class="dt-gathered">${big}<span class="dt-break">${brk}</span></div></div>`}
     <div class="dt-out${d20!=null?" wait":""}">${head}${tokens}${altBtns}
-      ${r.kind==="attack"?`<p class="dt-note">Compare the total to the target's AC.</p>`:r.label==="Initiative"?`<p class="dt-note">Highest total acts first.</p>`:r.kind==="check"?`<p class="dt-note">Compare the total to the DC.</p>`:""}
+      ${crit?`<p class="dt-note">A natural 20 always hits.</p>`:fumble?`<p class="dt-note">A natural 1 always misses.</p>`:r.kind==="attack"?`<p class="dt-note">Compare the total to the target's AC.</p>`:r.label==="Initiative"?`<p class="dt-note">Highest total acts first.</p>`:r.kind==="check"?`<p class="dt-note">Compare the total to the DC.</p>`:""}
       <div class="dt-btns"><button type="button" class="btn dark" data-reroll><span>Roll again</span>${CSI.d20}</button></div>
     </div>
     <p class="sr" aria-live="polite" id="diceSay"></p>
@@ -787,13 +789,22 @@ function throwDice(r,again){
   csModal.querySelector(".cs-card")?.setAttribute("aria-hidden","true");
   const countUp=el=>{ if(!el) return; const to=+el.dataset.count; if(reduced||!to){ el.textContent=to; return; } const t0=performance.now(), dur=Math.min(600,200+to*25);
     const f=now=>{ const t=Math.min(1,(now-t0)/dur); el.textContent=Math.round(to*(1-Math.pow(1-t,3))); if(t<1) requestAnimationFrame(f); else { el.classList.add("bump"); Sound.tick&&Sound.tick(); } }; el.textContent="0"; requestAnimationFrame(f); };
-  const reveal=()=>{ const o=tray.querySelector(".dt-out"); if(o) o.classList.remove("wait"); if(o) countUp(o.querySelector("[data-count]")); const say=$("#diceSay"); if(say) say.textContent=sayRes; if(crit||fumble) Sound.stamp(); };
+  const reveal=()=>{ const o=tray.querySelector(".dt-out"); if(o) o.classList.remove("wait"); if(o) countUp(o.querySelector("[data-count]")); const say=$("#diceSay"); if(say) say.textContent=sayRes; if(crit) Sound.stamp(); };
   /* BG3-style: the die lands on its natural roll, the bonus flies into it, and the face counts up to the total */
   const finish=()=>{
     if(d20==null){ reveal(); return; }
     const stage=tray.querySelector(".dt-stage"), fe=tray.querySelectorAll(".d20f")[D20.F.findIndex(f=>f.num===d20)], num=fe&&fe.querySelector("b"), chip=tray.querySelector(".dt-bonus");
     if(fe) fe.classList.add("lit");
-    if(!chip||reduced){ if(num) num.textContent=total; reveal(); return; }
+    let wait=220;
+    if(nat20){ stage.classList.add("nat20"); tray.querySelector(".dt-panel").classList.add("shake"); Sound.slash&&Sound.slash();
+      if(!reduced) stage.insertAdjacentHTML("beforeend",`<div class="dt-sparks" aria-hidden="true">${Array.from({length:16},(_,i)=>`<i style="--ang:${(i*22.5+Math.random()*12).toFixed(1)}deg;--d:${(.75+Math.random()*.5).toFixed(2)};--w:${(4+Math.random()*5).toFixed(1)}"></i>`).join("")}</div>`);
+      wait=700; }
+    if(nat1){ stage.classList.add("nat1"); Sound.crack&&Sound.crack();
+      stage.insertAdjacentHTML("beforeend",`<svg class="dt-crack" viewBox="0 0 100 100" aria-hidden="true"><polyline pathLength="1" points="38,8 50,30 42,44 58,58 47,74 56,94"/><polyline pathLength="1" points="50,30 66,26 74,34"/><polyline pathLength="1" points="58,58 30,62 24,72"/></svg>`);
+      wait=700; }
+    /* an attack that rolled a natural 20 or 1 is decided by the die alone, so it keeps showing that 20 or 1 */
+    if(!chip||crit||fumble){ if(num&&!crit&&!fumble) num.textContent=total; diceT=setTimeout(reveal,reduced?0:wait); return; }
+    if(reduced){ if(num) num.textContent=total; reveal(); return; }
     diceT=setTimeout(()=>{ chip.classList.add("pop"); Sound.tick&&Sound.tick();
       diceT=setTimeout(()=>{ chip.classList.remove("pop"); chip.classList.add("fly");
         diceT=setTimeout(()=>{ let v=d20; const dir=total>d20?1:-1, steps=Math.abs(total-d20), gap=Math.max(35,Math.min(90,420/steps));
@@ -802,7 +813,7 @@ function throwDice(r,again){
             if(v!==total) diceT=setTimeout(tick,gap); else diceT=setTimeout(reveal,260); };
           tick(); },360);
       },650);
-    },220);
+    },wait);
   };
   tray.querySelector("[data-reroll]").focus({preventScroll:true});
   Sound.shutter&&Sound.shutter();
