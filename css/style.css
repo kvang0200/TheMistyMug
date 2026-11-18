@@ -1392,3 +1392,17 @@ button.cs-act:hover,button.cs-act:focus-visible{transform:translate(calc(-3 * va
 .dt-nat.n1{border:calc(1 * var(--u)) solid var(--rule);color:var(--muted)}
 @media (prefers-reduced-motion:reduce){ .dt-panel.shake{animation:none} }
 .dt-stage{isolation:isolate}
+
+/* ---------- saving throws: their own labelled button, set apart from the skills ---------- */
+.cs-save{display:flex;align-items:center;gap:calc(8 * var(--u));width:100%;margin-top:calc(10 * var(--u));padding:calc(7 * var(--u)) calc(10 * var(--u));border:calc(1.5 * var(--u)) dashed var(--ink-rule);background:transparent;color:var(--p);font:inherit;text-align:left}
+.cs-save.prof{border-style:solid;border-color:var(--p);background:color-mix(in srgb,var(--p) 8%,transparent)}
+.cs-save .si{display:flex;flex:none;color:var(--ink-muted)}
+.cs-save.prof .si{color:var(--p)}
+.cs-save .si svg{width:calc(17 * var(--u));height:calc(17 * var(--u))}
+.cs-save .st{flex:1 1 auto;display:flex;flex-direction:column;font-family:var(--mono);font-size:calc(10 * var(--u));font-weight:700;letter-spacing:.14em;text-transform:uppercase;line-height:1.2}
+.cs-save .st i{font-style:normal;font-weight:400;letter-spacing:.1em;color:var(--ink-muted);font-size:calc(9 * var(--u))}
+.cs-save .sb{flex:none;font-family:var(--mono);font-size:calc(17 * var(--u));font-weight:700;line-height:1}
+button.cs-save{cursor:pointer;transition:background .15s,color .15s,transform .2s cubic-bezier(.2,1.8,.4,1)}
+button.cs-save:hover,button.cs-save:focus-visible{background:var(--p);color:var(--s);border-color:var(--p);transform:translate(calc(-2 * var(--u)),calc(-2 * var(--u)))}
+button.cs-save:hover .si,button.cs-save:focus-visible .si,button.cs-save:hover .st i,button.cs-save:focus-visible .st i{color:var(--s)}
+.cs-ab ul{margin-top:calc(12 * var(--u))}
