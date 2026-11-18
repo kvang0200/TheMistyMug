@@ -1,6 +1,7 @@
-/* =====================================================================
-   NPC CHARACTER SHEET (inside the NPC pop-up; laid out like the D&D 2024 sheet)
-   ===================================================================== */
+/* NPC character sheets (D&D 2024 layout) and the 3D dice tray.
+   Files in css/ load in number order; a later file wins when two rules tie. */
+
+/* NPC CHARACTER SHEET (inside the NPC pop-up; laid out like the D&D 2024 sheet) */
 .cs-card h4 {
   margin: 0 0 calc(8 * var(--u));
   font-family: var(--mono);
@@ -118,23 +119,9 @@
 .cs-ab li.sv {
   font-weight: 600;
 }
-.pdot {
-  flex: none;
-  width: calc(9 * var(--u));
-  height: calc(9 * var(--u));
-  border-radius: 50%;
-  border: calc(1.2 * var(--u)) solid var(--p);
-}
-.pdot.on {
-  background: var(--p);
-}
-.pdot.ex {
-  background: var(--a);
-  border-color: var(--a);
-}
 .cs-dl {
-  border-bottom: 0 !important;
-  margin-top: calc(14 * var(--u)) !important;
+  border-bottom: 0;
+  margin-top: calc(14 * var(--u));
 }
 .cs-sec {
   margin-top: calc(16 * var(--u));
@@ -171,6 +158,7 @@
   border-bottom: calc(1 * var(--u)) dashed var(--ink-rule);
   vertical-align: top;
 }
+
 @media (max-width: 760px) {
   .cs-top {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -184,23 +172,6 @@
   }
 }
 
-/* ---------- the character sheet pop-up: stacks over the NPC pop-up, Persona-style ---------- */
-@keyframes shardIn {
-  from {
-    transform: translateX(var(--from)) skewX(-24deg);
-  }
-  to {
-    transform: translateX(0) skewX(-24deg);
-  }
-}
-@keyframes shardOut {
-  from {
-    transform: translateX(0) skewX(-24deg);
-  }
-  to {
-    transform: translateX(calc(var(--from) * -1)) skewX(-24deg);
-  }
-}
 @keyframes csIn {
   0% {
     transform: translateX(115vw) rotate(-9deg) skewX(-16deg);
@@ -259,7 +230,6 @@
     transform: skewX(-12deg);
   }
 }
-
 .csmodal {
   position: fixed;
   inset: 0;
@@ -273,22 +243,14 @@
 .csmodal.on {
   display: flex;
 }
-/* the NPC file underneath steps back into the dark */
-.modal .sheet {
-  transition:
-    transform 0.55s cubic-bezier(0.2, 1.3, 0.4, 1),
-    filter 0.4s ease;
-}
-.modal.behind .sheet {
-  transform: translateX(-14%) scale(0.88) rotate(-4deg);
-  filter: brightness(0.62) saturate(0.55);
-}
+
 @media (min-width: 761px) {
   .cs-card {
     margin-left: calc(150 * var(--u));
     width: min(calc(900 * var(--u)), 100% - calc(150 * var(--u)));
   }
 }
+
 /* diagonal shards slam across the screen, then stay as the backdrop */
 .cs-shards {
   position: absolute;
@@ -333,7 +295,6 @@
 .csmodal.out .cs-shards i:nth-child(odd) {
   animation-delay: 0.06s;
 }
-
 .cs-card {
   position: relative;
   width: min(calc(980 * var(--u)), 100%);
@@ -445,7 +406,6 @@
 .cs-open {
   margin-top: calc(16 * var(--u));
 }
-
 /* lessons: one per teacher; unlearned ones sit under a wax seal */
 .cs-lessons {
   display: grid;
@@ -512,10 +472,6 @@
   .cs-red {
     --rest: translate(calc(-6 * var(--u)), calc(-6 * var(--u))) rotate(-1.6deg);
   }
-  .modal.behind .sheet {
-    transform: scale(0.94);
-    filter: brightness(0.35);
-  }
   .cs-lessons {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -523,13 +479,11 @@
     min-height: calc(96 * var(--u));
   }
 }
+
 @media (prefers-reduced-motion: reduce) {
   .csmodal *,
   .csmodal.out * {
     animation: none !important;
-  }
-  .modal .sheet {
-    transition: none;
   }
 }
 
@@ -654,7 +608,6 @@
 .cs-ab.hi .md {
   color: var(--a);
 }
-
 /* ---------- "In battle": what she can do on her turn, at a glance ---------- */
 .cs-battle {
   margin-top: calc(16 * var(--u));
@@ -669,8 +622,8 @@
   );
 }
 .cs-battle h4 {
-  color: var(--s) !important;
-  margin-bottom: calc(10 * var(--u)) !important;
+  color: var(--s);
+  margin-bottom: calc(10 * var(--u));
 }
 .cs-acts + .cs-acts {
   margin-top: calc(14 * var(--u));
@@ -790,6 +743,7 @@
   text-transform: uppercase;
   color: var(--muted);
 }
+
 @media (max-width: 760px) {
   .cs-actrow {
     grid-template-columns: 1fr;
@@ -910,7 +864,6 @@ button.cs-act:focus-visible {
   background: var(--a);
   color: var(--s);
 }
-
 /* ---------- the dice tray ---------- */
 @keyframes dtPanel {
   0% {
@@ -1207,23 +1160,6 @@ button.cs-act:focus-visible {
   color: color-mix(in srgb, var(--s) 80%, transparent);
   font-size: calc(11 * var(--u));
 }
-.tokmod,
-.tokeq {
-  font-family: var(--mono);
-  font-size: calc(16 * var(--u));
-  color: var(--muted);
-}
-.toktot {
-  font-family: var(--serif);
-  font-size: calc(40 * var(--u));
-  line-height: 1;
-}
-.toktype {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: calc(17 * var(--u));
-  color: var(--muted);
-}
 .dt-alt {
   display: flex;
   flex-wrap: wrap;
@@ -1255,6 +1191,7 @@ button.cs-act:focus-visible {
   background: var(--s);
   color: var(--p);
 }
+
 @media (prefers-reduced-motion: reduce) {
   .dice-tray * {
     animation: none !important;
@@ -1275,24 +1212,6 @@ button.cs-act:focus-visible {
   100% {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1) rotate(-6deg);
-  }
-}
-@keyframes numBump {
-  0% {
-    transform: scale(1.55);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-@keyframes mergeFlash {
-  0% {
-    opacity: 0.9;
-    transform: scale(0.4);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1.5);
   }
 }
 .dt-bonus {
@@ -1368,27 +1287,13 @@ button.cs-act:focus-visible {
   pointer-events: none;
   animation: mergeFlash 0.6s ease-out both;
 }
+
 @media (max-width: 760px) {
   .dt-bonus {
     left: calc(50% + var(--ds) * 1.05);
   }
 }
 
-/* ---------- damage: one big number, the dice as a small footnote ---------- */
-@keyframes dmgPop {
-  0% {
-    opacity: 0;
-    transform: skewX(-8deg) scale(0.3) rotate(-10deg);
-  }
-  70% {
-    opacity: 1;
-    transform: skewX(-8deg) scale(1.12) rotate(2deg);
-  }
-  100% {
-    opacity: 1;
-    transform: skewX(-8deg);
-  }
-}
 .dt-dmgbig {
   display: inline-flex;
   align-items: baseline;
@@ -1462,29 +1367,6 @@ button.cs-act:focus-visible {
 .dt-dmg > .label {
   display: block;
 }
-
-/* ---------- natural 20 and natural 1 ---------- */
-@keyframes panelShake {
-  0%,
-  100% {
-    translate: 0 0;
-  }
-  15% {
-    translate: calc(-9 * var(--u)) calc(3 * var(--u));
-  }
-  30% {
-    translate: calc(8 * var(--u)) calc(-4 * var(--u));
-  }
-  45% {
-    translate: calc(-6 * var(--u)) calc(2 * var(--u));
-  }
-  60% {
-    translate: calc(4 * var(--u)) 0;
-  }
-  80% {
-    translate: calc(-2 * var(--u)) 0;
-  }
-}
 @keyframes spark {
   0% {
     opacity: 1;
@@ -1510,11 +1392,6 @@ button.cs-act:focus-visible {
   100% {
     opacity: 0.55;
     transform: scale(1);
-  }
-}
-@keyframes crackDraw {
-  to {
-    stroke-dashoffset: 0;
   }
 }
 .dt-panel.shake {
@@ -1635,15 +1512,16 @@ button.cs-act:focus-visible {
   border: calc(1 * var(--u)) solid var(--rule);
   color: var(--muted);
 }
+
 @media (prefers-reduced-motion: reduce) {
   .dt-panel.shake {
     animation: none;
   }
 }
+
 .dt-stage {
   isolation: isolate;
 }
-
 /* ---------- saving throws: their own labelled button, set apart from the skills ---------- */
 .cs-save {
   display: flex;
@@ -1722,4 +1600,80 @@ button.cs-save:focus-visible .st i {
 }
 .cs-ab ul {
   margin-top: calc(12 * var(--u));
+}
+
+/* keyframes for the sheet's shards and the dice tray */
+@keyframes numBump {
+  0% {
+    transform: scale(1.55);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes mergeFlash {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.4);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+@keyframes dmgPop {
+  0% {
+    opacity: 0;
+    transform: skewX(-8deg) scale(0.3) rotate(-10deg);
+  }
+  70% {
+    opacity: 1;
+    transform: skewX(-8deg) scale(1.12) rotate(2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: skewX(-8deg);
+  }
+}
+@keyframes panelShake {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  15% {
+    translate: calc(-9 * var(--u)) calc(3 * var(--u));
+  }
+  30% {
+    translate: calc(8 * var(--u)) calc(-4 * var(--u));
+  }
+  45% {
+    translate: calc(-6 * var(--u)) calc(2 * var(--u));
+  }
+  60% {
+    translate: calc(4 * var(--u)) 0;
+  }
+  80% {
+    translate: calc(-2 * var(--u)) 0;
+  }
+}
+@keyframes crackDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes shardIn {
+  from {
+    transform: translateX(var(--from)) skewX(-24deg);
+  }
+  to {
+    transform: translateX(0) skewX(-24deg);
+  }
+}
+@keyframes shardOut {
+  from {
+    transform: translateX(0) skewX(-24deg);
+  }
+  to {
+    transform: translateX(calc(var(--from) * -1)) skewX(-24deg);
+  }
 }

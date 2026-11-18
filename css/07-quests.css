@@ -1,0 +1,454 @@
+/* Quests: the Tarokka reading, personal fortunes, the quest list and loose ends.
+   Files in css/ load in number order; a later file wins when two rules tie. */
+
+.note {
+  position: relative;
+  background: var(--p);
+  color: var(--s);
+  padding: calc(26 * var(--u)) calc(22 * var(--u)) calc(24 * var(--u));
+  transform: rotate(var(--tilt, 0deg));
+  box-shadow: 0 calc(18 * var(--u)) calc(40 * var(--u)) rgba(0, 0, 0, 0.35);
+  list-style: none;
+}
+.note::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(-9 * var(--u));
+  width: calc(18 * var(--u));
+  height: calc(18 * var(--u));
+  margin-left: calc(-9 * var(--u));
+  border-radius: 50%;
+  background: var(--a);
+  box-shadow: 0 calc(2 * var(--u)) 0 rgba(0, 0, 0, 0.4);
+}
+.note .label {
+  color: var(--muted);
+}
+.note p {
+  margin: calc(12 * var(--u)) 0 0;
+  font-family: var(--serif);
+  font-size: calc(19 * var(--u));
+  line-height: 1.4;
+}
+.board {
+  position: relative;
+}
+.board > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.board .string {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: crack 1.6s cubic-bezier(0.6, 0, 0.2, 1) 0.4s both;
+}
+.board ol {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  gap: calc(40 * var(--u)) calc(28 * var(--u));
+}
+.tarot .face.front {
+  background: var(--p);
+  color: var(--s);
+  border: calc(1 * var(--u)) solid color-mix(in srgb, var(--s) 45%, transparent);
+  outline: calc(1 * var(--u)) solid color-mix(in srgb, var(--s) 20%, transparent);
+  outline-offset: calc(-10 * var(--u));
+  box-shadow: 0 calc(24 * var(--u)) calc(50 * var(--u)) rgba(0, 0, 0, 0.5);
+  min-height: calc(340 * var(--u));
+}
+.tarot .sealed-btn {
+  justify-content: space-between;
+  padding: calc(28 * var(--u)) calc(18 * var(--u));
+}
+.tarot .roman {
+  font-family: var(--serif);
+  font-size: calc(24 * var(--u));
+}
+.tarot .back {
+  padding: calc(26 * var(--u)) calc(22 * var(--u));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: calc(16 * var(--u));
+  min-height: calc(340 * var(--u));
+}
+.tarot .back .t {
+  font-family: var(--serif);
+  font-size: calc(22 * var(--u));
+  line-height: 1.1;
+}
+.tarot .back p {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: calc(16 * var(--u));
+  line-height: 1.45;
+}
+.tarot .stamp {
+  right: calc(14 * var(--u));
+  bottom: calc(18 * var(--u));
+  font-size: calc(13 * var(--u));
+}
+.tarot .back {
+  padding-bottom: calc(64 * var(--u));
+}
+/* QUESTS */
+.quest .parch {
+  min-height: calc(190 * var(--u));
+  padding-bottom: calc(58 * var(--u));
+}
+.quest .t {
+  display: block;
+  margin-top: calc(10 * var(--u));
+  font-family: var(--serif);
+  font-size: calc(22 * var(--u));
+  line-height: 1.1;
+}
+.quest p {
+  margin: calc(8 * var(--u)) 0 0;
+  font-family: var(--serif);
+  font-size: calc(15 * var(--u));
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--p) 80%, transparent);
+}
+.quest .stamp {
+  right: calc(14 * var(--u));
+  bottom: calc(14 * var(--u));
+}
+/* ---- players on Home link to their fortune on the Quests tab ---- */
+.fortune-note {
+  margin: calc(24 * var(--u)) 0 calc(40 * var(--u));
+  max-width: calc(560 * var(--u));
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: calc(18 * var(--u));
+  line-height: 1.5;
+  color: var(--muted);
+}
+#tarokka,
+#fortunes,
+#loose,
+[id^="fortune-"] {
+  scroll-margin-top: calc(90 * var(--u));
+}
+/* ---- personal fortunes under wax ---- */
+.sealbox {
+  margin-top: calc(16 * var(--u));
+  border-top: calc(1 * var(--u)) solid var(--ink-rule);
+  padding-top: calc(16 * var(--u));
+  display: flex;
+  flex-direction: column;
+  gap: calc(14 * var(--u));
+}
+.seal-row {
+  all: unset;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: calc(16 * var(--u));
+  width: 100%;
+  min-height: calc(80 * var(--u));
+  padding: calc(8 * var(--u)) calc(14 * var(--u));
+  border: calc(1.5 * var(--u)) dashed color-mix(in srgb, var(--p) 40%, transparent);
+  color: var(--p);
+  transition:
+    background-color 0.25s,
+    border-color 0.25s;
+}
+.seal-row:hover {
+  background: color-mix(in srgb, var(--a) 8%, transparent);
+  border-color: var(--a);
+}
+.seal-row:hover .wax .whole,
+.seal-row:focus-visible .wax .whole {
+  animation: wobble 0.5s ease-in-out;
+}
+.seal-row:focus-visible {
+  outline: calc(2 * var(--u)) solid var(--a);
+  outline-offset: calc(2 * var(--u));
+}
+.seal-txt {
+  display: flex;
+  flex-direction: column;
+  gap: calc(5 * var(--u));
+}
+.seal-title {
+  font-family: var(--serif);
+  font-size: calc(22 * var(--u));
+  line-height: 1.1;
+}
+.sealbox.is-open .seal-row {
+  min-height: calc(52 * var(--u));
+  border-style: solid;
+  border-color: var(--ink-rule);
+}
+.sealbox.is-open .seal-title {
+  font-size: calc(17 * var(--u));
+}
+.seal-body {
+  display: flex;
+  flex-direction: column;
+  gap: calc(12 * var(--u));
+}
+.seal-body[hidden] {
+  display: none;
+}
+.seal-body p {
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: calc(16 * var(--u));
+  line-height: 1.55;
+}
+@keyframes bodyIn {
+  from {
+    clip-path: inset(0 0 100% 0);
+    opacity: 0.2;
+    translate: 0 calc(-12 * var(--u));
+  }
+  to {
+    clip-path: inset(0);
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+.sealbox.is-open:not(.instant) .seal-body {
+  animation: bodyIn 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+.jumps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(4 * var(--u)) calc(22 * var(--u));
+  margin: calc(-30 * var(--u)) 0 calc(36 * var(--u));
+}
+/* after the crack, the broken seal clears out of the row */
+@keyframes waxGone {
+  to {
+    width: 0;
+    margin-right: calc(-16 * var(--u));
+    opacity: 0;
+  }
+}
+.sealbox.is-open .seal-row .wax {
+  animation:
+    shake 0.3s ease-in-out both,
+    waxGone 0.35s ease 0.9s forwards;
+}
+/* ---- dealt cards: they fly in from a deck above the table, one after another ---- */
+@keyframes dealIn {
+  0% {
+    opacity: 0;
+    translate: var(--dx, 0) var(--dy, calc(-200 * var(--u)));
+    rotate: var(--dr, -10deg);
+    scale: 0.82;
+  }
+  12% {
+    opacity: 1;
+  }
+  70% {
+    scale: 1.03;
+  }
+  100% {
+    opacity: 1;
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 1;
+  }
+}
+.deal.undealt > * {
+  opacity: 0;
+}
+.deal.dealt > * {
+  animation: dealIn 0.8s cubic-bezier(0.2, 0.85, 0.25, 1) var(--dd, 0s) backwards;
+}
+.deal > .flip {
+  z-index: calc(10 - var(--i, 0));
+}
+/* personal fortunes as sealed cards */
+.fcard .face.front,
+.fcard .back {
+  min-height: calc(430 * var(--u));
+}
+.fcard .sealed-btn {
+  justify-content: space-between;
+  padding: calc(30 * var(--u)) calc(18 * var(--u));
+}
+.fcard .for {
+  font-family: var(--mono);
+  font-size: calc(11 * var(--u));
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--s) 70%, transparent);
+}
+.fcard .fname {
+  font-family: var(--serif);
+  font-size: calc(28 * var(--u));
+  line-height: 1.05;
+  text-align: center;
+}
+.fcard .back {
+  padding: calc(26 * var(--u)) calc(22 * var(--u)) calc(22 * var(--u));
+  display: flex;
+  flex-direction: column;
+  gap: calc(12 * var(--u));
+}
+.fcard .back p {
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: calc(15 * var(--u));
+  line-height: 1.5;
+}
+.fcard .back .t {
+  font-family: var(--serif);
+  font-size: calc(24 * var(--u));
+  line-height: 1.05;
+}
+
+@media (max-width: 760px) {
+  #v-quests ol.grid {
+    gap: calc(52 * var(--u)) 0 !important;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @media (hover: none) {
+    /* touch screens: things you press sink in and spring back, the way hover lifts them on desktop */
+    a.card,
+    button.card,
+    .note,
+    .seal-row,
+    .chips > *,
+    .filters button,
+    .btn,
+    .nav a,
+    .pslot > .card,
+    .sealed-btn {
+      transition:
+        transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1),
+        scale 0.35s cubic-bezier(0.3, 1.6, 0.5, 1),
+        filter 0.2s;
+    }
+    .note.pressing,
+    .seal-row.pressing,
+    .chips > .pressing,
+    .filters button.pressing,
+    .btn.pressing {
+      scale: 0.95;
+    }
+    /* unbroken seals give a little nudge every few seconds: tap me */
+    .flip:not(.is-open):not(.rewax):not(.instant) .wax .whole,
+    .sealbox:not(.is-open) .seal-row .wax .whole {
+      animation: sealNudge 5.5s ease-in-out infinite;
+    }
+  }
+}
+
+@media (hover: none) {
+  .seal-row:hover {
+    background: transparent;
+    border-color: color-mix(in srgb, var(--p) 40%, transparent);
+  }
+}
+
+/* On phones each card shows only the essentials; the full details are one
+   tap away in the pop-up file. Sealed cards sit two across, and a card
+   spreads to full width once its seal is broken. The motion stays. */
+/* ongoing quests: the name is a button; the description shows under it
+   (always on bigger screens, on tap on phones) */
+.qnote .qn {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  cursor: pointer;
+}
+.qnote .qn:focus-visible {
+  outline: calc(2 * var(--u)) solid var(--a);
+  outline-offset: calc(4 * var(--u));
+}
+.qnote .qt {
+  display: block;
+  margin-top: calc(12 * var(--u));
+  font-family: var(--serif);
+  font-size: calc(22 * var(--u));
+  line-height: 1.15;
+}
+.note .qd {
+  font-size: calc(16 * var(--u));
+  color: color-mix(in srgb, var(--s) 82%, transparent);
+}
+
+@media (max-width: 760px) {
+  /* fewer words: section intros, meta lines and helper notes go */
+  .head p,
+  .fortune-note,
+  .jumps,
+  .metaline,
+  .teaser .tz-s,
+  .map-foot > span:nth-child(n + 2) {
+    display: none;
+  }
+  .sess .face,
+  .tarot .face.front,
+  .tarot .back,
+  .fcard .face.front,
+  .fcard .back {
+    min-height: calc(220 * var(--u));
+  }
+  .fcard .fname {
+    font-size: calc(21 * var(--u));
+  }
+  .fcard .for {
+    letter-spacing: 0.1em;
+  }
+  /* ongoing quests: tap a quest to read what it's about */
+  #v-quests ol.grid {
+    gap: calc(26 * var(--u)) 0 !important;
+  }
+  .qnote .qd {
+    display: none;
+  }
+  .qnote.open .qd {
+    display: block;
+    animation: fadeIn 0.3s ease both;
+  }
+  .qnote .qn::after {
+    content: "+";
+    position: absolute;
+    right: calc(18 * var(--u));
+    top: calc(18 * var(--u));
+    font-family: var(--sans);
+    font-weight: 400;
+    font-size: calc(26 * var(--u));
+    line-height: 1;
+    color: var(--s);
+    opacity: 0.75;
+    transition: rotate 0.25s cubic-bezier(0.2, 1.6, 0.4, 1);
+  }
+  .qnote.open .qn::after {
+    rotate: 45deg;
+  }
+  .qnote .label {
+    padding-right: calc(30 * var(--u));
+  }
+  .note {
+    padding: calc(22 * var(--u)) calc(18 * var(--u)) calc(20 * var(--u));
+  }
+  .note p {
+    font-size: calc(17 * var(--u));
+  }
+  .qnote .qt {
+    font-size: calc(20 * var(--u));
+    margin-top: calc(8 * var(--u));
+    padding-right: calc(24 * var(--u));
+  }
+}

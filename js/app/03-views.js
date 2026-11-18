@@ -152,7 +152,7 @@ function renderHome() {
 
 
   <section class="section players-sec" id="players"><div class="mist" style="top:0" aria-hidden="true"></div><div class="wrap" style="position:relative">
-    ${head("01 — The party", `The <i>players</i>`, `<p>${matchMedia("(hover:hover) and (min-width:701px)").matches ? "Hover a player to flip their portrait over, and tap to open their file." : "Tap a player to open their file."} Each personal fortune is sealed inside it.</p>`)}
+    ${head("01 — The party", `The <i>players</i>`, `<p>${matchMedia("(hover:hover) and (min-width:761px)").matches ? "Hover a player to flip their portrait over, and tap to open their file." : "Tap a player to open their file."} Each personal fortune is sealed inside it.</p>`)}
     <div class="ptrack">${PCS.map(playerCard).join("")}</div>
   </div></section>
 

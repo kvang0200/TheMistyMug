@@ -5,18 +5,20 @@
      refreshed in the background.
    Bump VERSION when you change css/, js/app/, js/sound.js, fonts/ or img/ to make every
    player's device drop the old copies on its next visit. */
-const VERSION = "2026-11-18-split-files";
+const VERSION = "2026-11-18-css-by-feature";
 const CACHE = "barovia-" + VERSION;
 const CORE = [
   "./",
   "index.html",
   "css/01-base.css",
-  "css/02-pages.css",
-  "css/03-motion.css",
-  "css/04-title-card.css",
-  "css/05-phone-and-fixes.css",
-  "css/06-character-sheet.css",
-  "css/07-popup-effects.css",
+  "css/02-header.css",
+  "css/03-home.css",
+  "css/04-sessions.css",
+  "css/05-npcs.css",
+  "css/06-locations.css",
+  "css/07-quests.css",
+  "css/08-popups.css",
+  "css/09-character-sheet.css",
   "js/data.js",
   "js/sound.js",
   "js/app/01-core.js",

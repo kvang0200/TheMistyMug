@@ -180,7 +180,7 @@ function fitCover() {
   cv.classList.toggle("stacked", !!(vil && copy && vil.offsetTop > copy.offsetTop + 40));
   if (!hl) return;
   /* only grow on laptop-sized screens; large monitors keep the normal headline */
-  if (innerWidth <= 700 || cv.classList.contains("stacked") || innerWidth / unitPx() > 1600) return;
+  if (innerWidth <= 760 || cv.classList.contains("stacked") || innerWidth / unitPx() > 1600) return;
   const room = innerHeight - $("#hdr").offsetHeight;
   if (cv.offsetHeight > room) return;
   const base = parseFloat(getComputedStyle(hl).fontSize);

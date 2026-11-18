@@ -12,7 +12,7 @@ unmet NPCs, or quests the party hasn't started.
 |---|---|---|
 | `js/data.js` | All campaign content: sessions, NPCs, places, Tarokka, fortunes, quests, party, plus map pins and the travel trail | **Yes** (usually the only file) |
 | `index.html` | Page skeleton: intro, header, the five tabs, the map | Rarely |
-| `css/` | All styling and animation, split into 7 files that load in order (later files win). **The three site colors are at the top of `01-base.css`** | Rarely |
+| `css/` | All styling and animation, one file per feature, loaded in order (later files win). **The three site colors are at the top of `01-base.css`** | Rarely |
 | `js/app/` | Builds every tab and pop-up from `data.js`; seals, stamps, search, map. Split into 8 files that share one scope and load in order | Rarely |
 | `js/sound.js` | Sound effects made in the browser: wax cracking, paper turning, stamps, slashes (no sound files) | Rarely |
 | `sw.js` | Offline cache (service worker) | Bump `VERSION` when anything except `data.js` changes |
@@ -49,13 +49,18 @@ No build step. Edit a file, commit, and Pages republishes in a minute or two.
 
 | `css/` file | What's in it |
 |---|---|
-| `01-base.css` | Colors, fonts, design pixels, motion keyframes, header, shared pieces (cards, stamps, wax seals, flip cards) |
-| `02-pages.css` | Home, Locations map, pop-up sheet, Quests, small-screen basics |
-| `03-motion.css` | Reduced motion, scroll motion, pinned scenes, dealt cards, player portraits |
-| `04-title-card.css` | The Home title card and the page transitions |
-| `05-phone-and-fixes.css` | Later phone and visual fixes (Nov 2026) layered over the files above |
-| `06-character-sheet.css` | NPC character sheets and the dice tray |
-| `07-popup-effects.css` | Pop-up entrances and exits (Tarokka card, initiative, portcullis, Persona-style exit) |
+| `01-base.css` | Colors, fonts, design pixels, shared keyframes, and pieces every page uses: cards, labels, stamps, chips, wax seals, flip cards, scroll motion, film grain |
+| `02-header.css` | Intro, header (tabs, search, sound) and page transitions |
+| `03-home.css` | Home: title card, Strahd's card, the dice, players, latest session |
+| `04-sessions.css` | Sessions: chronicle bands, redactions, sticky list heading |
+| `05-npcs.css` | NPCs: card wall, group headings, filter bar |
+| `06-locations.css` | Locations: interactive map and list |
+| `07-quests.css` | Quests: Tarokka reading, personal fortunes, quest list, loose ends |
+| `08-popups.css` | NPC, player and place pop-ups, with their entrance and exit effects |
+| `09-character-sheet.css` | NPC character sheets and the dice tray |
+
+Each file keeps its own phone rules next to the rules they change. **Phones are 760px and
+narrower** everywhere (`@media (max-width: 760px)`; desktop-only rules use `min-width: 761px`).
 
 | `js/app/` file | What's in it |
 |---|---|

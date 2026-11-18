@@ -1,8 +1,464 @@
-/* =====================================================================
-   NPC / PLAYER / PLACE POP-UP ENTRANCES (Persona speed, D&D objects)
+/* Pop-ups for NPCs, players and places: the file itself, plus the entrance and exit effects.
+   Files in css/ load in number order; a later file wins when two rules tie. */
+
+@keyframes slashPass {
+  0% {
+    transform: translateX(-150%) rotate(-12deg);
+  }
+  100% {
+    transform: translateX(150%) rotate(-12deg);
+  }
+}
+@keyframes wipeIn {
+  from {
+    clip-path: polygon(-20% -20%, -20% -20%, -60% 130%, -60% 130%);
+  }
+  to {
+    clip-path: polygon(-20% -20%, 160% -20%, 130% 130%, -60% 130%);
+  }
+}
+.intro .pass {
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  top: 50%;
+  height: calc(120 * var(--u));
+  margin-top: calc(-60 * var(--u));
+  background: var(--a);
+  animation: slashPass 0.45s cubic-bezier(0.75, 0, 0.2, 1) 0.25s both;
+}
+/* POP-UP SHEET (NPCs, players, places) */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(calc(12 * var(--u)), 3vw, calc(40 * var(--u)));
+  background: color-mix(in srgb, var(--p) 84%, transparent);
+  overflow: hidden;
+}
+.modal.on {
+  display: flex;
+  animation: fadeIn 0.3s ease both;
+}
+.modal .pass {
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  top: 50%;
+  height: calc(140 * var(--u));
+  margin-top: calc(-70 * var(--u));
+  background: var(--a);
+  z-index: 3;
+  pointer-events: none;
+  animation: slashPass 0.55s cubic-bezier(0.75, 0, 0.2, 1) both;
+}
+.modal .mist {
+  top: 30%;
+}
+.sheet {
+  position: relative;
+  width: min(calc(1080 * var(--u)), 100%);
+  max-height: calc(100vh - calc(32 * var(--u)));
+  max-height: calc(100dvh - calc(32 * var(--u)));
+  display: flex;
+  color: var(--p);
+  animation: wipeIn 0.7s cubic-bezier(0.75, 0, 0.2, 1) 0.3s backwards;
+}
+.sheet > .shade {
+  position: absolute;
+  inset: calc(10 * var(--u)) calc(6 * var(--u)) 0;
+  box-shadow: 0 calc(40 * var(--u)) calc(80 * var(--u)) rgba(0, 0, 0, 0.65);
+  pointer-events: none;
+}
+.sheet > .parch {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-0.6deg);
+}
+.sheet .tab {
+  position: absolute;
+  left: calc(40 * var(--u));
+  top: calc(18 * var(--u));
+  z-index: 2;
+}
+.sheet .photo {
+  position: relative;
+  flex: 0 0 min(36%, calc(360 * var(--u)));
+  padding: calc(48 * var(--u)) 0 calc(36 * var(--u)) calc(40 * var(--u));
+  display: flex;
+}
+.sheet .photo .frame {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: calc(300 * var(--u));
+  overflow: hidden;
+  background: var(--p);
+  box-shadow: 0 calc(14 * var(--u)) calc(30 * var(--u)) rgba(0, 0, 0, 0.35);
+  transform: rotate(-1.5deg);
+  animation: sway 7s ease-in-out infinite alternate;
+}
+.sheet .photo .frame .sil {
+  position: absolute;
+  inset: 0;
+}
+.sheet .photo .frame .glowdot {
+  position: absolute;
+  left: 50%;
+  top: 16%;
+  width: calc(300 * var(--u));
+  height: calc(300 * var(--u));
+  margin-left: calc(-150 * var(--u));
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--a) 40%, transparent) 0%,
+    transparent 66%
+  );
+}
+.sheet .photo .frame .mapcrop {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  filter: sepia(0.3) contrast(1.05);
+}
+.sheet .photo .frame .mapcrop::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(26 * var(--u));
+  height: calc(26 * var(--u));
+  margin: calc(-13 * var(--u));
+  border-radius: 48% 52% 50% 46%;
+  background: var(--a);
+  box-shadow:
+    0 0 0 calc(4 * var(--u)) color-mix(in srgb, var(--s) 70%, transparent),
+    0 0 0 calc(12 * var(--u)) color-mix(in srgb, var(--a) 30%, transparent);
+}
+.sheet .photo .cap {
+  position: absolute;
+  left: calc(16 * var(--u));
+  bottom: calc(14 * var(--u));
+  color: var(--muted);
+}
+.sheet .tape {
+  position: absolute;
+  left: 46%;
+  top: calc(-6 * var(--u));
+  width: calc(46 * var(--u));
+  height: calc(18 * var(--u));
+  background: color-mix(in srgb, var(--s) 70%, var(--p));
+  opacity: 0.5;
+  transform: rotate(-4deg);
+}
+.sheet .body {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: calc(40 * var(--u)) calc(48 * var(--u)) calc(34 * var(--u));
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.sheet .close {
+  position: absolute;
+  right: calc(26 * var(--u));
+  top: calc(26 * var(--u));
+  width: calc(48 * var(--u));
+  height: calc(48 * var(--u));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: calc(1 * var(--u)) solid var(--ink-rule);
+  color: var(--p);
+  cursor: pointer;
+  z-index: 2;
+  transition:
+    transform 0.25s cubic-bezier(0.2, 1.8, 0.4, 1),
+    background 0.15s,
+    color 0.15s;
+}
+.sheet .close:hover,
+.sheet .close:focus-visible {
+  transform: rotate(90deg);
+  background: var(--a);
+  color: var(--s);
+}
+.sheet .close svg {
+  width: calc(18 * var(--u));
+  height: calc(18 * var(--u));
+}
+.sheet .kicker {
+  padding-right: calc(60 * var(--u));
+}
+.sheet h2 {
+  margin: calc(16 * var(--u)) 0 0;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(calc(48 * var(--u)), 7vw, calc(76 * var(--u)));
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+}
+.sheet h2 .ln {
+  display: block;
+}
+.sheet h2 .ln.it {
+  font-style: italic;
+}
+.sheet .epi {
+  margin: calc(12 * var(--u)) 0 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: calc(21 * var(--u));
+  color: color-mix(in srgb, var(--p) 78%, transparent);
+}
+.sheet .dl {
+  font-size: calc(13 * var(--u));
+  margin-top: calc(16 * var(--u));
+  border-bottom: calc(1 * var(--u)) solid var(--ink-rule);
+  padding-bottom: calc(14 * var(--u));
+}
+.sheet .bar-reveal {
+  position: relative;
+}
+.sheet .bar-reveal::after {
+  content: "";
+  position: absolute;
+  inset: calc(-2 * var(--u)) calc(-6 * var(--u));
+  background: var(--p);
+  transform-origin: right;
+  animation: draw 0.45s cubic-bezier(0.2, 1.5, 0.4, 1) 2.1s reverse both;
+}
+.sheet h3 {
+  margin: calc(20 * var(--u)) 0 0;
+  font-family: var(--mono);
+  font-size: calc(12 * var(--u));
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--ink-muted);
+}
+.sheet ol {
+  margin: calc(10 * var(--u)) 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: calc(7 * var(--u));
+}
+.sheet ol li {
+  display: flex;
+  gap: calc(14 * var(--u));
+  font-size: calc(14.5 * var(--u));
+  line-height: 1.5;
+}
+.sheet ol li .n {
+  flex: 0 0 calc(22 * var(--u));
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: calc(17 * var(--u));
+  color: var(--a);
+}
+.sheet .text {
+  margin: calc(10 * var(--u)) 0 0;
+  font-family: var(--serif);
+  font-size: calc(18 * var(--u));
+  line-height: 1.6;
+}
+.sheet .chips {
+  margin-top: auto;
+  padding-top: calc(16 * var(--u));
+}
+.sheet .chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(8 * var(--u));
+  margin-top: calc(18 * var(--u));
+  padding-top: calc(14 * var(--u));
+  border-top: calc(1 * var(--u)) solid var(--ink-rule);
+}
+.sheet .stamp {
+  right: calc(96 * var(--u));
+  top: calc(112 * var(--u));
+  font-size: calc(20 * var(--u));
+  letter-spacing: 0.22em;
+}
+
+@media (max-width: 760px) {
+  .sheet {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .sheet .photo {
+    flex: 0 0 auto;
+    padding: calc(44 * var(--u)) calc(22 * var(--u)) 0;
+    height: calc(240 * var(--u));
+  }
+  .sheet .photo .frame {
+    min-height: 0;
+  }
+  .sheet .body {
+    padding: calc(24 * var(--u)) calc(22 * var(--u)) calc(26 * var(--u));
+    overflow: visible;
+  }
+  .sheet .close {
+    top: auto;
+    bottom: auto;
+    right: calc(14 * var(--u));
+    top: calc(10 * var(--u));
+  }
+  .sheet .stamp {
+    right: calc(22 * var(--u));
+    top: auto;
+    position: relative;
+    align-self: flex-end;
+    margin-top: calc(-10 * var(--u));
+  }
+  .sheet .kicker {
+    padding-right: calc(56 * var(--u));
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro,
+  .cut,
+  .modal .pass {
+    display: none !important;
+  }
+}
+
+/* ---- particles (wax shards, embers) ---- */
+.fx-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+.sheet .sealbox {
+  border-top: 0;
+  padding-top: 0;
+  margin-top: calc(12 * var(--u));
+}
+.sheet .lede {
+  margin: calc(14 * var(--u)) 0 0;
+  max-width: calc(620 * var(--u));
+  font-family: var(--serif);
+  font-size: calc(19 * var(--u));
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  /* phones: scroll the overlay, not the sheet, so the parchment (absolutely
+     positioned behind the content) always stretches to the full length of the
+     text instead of stopping at the screen height */
+  .modal {
+    align-items: flex-start;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-top: calc(16 * var(--u));
+    padding-bottom: calc(40 * var(--u));
+  }
+  .modal .sheet {
+    max-height: none;
+    overflow: visible;
+    flex: 0 0 auto;
+    margin: 0 auto;
+  }
+  .modal .sheet > .parch {
+    transform: rotate(-0.3deg);
+  }
+  .sheet .stamp {
+    margin-top: calc(30 * var(--u));
+  }
+}
+
+/* pop-up stamps sit in the flow at the foot of the file at every size, so a
+   long name (Vallakovich Reformation Center, The Wachter Father) or a long
+   description can never end up underneath one */
+.sheet .stamp {
+  position: relative;
+  right: auto;
+  top: auto;
+  align-self: flex-end;
+  flex: none;
+  margin: calc(26 * var(--u)) calc(6 * var(--u)) calc(6 * var(--u)) 0;
+}
+.sheet .body {
+  padding-bottom: calc(40 * var(--u));
+}
+@keyframes sheetUp {
+  from {
+    opacity: 0;
+    translate: 0 calc(70 * var(--u));
+    scale: 0.97;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @media (max-width: 760px) {
+    /* pop-ups rise up from the bottom of the screen like a sheet of paper slid across the table */
+    .modal.on .sheet {
+      animation: sheetUp 0.55s cubic-bezier(0.2, 0.9, 0.25, 1) 0.05s backwards;
+    }
+  }
+}
+
+@media (max-width: 760px) {
+  /* pop-ups on phones: the red slash that wipes across when a file opens was
+     left parked just off the right edge, and the pop-up could be dragged
+     sideways to reveal it as a bright red band */
+  .modal {
+    overflow-x: hidden;
+  }
+  /* the overlay scrolls on phones; pin the entrance effects to the screen so
+     scrolling mid-entrance doesn't drag them up and leave a sliced-off strip */
+  #modal .fx,
+  #modal .pass {
+    position: fixed;
+  }
+}
+
+/* the NPC file underneath steps back into the dark */
+.modal .sheet {
+  transition:
+    transform 0.55s cubic-bezier(0.2, 1.3, 0.4, 1),
+    filter 0.4s ease;
+}
+.modal.behind .sheet {
+  transform: translateX(-14%) scale(0.88) rotate(-4deg);
+  filter: brightness(0.62) saturate(0.55);
+}
+
+@media (max-width: 760px) {
+  .modal.behind .sheet {
+    transform: scale(0.94);
+    filter: brightness(0.35);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal .sheet {
+    transition: none;
+  }
+}
+
+/* NPC / PLAYER / PLACE POP-UP ENTRANCES (Persona speed, D&D objects)
    modal[data-fx]: card = NPC (a Tarokka card flips and bursts into the file)
-   init = player (a "roll for initiative" cut-in) · gate = location (portcullis)
-   ===================================================================== */
+   init = player (a "roll for initiative" cut-in) · gate = location (portcullis) */
 .modal .fx {
   position: absolute;
   inset: 0;
@@ -60,7 +516,6 @@
     opacity: 1;
   }
 }
-
 /* ---------- NPC · TAROKKA CARD ---------- */
 @keyframes bandTop {
   from {
@@ -257,7 +712,6 @@
 .modal[data-fx="card"].out .fx-bandb {
   animation: bandsOut 0.3s ease-in both;
 }
-
 /* ---------- PLAYER · ROLL FOR INITIATIVE ---------- */
 @keyframes cutBand {
   0% {
@@ -419,7 +873,6 @@
 .modal[data-fx="init"].out .fx {
   animation: fxFade 0.25s ease-in both;
 }
-
 /* ---------- LOCATION · PORTCULLIS ---------- */
 @keyframes barDrop {
   0% {
@@ -574,6 +1027,7 @@
     letter-spacing: 0.14em;
   }
 }
+
 /* ---------- EXITS (Persona-style) ----------
    The file kicks back for a beat, then is thrown off screen while a red band and a
    black band slash across it the other way and a few shards fly. Each kind leaves
@@ -721,6 +1175,7 @@
 .modal[data-fx="card"].out .fx-tk {
   display: none;
 }
+
 @media (prefers-reduced-motion: reduce) {
   .modal .fx,
   .fx-out {
