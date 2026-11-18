@@ -530,7 +530,7 @@ function fxSounds(kind){
   const at=(ms,f)=>fxTimers.push(setTimeout(f,ms));
   if(kind==="init"){ Sound.slash(); at(200,()=>Sound.dice()); at(720,()=>Sound.drum()); }
   else if(kind==="gate"){ Sound.chains(); at(380,()=>Sound.clang()); at(640,()=>Sound.winch()); }
-  else { at(470,()=>Sound.cardSnap()); at(860,()=>Sound.slash(.3)); }
+  else { at(90,()=>Sound.cardRiffle()); at(470,()=>Sound.cardSnap()); at(860,()=>Sound.cardBurst()); }
 }
 function openSheet({tab,photo,kicker,name,epi,body,stamp,fx}){
   lastFocus=document.activeElement;

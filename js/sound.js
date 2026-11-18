@@ -87,7 +87,12 @@ const Sound=(()=>{
 
   /* ---- the D&D pop-up entrances ---- */
   /* a Tarokka card snapping over */
-  const cardSnap=play(()=>{ hiss(.045,{type:"highpass",f0:2200,gain:.34,attack:.001,wet:.12}); hiss(.12,{f0:1400,f1:700,Q:.9,gain:.18,attack:.004,delay:.01,wet:.2}); tone(180,120,.07,{gain:.18,delay:.005,wet:.2}); });
+  /* a Tarokka card: a crunchy riffle as it spins in, a thick crackling snap as it flips, a crumple as it bursts.
+     Grains of filtered noise kept in the low-mid range so it's crunchy, not shrill */
+  const grains=(n,span,{f=700,fr=1300,Q=2.2,g=.2,gr=.14,delay=0,len=.014,lr=.022,wet=.18}={})=>{ for(let i=0;i<n;i++) hiss(len+Math.random()*lr,{f0:f+Math.random()*fr,Q,gain:g+Math.random()*gr,attack:.001,delay:delay+Math.random()*span,wet,pan:Math.random()*.8-.4}); };
+  const cardRiffle=play(()=>{ for(let i=0;i<9;i++){ const dl=i*.032; hiss(.02,{f0:850+i*55,Q:2.2,gain:.44-i*.025,attack:.001,delay:dl,wet:.12,pan:-.3+i*.07}); } grains(12,.28,{g:.2,gr:.14,f:600,fr:900}); });
+  const cardSnap=play(()=>{ tone(150,70,.12,{gain:.34,wet:.25}); hiss(.035,{f0:1500,Q:1.6,gain:.5,attack:.001,wet:.12}); hiss(.09,{type:"lowpass",f0:1200,f1:400,gain:.32,attack:.002,wet:.2}); grains(22,.1,{g:.3,gr:.24}); });
+  const cardBurst=play(()=>{ tone(110,48,.3,{gain:.32,wet:.4}); hiss(.28,{type:"lowpass",f0:1600,f1:350,gain:.26,attack:.01,wet:.35}); grains(34,.24,{g:.26,gr:.22,f:500,fr:1500}); });
   /* a die on a table: hard little knocks, closer together as it settles */
   const dieHit=play((g=1,dl=0)=>{ const f=1500+Math.random()*900; hiss(.022,{f0:f,Q:3.5,gain:.3*g,attack:.001,delay:dl,wet:.12,pan:Math.random()*.6-.3}); tone(f*.62,f*.5,.03,{type:"triangle",gain:.06*g,delay:dl,wet:.1}); tone(230,190,.05,{gain:.12*g,delay:dl,wet:.15}); });
   const dice=play(()=>{ [0,.11,.2,.27,.32,.36,.39,.41].forEach((dl,i)=>dieHit(Math.max(.28,1-i*.11),dl)); });
@@ -125,5 +130,5 @@ const Sound=(()=>{
      engine is ready before the click that triggered it asks for a sound. */
   const wake=()=>{ if(!on) return; if(!started){ setOn(true); return; } if(ctx.state!=="running") ctx.resume(); };
   ["click","touchend","keydown"].forEach(ev=>addEventListener(ev,wake,{capture:true,passive:true}));
-  return {setOn,isOn:()=>on,tick,slash,page,open,close,crack,flip,stamp,tear,reseal,shutter,cardSnap,dieHit,dice,drum,chains,clang,winch};
+  return {setOn,isOn:()=>on,tick,slash,page,open,close,crack,flip,stamp,tear,reseal,shutter,cardRiffle,cardSnap,cardBurst,dieHit,dice,drum,chains,clang,winch};
 })();
