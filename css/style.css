@@ -1008,6 +1008,9 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
    sideways to reveal it as a bright red band */
 @media (max-width:760px){
   .modal{overflow-x:hidden}
+  /* the overlay scrolls on phones; pin the entrance effects to the screen so
+     scrolling mid-entrance doesn't drag them up and leave a sliced-off strip */
+  #modal .fx,#modal .pass{position:fixed}
 }
 
 /* touch screens keep :hover "stuck" after a tap, which left red-pink
@@ -1086,10 +1089,12 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
   .sealed-btn .t{font-size:calc(19 * var(--u))!important}
   .fcard .fname{font-size:calc(21 * var(--u))}
   .fcard .for{letter-spacing:.1em}
-  /* a broken seal spreads the card across the row so its text has room */
-  .grid>.flip.is-open,.grid>.flip.is-open:last-child:nth-child(odd){grid-column:1/-1;width:auto;justify-self:stretch}
+  /* a broken seal spreads the card across the row so its text has room.
+     .wide is added by app.js once the wax has cracked (and removed once a
+     resealed card has turned back), so the card never changes size mid-animation */
+  .grid>.flip.wide,.grid>.flip.wide:last-child:nth-child(odd){grid-column:1/-1;width:auto;justify-self:stretch}
   /* a sealed card's hidden back would otherwise set its height */
-  .grid>.flip:not(.is-open):not(.rewax) .face.back{display:none}
+  .grid>.flip:not(.wide) .face.back{display:none}
   .sess-back .chips{display:none}
 
   /* NPCs: the stamp says enough */

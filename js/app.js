@@ -75,7 +75,7 @@ function wax(kind="key",w=78){
 }
 function flipCard({key,cls="",i=0,front,back,frontParch=true,id="",still=false}){
   const open=isOpen(key);
-  return `<div class="flip in ${cls}${open?" is-open instant":""}" data-seal="${esc(key)}"${id?` id="${esc(id)}"`:""} style="--tilt:${tilt(i)}deg;--i:${i}"><div class="shade"></div><div class="inner"><div class="face front${frontParch?" parch":""}"${open?" inert":""}>${front}</div><div class="face back parch"${open?"":" inert"}>${back}${resealBtn("this card")}</div></div></div>`;
+  return `<div class="flip in ${cls}${open?" is-open instant wide":""}" data-seal="${esc(key)}"${id?` id="${esc(id)}"`:""} style="--tilt:${tilt(i)}deg;--i:${i}"><div class="shade"></div><div class="inner"><div class="face front${frontParch?" parch":""}"${open?" inert":""}>${front}</div><div class="face back parch"${open?"":" inert"}>${back}${resealBtn("this card")}</div></div></div>`;
 }
 /* a wax-sealed note (personal fortunes): tap the seal to crack it, tap again to reseal */
 function sealBox(key,name,inner){
@@ -892,7 +892,7 @@ function syncTwins(el,open){
   twins(el).forEach(x=>{
     x.classList.remove("rewax");
     if(x.classList.contains("sealbox")) paintBox(x,open,true);
-    else { x.classList.toggle("is-open",open); x.classList.toggle("instant",open); faces(x,open); stampLater(x,open,false); }
+    else { clearTimeout(x._wideT); x.classList.toggle("is-open",open); x.classList.toggle("instant",open); x.classList.toggle("wide",open); faces(x,open); stampLater(x,open,false); }
   });
 }
 function faces(card,open){ const f=card.querySelector(".face.front"), b=card.querySelector(".face.back"); if(f) f.inert=open; if(b) b.inert=!open; }
@@ -900,8 +900,25 @@ function stampLater(card,show,animate){
   const later=card.querySelector("[data-later]"); if(!later) return;
   later.hidden=!show; later.classList.toggle("stamp-now",show&&animate); later.style.animationDelay=show&&animate?"1.45s":"";
 }
+/* phones: an opened card spans the whole row (.wide in css). The size change waits
+   until the wax has cracked, and the cards around it glide to their new places
+   instead of jumping (record where everything was, change, animate from there) */
+function reflow(card,wide){
+  if(card.classList.contains("wide")===wide) return;
+  const kids=card.parentElement?[...card.parentElement.children]:[card];
+  const before=kids.map(k=>k.getBoundingClientRect());
+  card.classList.toggle("wide",wide);
+  if(reduced) return;
+  kids.forEach((k,i)=>{
+    const a=before[i], b=k.getBoundingClientRect(); if(!b.width||!b.height||!a.width) return;
+    const dx=a.left-b.left, dy=a.top-b.top, sx=a.width/b.width, sy=a.height/b.height;
+    if(Math.abs(dx)<1&&Math.abs(dy)<1&&Math.abs(sx-1)<.01&&Math.abs(sy-1)<.01) return;
+    k.animate([{transformOrigin:"0 0",transform:`translate(${dx}px,${dy}px) scale(${sx},${sy})`},{transformOrigin:"0 0",transform:"none"}],{duration:560,easing:"cubic-bezier(.2,.9,.25,1)"});
+  });
+}
 function crackSeal(card){
   if(!card||card.classList.contains("is-open")) return;
+  clearTimeout(card._wideT); card._wideT=setTimeout(()=>reflow(card,true),reduced?0:600);
   const w=card.querySelector(".wax"), hadFocus=card.contains(document.activeElement);
   card.classList.remove("rewax"); card.classList.add("is-open"); faces(card,true); remember(card.dataset.seal);
   if(hadFocus){ const r=card.querySelector("[data-reseal]"); if(r) r.focus({preventScroll:true}); }
@@ -913,6 +930,8 @@ function crackSeal(card){
 function resealCard(card){
   if(!card||!card.classList.contains("is-open")) return;
   forget(card.dataset.seal);
+  /* stay full width while it turns back and the fresh wax lands, then shrink */
+  clearTimeout(card._wideT); card._wideT=setTimeout(()=>reflow(card,false),reduced?0:1050);
   card.classList.remove("is-open","instant"); card.classList.add("rewax"); faces(card,false); stampLater(card,false,false);
   const btn=card.querySelector("[data-crack]"); if(btn) btn.focus({preventScroll:true});
   syncTwins(card,false);
