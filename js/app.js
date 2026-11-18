@@ -530,6 +530,7 @@ function openSheet({tab,photo,kicker,name,epi,body,stamp}){
 }
 function closeSheet(){
   if(!modal.classList.contains("on")) return;
+  closeCS(true);
   clearTimeout(stampTimer);
   modal.classList.remove("on"); modal.setAttribute("aria-hidden","true"); modal.innerHTML="";
   document.documentElement.style.overflow="";
@@ -563,22 +564,25 @@ function npcSheet(n,t0=1.75){
   const box=(k,v,cls="")=>`<div class="cs-box${cls}"><span class="v">${esc(has(v)?v:"—")}</span><span class="k">${k}</span></div>`;
   const line=[S.sp,S.cl?S.cl+(has(S.lvl)?" "+S.lvl:""):null,S.size].filter(Boolean).map(esc).join(" · ");
   const abil=ABIL.map(([k,name,sk])=>{ const m=mod(k), sv=bonus(m,saves.includes(k));
-    return `<div class="cs-ab"><span class="nm">${name}</span><span class="md">${sgn(m)}</span><span class="sc">${has(A[k])?esc(A[k]):"—"}</span>
+    return `<div class="cs-ab" style="--i:${ABIL.findIndex(a=>a[0]===k)}"><span class="nm">${name}</span><span class="md">${sgn(m)}</span><span class="sc">${has(A[k])?esc(A[k]):"—"}</span>
       <ul><li class="sv">${dot(saves.includes(k))}<span>${sgn(sv)}</span>Saving Throw</li>${sk.map(s=>{const x=skill(s); return `<li>${dot(x.p,x.e)}<span>${sgn(x.v)}</span>${s}</li>`;}).join("")}</ul></div>`; }).join("");
-  const list=(title,items,fn)=>items&&items.length?`<div class="cs-sec"><h4>${title}</h4>${items.map(fn).join("")}</div>`:"";
-  const atk=(S.attacks||[]).length?`<div class="cs-sec"><h4>Weapons &amp; Damage Cantrips</h4><table class="cs-atk"><thead><tr><th>Name</th><th>Atk / DC</th><th>Damage &amp; Type</th><th>Notes</th></tr></thead><tbody>${S.attacks.map(a=>`<tr><td>${esc(a.n)}</td><td>${esc(a.hit||"—")}</td><td>${esc(a.dmg||"—")}</td><td>${esc(a.note||"")}</td></tr>`).join("")}</tbody></table></div>`:"";
-  const sp=S.spells, spell=sp&&(sp.list||[]).length?`<div class="cs-sec"><h4>Spellcasting${sp.ability?` · ${esc(sp.ability)}`:""}${sp.dc?` · Save DC ${esc(sp.dc)}`:""}${sp.atk?` · Attack ${esc(sp.atk)}`:""}</h4>${sp.list.map(l=>`<p class="cs-p"><b>${esc(l.lvl)}.</b> ${esc((l.s||[]).join(", ")||"—")}</p>`).join("")}</div>`:"";
-  return `<div class="npc-sheet snap" style="animation-delay:${t0.toFixed(2)}s">
-    <h3>CHARACTER SHEET</h3>
-    ${line?`<p class="cs-line">${line}</p>`:""}
-    <div class="cs-top">${box("Armor Class",S.ac," shield")}${box("Hit Points",S.hp)}${box("Initiative",init)}${box("Speed",S.speed)}${box("Prof. Bonus",pb==null?null:sgn(pb))}${box("Passive Perception",pp)}</div>
+  const list=(title,items,fn)=>items&&items.length?`<div class="cs-sec cs-in" style="--d:6"><h4>${title}</h4>${items.map(fn).join("")}</div>`:"";
+  const atk=(S.attacks||[]).length?`<div class="cs-sec cs-in" style="--d:5"><h4>Weapons &amp; Damage Cantrips</h4><table class="cs-atk"><thead><tr><th>Name</th><th>Atk / DC</th><th>Damage &amp; Type</th><th>Notes</th></tr></thead><tbody>${S.attacks.map(a=>`<tr><td>${esc(a.n)}</td><td>${esc(a.hit||"—")}</td><td>${esc(a.dmg||"—")}</td><td>${esc(a.note||"")}</td></tr>`).join("")}</tbody></table></div>`:"";
+  const sp=S.spells, spell=sp&&(sp.list||[]).length?`<div class="cs-sec cs-in" style="--d:7"><h4>Spellcasting${sp.ability?` · ${esc(sp.ability)}`:""}${sp.dc?` · Save DC ${esc(sp.dc)}`:""}${sp.atk?` · Attack ${esc(sp.atk)}`:""}</h4>${sp.list.map(l=>`<p class="cs-p"><b>${esc(l.lvl)}.</b> ${esc((l.s||[]).join(", ")||"—")}</p>`).join("")}</div>`:"";
+  const L=S.lessons||[], learned=L.filter(l=>!l.sealed).length;
+  const lessons=L.length?`<div class="cs-sec cs-in" style="--d:7"><h4>Lessons · ${learned} of ${L.length} learned</h4><div class="cs-lessons">${L.map((l,i)=>l.sealed
+    ?`<div class="cs-lesson sealed" style="--i:${i}">${wax("key",46)}<span class="label">Lesson · Sealed</span></div>`
+    :`<div class="cs-lesson" style="--i:${i}"><span class="label">Taught by ${esc(l.from)}</span><span class="t">${esc(l.n)}</span><p>${esc(l.p)}</p></div>`).join("")}</div></div>`:"";
+  const tops=[["Armor Class",S.ac," shield"],["Hit Points",S.hp],["Initiative",init],["Speed",S.speed],["Prof. Bonus",pb==null?null:sgn(pb)],["Passive Perception",pp]];
+  return `${line?`<p class="cs-line cs-in" style="--d:0">${line}</p>`:""}
+    <div class="cs-top">${tops.map(([k,v,c],i)=>box(k,v,(c||"")+`" style="--i:${i}`)).join("")}</div>
     <div class="cs-abils">${abil}</div>
-    ${(S.senses||S.langs)?`<dl class="dl cs-dl">${S.senses?`<dt>Senses</dt><dd>${esc(S.senses)}</dd>`:""}${(S.langs||[]).length?`<dt>Languages</dt><dd>${esc(S.langs.join(", "))}</dd>`:""}</dl>`:""}
+    ${(S.senses||(S.langs||[]).length)?`<dl class="dl cs-dl cs-in" style="--d:5">${S.senses?`<dt>Senses</dt><dd>${esc(S.senses)}</dd>`:""}${(S.langs||[]).length?`<dt>Languages</dt><dd>${esc(S.langs.join(", "))}</dd>`:""}</dl>`:""}
     ${atk}
     ${list("Features &amp; Traits",S.traits,f=>`<p class="cs-p">${f.n?`<b>${esc(f.n)}.</b> `:""}${esc(f.p||"")}</p>`)}
+    ${lessons}
     ${spell}
-    ${list("Equipment",S.gear,g=>`<p class="cs-p">${esc(g)}</p>`)}
-  </div>`;
+    ${list("Equipment",S.gear,g=>`<p class="cs-p">${esc(g)}</p>`)}`;
 }
 function openNpc(id){
   const n=npcById[id]; if(!n) return;
@@ -587,8 +591,8 @@ function openNpc(id){
     kicker:`${esc(st.label.toUpperCase())} · ${n.met&&n.met!=="—"?"FIRST MET IN "+esc(metLabel(n.met).toUpperCase()):"NOT YET MET"}`,
     name:n.name,epi:n.epi,stamp:{text:st.stamp,tone:st.tone},
     body:`${n.d?`<p class="lede snap" style="animation-delay:1.4s">${esc(n.d)}</p>`:""}<dl class="dl snap" style="animation-delay:1.45s"><dt>Status</dt><dd>${statusWord(n)}</dd><dt>Last seen</dt><dd>${esc(where(n))}</dd></dl>
+      ${n.sheet?`<div class="snap" style="animation-delay:1.5s"><button type="button" class="btn dark cs-open" data-sheet="${esc(n.id)}"><span>Character sheet</span>${ICON.arrow}</button></div>`:""}
       ${n.facts&&n.facts.length?`<h3 class="snap" style="animation-delay:1.6s">WHAT THE PARTY KNOWS</h3>${factList(n.facts)}`:""}
-      ${npcSheet(n,1.75+((n.facts||[]).length*.08))}
       ${sessionChips(sessionsWith(n.id))}`});
 }
 function openPc(id){
@@ -615,11 +619,43 @@ function openPlace(name){
       ${inside.length?`<h3 class="snap" style="animation-delay:1.8s">PLACES HERE</h3><div class="chips snap" style="margin-top:calc(10 * var(--u));animation-delay:1.9s">${inside.map(q=>`<button type="button" class="chip" data-place="${esc(q.n)}">${esc(q.n)}</button>`).join("")}</div>`:""}
       ${visited?`<div class="chips-row snap" style="animation-delay:2.1s"><span class="label" style="color:var(--ink-muted);margin-right:calc(6 * var(--u))">First visited</span><button type="button" class="chip" data-session="${esc(p.s)}">Session ${esc(p.s)}</button></div>`:""}`});
 }
-modal.addEventListener("click",e=>{ if(e.target===modal||e.target.closest("[data-close]")) closeSheet(); });
+/* ---------- the character sheet pop-up: stacks over the NPC pop-up with a Persona-style slam ---------- */
+const csModal=$("#csModal");
+let csFrom=null, csTimer=null;
+const csOn=()=>csModal.classList.contains("on");
+function openCS(id){
+  const n=npcById[id]; if(!n||!n.sheet) return;
+  clearTimeout(csTimer); csFrom=document.activeElement;
+  csModal.innerHTML=`<div class="cs-shards" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="cs-card" role="dialog" aria-modal="true" aria-labelledby="csName">
+    <div class="cs-ink" aria-hidden="true"></div><div class="cs-red" aria-hidden="true"></div><div class="cs-paper parch" aria-hidden="true"></div>
+    <div class="cs-head">
+      <span class="label cs-kick">Character sheet · ${esc(standing(n).label)}</span>
+      <h2 id="csName" aria-label="${esc(n.name)}">${nameLines(n.name)}</h2>
+      <button type="button" class="close" data-csclose aria-label="Close the character sheet">${ICON.close}</button>
+    </div>
+    <div class="cs-scroll">${npcSheet(n)}</div>
+  </div>`;
+  csModal.classList.remove("out"); csModal.classList.add("on"); csModal.setAttribute("aria-hidden","false");
+  modal.classList.add("behind"); $(".sheet",modal)?.setAttribute("aria-hidden","true");
+  Sound.slash(); if(!reduced) setTimeout(()=>Sound.stamp(),380);
+  csModal.querySelector("[data-csclose]").focus({preventScroll:true});
+}
+function closeCS(instant){
+  if(!csOn()) return;
+  clearTimeout(csTimer);
+  const done=()=>{ csModal.classList.remove("on","out"); csModal.innerHTML=""; csModal.setAttribute("aria-hidden","true"); };
+  modal.classList.remove("behind"); $(".sheet",modal)?.removeAttribute("aria-hidden");
+  if(instant||reduced) done(); else { csModal.classList.add("out"); csTimer=setTimeout(done,420); Sound.close(); }
+  if(!instant&&csFrom&&document.contains(csFrom)) csFrom.focus({preventScroll:true});
+}
+csModal.addEventListener("click",e=>{ if(e.target===csModal||e.target.closest(".cs-shards")||e.target.closest("[data-csclose]")) closeCS(); });
+modal.addEventListener("click",e=>{ const b=e.target.closest("[data-sheet]"); if(b){ openCS(b.dataset.sheet); return; } if(e.target===modal||e.target.closest("[data-close]")) closeSheet(); });
 addEventListener("keydown",e=>{
   if(!modal.classList.contains("on")) return;
-  if(e.key==="Escape"){ closeSheet(); return; }
-  if(e.key==="Tab"){ const f=[...modal.querySelectorAll("button,[href]")].filter(x=>!x.disabled&&x.offsetParent!==null); if(!f.length) return;
+  const top=csOn()?csModal:modal;
+  if(e.key==="Escape"){ if(top===csModal) closeCS(); else closeSheet(); return; }
+  if(e.key==="Tab"){ const f=[...top.querySelectorAll("button,[href]")].filter(x=>!x.disabled&&x.offsetParent!==null); if(!f.length) return;
     if(e.shiftKey&&document.activeElement===f[0]){ e.preventDefault(); f[f.length-1].focus(); } else if(!e.shiftKey&&document.activeElement===f[f.length-1]){ e.preventDefault(); f[0].focus(); } }
 });
 

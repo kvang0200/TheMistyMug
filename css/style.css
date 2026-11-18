@@ -1114,9 +1114,8 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
 /* =====================================================================
    NPC CHARACTER SHEET (inside the NPC pop-up; laid out like the D&D 2024 sheet)
    ===================================================================== */
-.npc-sheet{margin-top:calc(22 * var(--u));padding-top:calc(4 * var(--u));border-top:calc(2 * var(--u)) solid var(--p)}
-.npc-sheet h4{margin:0 0 calc(8 * var(--u));font-family:var(--mono);font-size:calc(11 * var(--u));font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--a)}
-.cs-line{margin:calc(8 * var(--u)) 0 0;font-family:var(--serif);font-style:italic;font-size:calc(18 * var(--u))}
+.cs-card h4{margin:0 0 calc(8 * var(--u));font-family:var(--mono);font-size:calc(11 * var(--u));font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--a)}
+.cs-line{margin:0;font-family:var(--serif);font-style:italic;font-size:calc(18 * var(--u))}
 .cs-top{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:calc(8 * var(--u));margin-top:calc(14 * var(--u))}
 .cs-box{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(4 * var(--u));min-height:calc(74 * var(--u));padding:calc(8 * var(--u)) calc(4 * var(--u));border:calc(1.5 * var(--u)) solid var(--p);text-align:center}
 .cs-box .v{font-family:var(--serif);font-size:calc(26 * var(--u));line-height:1}
@@ -1146,4 +1145,75 @@ button.card{width:100%;padding:0;border:0;background:none;font:inherit;color:inh
   .cs-top{grid-template-columns:repeat(3,minmax(0,1fr))}
   .cs-abils{grid-template-columns:repeat(2,minmax(0,1fr))}
   .cs-atk th:nth-child(4),.cs-atk td:nth-child(4){display:none}
+}
+
+/* ---------- the character sheet pop-up: stacks over the NPC pop-up, Persona-style ---------- */
+@keyframes shardIn{from{transform:translateX(var(--from)) skewX(-24deg)}to{transform:translateX(0) skewX(-24deg)}}
+@keyframes shardOut{from{transform:translateX(0) skewX(-24deg)}to{transform:translateX(calc(var(--from) * -1)) skewX(-24deg)}}
+@keyframes csIn{0%{transform:translateX(115vw) rotate(-9deg) skewX(-16deg)}55%{transform:translateX(-2.5%) rotate(1.2deg) skewX(4deg)}78%{transform:translateX(.6%) rotate(-.4deg) skewX(-1deg)}100%{transform:none}}
+@keyframes csOut{0%{transform:none}25%{transform:translateX(3%) rotate(1deg) skewX(3deg)}100%{transform:translateX(-120vw) rotate(8deg) skewX(16deg)}}
+@keyframes csLag{0%{transform:translateX(130vw) rotate(-14deg)}100%{transform:var(--rest)}}
+@keyframes csPop{0%{opacity:0;transform:scale(.3) rotate(-14deg)}65%{opacity:1;transform:scale(1.1) rotate(3deg)}100%{opacity:1;transform:none}}
+@keyframes csKick{0%{transform:translateX(-120%) skewX(-12deg)}70%{transform:translateX(4%) skewX(-12deg)}100%{transform:skewX(-12deg)}}
+
+.csmodal{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;padding:clamp(calc(12 * var(--u)),3vw,calc(40 * var(--u)));overflow:hidden}
+.csmodal.on{display:flex}
+/* the NPC file underneath steps back into the dark */
+.modal .sheet{transition:transform .55s cubic-bezier(.2,1.3,.4,1),filter .4s ease}
+.modal.behind .sheet{transform:translateX(-14%) scale(.88) rotate(-4deg);filter:brightness(.62) saturate(.55)}
+@media (min-width:761px){ .cs-card{margin-left:calc(150 * var(--u));width:min(calc(900 * var(--u)),100% - calc(150 * var(--u)))} }
+/* diagonal shards slam across the screen, then stay as the backdrop */
+.cs-shards{position:absolute;inset:0}
+.cs-shards i{position:absolute;left:-25%;right:-25%;animation:shardIn .42s cubic-bezier(.75,0,.2,1) both}
+.cs-shards i:nth-child(1){top:-8%;height:20%;background:var(--a);--from:-130%}
+.cs-shards i:nth-child(2){top:20%;height:9%;background:var(--p);--from:130%;animation-delay:.05s}
+.cs-shards i:nth-child(3){top:72%;height:12%;background:color-mix(in srgb,var(--a) 82%,var(--p));--from:-130%;animation-delay:.09s}
+.cs-shards i:nth-child(4){top:86%;height:3%;background:var(--s);--from:130%;animation-delay:.13s}
+.csmodal.out .cs-shards i{animation:shardOut .34s cubic-bezier(.7,0,.8,.3) both}
+.csmodal.out .cs-shards i:nth-child(odd){animation-delay:.06s}
+
+.cs-card{position:relative;width:min(calc(980 * var(--u)),100%);max-height:calc(100vh - calc(40 * var(--u)));max-height:calc(100dvh - calc(40 * var(--u)));display:flex;flex-direction:column;color:var(--p);animation:csIn .66s cubic-bezier(.2,1.1,.35,1) .12s both}
+.csmodal.out .cs-card{animation:csOut .4s cubic-bezier(.7,0,.8,.3) both}
+.cs-ink,.cs-red,.cs-paper{position:absolute;inset:0}
+.cs-ink{background:var(--p);--rest:translate(calc(20 * var(--u)),calc(18 * var(--u))) rotate(1.8deg);transform:var(--rest);animation:csLag .7s cubic-bezier(.2,1.2,.35,1) .2s both}
+.cs-red{background:var(--a);clip-path:polygon(0 0,100% 0,100% 14%,0 26%);--rest:translate(calc(-16 * var(--u)),calc(-14 * var(--u))) rotate(-2.4deg);transform:var(--rest);animation:csLag .7s cubic-bezier(.2,1.2,.35,1) .16s both}
+.cs-paper{transform:rotate(-.6deg)}
+.cs-head{position:relative;padding:calc(30 * var(--u)) calc(110 * var(--u)) calc(14 * var(--u)) calc(44 * var(--u))}
+.cs-kick{display:inline-block;padding:calc(6 * var(--u)) calc(14 * var(--u));background:var(--p);color:var(--s);animation:csKick .45s cubic-bezier(.2,1.4,.4,1) .45s both}
+.cs-head h2{margin:calc(12 * var(--u)) 0 0;font-family:var(--serif);font-weight:400;font-size:clamp(calc(40 * var(--u)),5.5vw,calc(60 * var(--u)));line-height:.92;letter-spacing:-.035em;--base:-.3s}
+.cs-head h2 .ln{display:inline}
+.cs-head h2 .ln.it{font-style:italic;margin-left:.25em}
+.cs-head .close{position:absolute;right:calc(26 * var(--u));top:calc(26 * var(--u));width:calc(48 * var(--u));height:calc(48 * var(--u));display:flex;align-items:center;justify-content:center;background:transparent;border:calc(1 * var(--u)) solid var(--ink-rule);color:var(--p);cursor:pointer;transition:transform .25s cubic-bezier(.2,1.8,.4,1),background .15s,color .15s}
+.cs-head .close:hover,.cs-head .close:focus-visible{transform:rotate(90deg);background:var(--a);color:var(--s)}
+.cs-head .close svg{width:calc(18 * var(--u));height:calc(18 * var(--u))}
+.cs-scroll{position:relative;overflow-y:auto;overscroll-behavior:contain;padding:calc(4 * var(--u)) calc(44 * var(--u)) calc(36 * var(--u))}
+.cs-in{animation:snap .5s cubic-bezier(.2,1.4,.4,1) both;animation-delay:calc(.6s + var(--d,0) * .07s)}
+.cs-box{animation:csPop .42s cubic-bezier(.2,1.4,.4,1) both;animation-delay:calc(.62s + var(--i,0) * .05s)}
+.cs-ab{animation:snap .45s cubic-bezier(.2,1.4,.4,1) both;animation-delay:calc(.82s + var(--i,0) * .06s)}
+.cs-open{margin-top:calc(16 * var(--u))}
+
+/* lessons: one per teacher; unlearned ones sit under a wax seal */
+.cs-lessons{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(170 * var(--u)),1fr));gap:calc(10 * var(--u))}
+.cs-lesson{display:flex;flex-direction:column;gap:calc(4 * var(--u));padding:calc(12 * var(--u)) calc(14 * var(--u));border:calc(1.5 * var(--u)) solid var(--p);background:color-mix(in srgb,var(--s) 60%,transparent);animation:csPop .42s cubic-bezier(.2,1.4,.4,1) both;animation-delay:calc(1.15s + var(--i,0) * .07s)}
+.cs-lesson .label{color:var(--a)}
+.cs-lesson .t{font-family:var(--serif);font-style:italic;font-size:calc(21 * var(--u));line-height:1.1}
+.cs-lesson p{margin:calc(2 * var(--u)) 0 0;font-size:calc(13 * var(--u));line-height:1.45}
+.cs-lesson.sealed{align-items:center;justify-content:center;min-height:calc(120 * var(--u));border-style:dashed;border-color:var(--ink-rule);background:color-mix(in srgb,var(--p) 6%,transparent);text-align:center}
+.cs-lesson.sealed .label{color:var(--ink-muted)}
+
+@media (max-width:760px){
+  .csmodal{padding:calc(10 * var(--u))}
+  .cs-card{max-height:calc(100dvh - calc(20 * var(--u)))}
+  .cs-head{padding:calc(22 * var(--u)) calc(76 * var(--u)) calc(10 * var(--u)) calc(20 * var(--u))}
+  .cs-head .close{right:calc(14 * var(--u));top:calc(14 * var(--u))}
+  .cs-scroll{padding:calc(4 * var(--u)) calc(20 * var(--u)) calc(26 * var(--u))}
+  .cs-ink{--rest:translate(calc(8 * var(--u)),calc(8 * var(--u))) rotate(1.2deg)}
+  .cs-red{--rest:translate(calc(-6 * var(--u)),calc(-6 * var(--u))) rotate(-1.6deg)}
+  .modal.behind .sheet{transform:scale(.94);filter:brightness(.35)}
+  .cs-lessons{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cs-lesson.sealed{min-height:calc(96 * var(--u))}
+}
+@media (prefers-reduced-motion:reduce){
+  .csmodal *,.csmodal.out *{animation:none!important}
+  .modal .sheet{transition:none}
 }

@@ -18,6 +18,7 @@
        attacks:[{n:"Dagger", hit:"+4", dmg:"1d4+2 piercing", note:"Finesse, light, thrown"}],
        traits:[{n:"Name", p:"What it does."}],
        spells:{ability:"Intelligence", dc:13, atk:"+5", list:[{lvl:"Cantrips", s:["Fire Bolt"]},{lvl:"1st", s:["Shield"]}]},
+       lessons:[{from:"Aoife", n:"Smite", p:"What it does."}, {sealed:true}],   // sealed = not learned yet (no name, so it can't be peeked at)
        gear:["Spellbook"]
      }
      Modifiers, saves, skills, initiative and passive Perception are worked out from the scores.
@@ -58,9 +59,19 @@ const DATA = {
   // side: ally | unsure | foe ; fate: alive | dead | unknown
   npcs: [
     {id:"ireena", d:"The adopted daughter of the late burgomaster of the Village of Barovia, and the woman Strahd has his eye on. She travels with the party on and off, and Alir is teaching her magic.", name:"Ireena Kolyana", epi:"Daughter of the late burgomaster", side:"ally", fate:"alive", where:"Traveling with the party", met:"7", img:null,
-     sheet:{sp:"Human", size:"Medium", speed:"30 ft.",
-       traits:[{n:"Learning magic", p:"Alir is teaching her one cantrip and one 1st-level spell. Her spells aren't chosen yet."}]},
-     facts:["Adopted daughter of Kolyan, the late burgomaster of the Village of Barovia, and sister to Ismark.","The party agreed to escort her to St. Andral's Church in Vallaki (Session 9). Strahd has shown open interest in her.","Gave her bracelet to Namroc and a flower and charm to Lala at Argynvost Hill.","Asked Alir to teach her magic after watching him fight. She is learning a cantrip and a 1st-level spell.","Comes and goes from the party. She left just before the winery and rejoined in Session 17."]},
+     sheet:{sp:"Human", lvl:5, size:"Medium", speed:"30 ft.", ac:"15", hp:32,
+       abil:{str:14, dex:12, con:12, int:12, wis:10, cha:15},
+       saves:["wis","cha"], skills:["History","Insight","Persuasion"],
+       attacks:[{n:"Longsword", hit:"+5", dmg:"1d8+2 slashing", note:"Versatile (1d10+2). Mastery: Sap"},
+                {n:"Fire Bolt", hit:"+4", dmg:"1d10 fire", note:"Range 120 ft. Alir's lesson"}],
+       traits:[{n:"One blade", p:"Ireena never makes more than one attack on her turn. She fights best beside her friends, not ahead of them."}],
+       lessons:[
+         {from:"Aoife", n:"Smite", p:"Once per long rest, right after she hits with a melee weapon, she can use a bonus action to deal an extra 2d8 radiant damage (3d8 against Fiends and Undead)."},
+         {from:"Alir", n:"Arcane Basics", p:"She knows the Fire Bolt and Mage Hand cantrips, and casts them with Intelligence (+4 to hit)."},
+         {sealed:true}, {sealed:true}, {sealed:true}
+       ],
+       gear:["Breastplate","Longsword"]},
+     facts:["Adopted daughter of Kolyan, the late burgomaster of the Village of Barovia, and sister to Ismark.","The party agreed to escort her to St. Andral's Church in Vallaki (Session 9). Strahd has shown open interest in her.","Gave her bracelet to Namroc and a flower and charm to Lala at Argynvost Hill.","Asked Alir to teach her magic after watching him fight. He has taught her Fire Bolt and Mage Hand, and Aoife has taught her to smite.","Comes and goes from the party. She left just before the winery and rejoined in Session 17."]},
     {id:"ismark", d:"Ireena's protective older brother. He asked the party to keep his sister safe after Rahadin killed their father.", name:"Ismark Kolyanovich", epi:"Ireena's brother", side:"ally", fate:"alive", where:"Burgomaster's manor, Village of Barovia", met:"6", img:null,
      facts:["Met the party in the Blood of the Vine Tavern and told them Rahadin killed his father, the Burgomaster.","Asked the party for help protecting his sister."]},
     {id:"arabelle", d:"The young Vistana Madam Eva named as the party's fated ally, and Luna reborn. She can see the dead, and is trying to reach Stella's lost soul.", name:"Arabelle", epi:"The fated ally", side:"ally", fate:"alive", where:"Scouting the Reformation Center with Ezmerelda", met:"14", img:null,
