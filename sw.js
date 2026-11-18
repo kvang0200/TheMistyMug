@@ -3,8 +3,9 @@
      and fall back to the cache when offline.
    - Everything else (styles, scripts, fonts, images) is served from the cache instantly and
      refreshed in the background.
-   Bump VERSION when you change css/, js/app/, js/sound.js, fonts/ or img/ to make every
-   player's device drop the old copies on its next visit. */
+   VERSION is stamped automatically (.github/workflows/stamp-cache-version.yml) whenever
+   css/, js/app/, js/sound.js, fonts/, img/ or index.html change on main, so every player's
+   device drops its old copies on its next visit. No need to edit it by hand. */
 const VERSION = "2026-11-18-css-by-feature";
 const CACHE = "barovia-" + VERSION;
 const CORE = [

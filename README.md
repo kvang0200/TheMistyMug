@@ -15,7 +15,7 @@ unmet NPCs, or quests the party hasn't started.
 | `css/` | All styling and animation, one file per feature, loaded in order (later files win). **The three site colors are at the top of `01-base.css`** | Rarely |
 | `js/app/` | Builds every tab and pop-up from `data.js`; seals, stamps, search, map. Split into 8 files that share one scope and load in order | Rarely |
 | `js/sound.js` | Sound effects made in the browser: wax cracking, paper turning, stamps, slashes (no sound files) | Rarely |
-| `sw.js` | Offline cache (service worker) | Bump `VERSION` when anything except `data.js` changes |
+| `sw.js` | Offline cache (service worker) | No: `VERSION` is stamped automatically |
 | `fonts/` | Self-hosted Bodoni Moda, Inter and IBM Plex Mono, subset to Latin; OFL licences included | No |
 | `img/` | Map (`barovia-map.webp` 2000px + `barovia-map-1000.webp` preview), fog layers, grain texture, app icons, portraits | When adding art or fog changes |
 
@@ -78,8 +78,10 @@ modules: they share one scope, so a file can use anything defined in a file befo
 
 **Caching:** players' devices keep a copy of the site so it opens instantly and works offline.
 `index.html` and `js/data.js` are always fetched fresh when online, so normal session updates
-show up right away. If you change anything else (CSS, `js/app/`, `sound.js`, images, fonts), also
-change `VERSION` at the top of `sw.js` (today's date is fine) so devices drop their old copies.
+show up right away. When anything else changes on `main` (CSS, `js/app/`, `sound.js`, images,
+fonts, `index.html`), a GitHub Action writes a new `VERSION` into `sw.js` (date + commit) and
+commits it, so devices drop their old copies. You'll see those "Stamp offline cache version"
+commits in the history; there's nothing to do by hand.
 
 **Security policy:** `index.html` has a Content-Security-Policy tag that only lets the site run
 its own scripts, styles and fonts. Portrait images can still come from any `https://` address.
