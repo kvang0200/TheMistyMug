@@ -264,6 +264,12 @@ function renderQuests() {
   <div id="questList"></div>`;
   renderQuestList();
 }
+/* the words of a notice, each in its own span so they can ink in one after another */
+const inkWords = (t) =>
+  esc(t)
+    .split(/\s+/)
+    .map((w, i) => `<span class="w" style="--i:${Math.min(i, 30)}">${w}</span>`)
+    .join(" ");
 /* one notice pinned to the board */
 function questNotice(q, i, done) {
   const no = String(D.quests.indexOf(q) + 1).padStart(2, "0");
@@ -272,8 +278,8 @@ function questNotice(q, i, done) {
     <div class="np parch">
       <span class="np-top"><span class="label np-kind">${esc(q.t)}${kind === "town" ? " notice" : " quest"}</span><span class="label np-no">Nº ${no}</span></span>
       <button type="button" class="qn" data-qnote aria-expanded="false"><span class="qt">${esc(q.n)}</span></button>
-      <div class="qd-fold"><div class="qd-in"><p class="qd">${esc(q.p)}</p></div></div>
-      ${done ? `<span class="stamp red stamp-view">COMPLETED</span>` : `<span class="np-foot label"><i class="np-dot" aria-hidden="true"></i>Open</span>`}
+      <div class="qd-fold"><div class="qd-in"><p class="qd">${inkWords(q.p)}</p></div></div>
+      ${done ? `<span class="stamp red stamp-view">COMPLETED</span>` : `<span class="np-foot label"><i class="np-dot" aria-hidden="true"></i>Ongoing</span>`}
     </div>
   </li>`;
 }

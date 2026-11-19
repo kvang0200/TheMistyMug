@@ -35,7 +35,8 @@
   display: none;
   align-items: center;
   justify-content: center;
-  padding: clamp(calc(12 * var(--u)), 3vw, calc(40 * var(--u)));
+  --mpad: clamp(calc(12 * var(--u)), 3vw, calc(40 * var(--u)));
+  padding: var(--mpad);
   background: color-mix(in srgb, var(--p) 84%, transparent);
   overflow: hidden;
 }
@@ -61,8 +62,10 @@
 .sheet {
   position: relative;
   width: min(calc(1080 * var(--u)), 100%);
-  max-height: calc(100vh - calc(32 * var(--u)));
-  max-height: calc(100dvh - calc(32 * var(--u)));
+  /* fit inside the overlay's padding, with room for the torn edges and tilt;
+     svh is the screen with Safari's toolbars showing, so it never runs under them */
+  max-height: calc(100vh - 2 * var(--mpad) - calc(24 * var(--u)));
+  max-height: calc(100svh - 2 * var(--mpad) - calc(24 * var(--u)));
   display: flex;
   color: var(--p);
   animation: wipeIn 0.7s cubic-bezier(0.75, 0, 0.2, 1) 0.3s backwards;

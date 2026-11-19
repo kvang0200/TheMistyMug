@@ -424,6 +424,14 @@
 .scene.on .villain {
   translate: 0 calc(var(--pt, 0) * calc(-80 * var(--u)) + var(--pu, 0) * calc(40 * var(--u)));
 }
+/* touch screens: the title card's text fades and darkens as the players cover it, but holds still */
+.sx-once .scene.on .mast,
+.sx-once .scene.on .cover-copy > :not(.tally),
+.sx-once .scene.on .villain,
+.sx-once .scene.on .cover-copy {
+  translate: none;
+  scale: none;
+}
 .scene.on > .cover.sstage::after {
   content: "";
   position: absolute;

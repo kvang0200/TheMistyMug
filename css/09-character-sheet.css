@@ -237,7 +237,8 @@
   display: none;
   align-items: center;
   justify-content: center;
-  padding: clamp(calc(12 * var(--u)), 3vw, calc(40 * var(--u)));
+  --mpad: clamp(calc(12 * var(--u)), 3vw, calc(40 * var(--u)));
+  padding: var(--mpad);
   overflow: hidden;
 }
 .csmodal.on {
@@ -298,8 +299,8 @@
 .cs-card {
   position: relative;
   width: min(calc(980 * var(--u)), 100%);
-  max-height: calc(100vh - calc(40 * var(--u)));
-  max-height: calc(100dvh - calc(40 * var(--u)));
+  max-height: calc(100vh - 2 * var(--mpad) - calc(24 * var(--u)));
+  max-height: calc(100svh - 2 * var(--mpad) - calc(24 * var(--u)));
   display: flex;
   flex-direction: column;
   color: var(--p);
