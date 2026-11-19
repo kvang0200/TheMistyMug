@@ -6,7 +6,7 @@
    VERSION is stamped automatically (.github/workflows/stamp-cache-version.yml) whenever
    css/, js/app/, js/sound.js, fonts/, img/ or index.html change on main, so every player's
    device drops its old copies on its next visit. No need to edit it by hand. */
-const VERSION = "2026-11-18-6a9e4cc";
+const VERSION = "2026-11-19-394b713";
 const CACHE = "barovia-" + VERSION;
 const CORE = [
   "./",
