@@ -63,22 +63,6 @@ function playerCard(p) {
   <div class="pphoto" aria-hidden="true"><div class="pp-in" style="--r:${[7, -6, 8, -7, 6][p.i % 5]}deg"><div class="pp-face pp-back"><i class="seal-dot"></i></div><div class="pp-face pp-front"><span class="tape"></span>${sil({ ...p, name: p.n })}<span class="cap">${esc(p.n)}</span></div></div></div>
 </div>`;
 }
-/* the same fortunes again on the Quests tab; opening one opens both */
-function fortuneCard(p) {
-  const v = visionFor(p.n);
-  if (!v) return "";
-  const first = p.n.split(" ")[0];
-  return flipCard({
-    key: "f-" + slug(p.n),
-    i: p.i,
-    cls: "tarot fcard",
-    frontParch: false,
-    still: true,
-    id: "fortune-" + p.id,
-    front: `<button type="button" class="sealed-btn" data-crack aria-label="Break the seal on ${esc(first)}'s personal fortune"><span class="for">For ${esc(first)} only</span><span class="fname">${esc(p.n)}</span>${wax("key", 84)}<span class="label">Break the seal</span></button>`,
-    back: `<span class="label">Personal fortune</span><span class="t">${esc(p.n)}</span><p>${esc(v.p)}</p><span class="label" style="color:var(--ink-muted)">From Madam Eva · Session 5</span>`,
-  });
-}
 function tarotCard(c, i) {
   const done = c.st === "done";
   return flipCard({
@@ -269,38 +253,57 @@ const Q_FILTERS = [
   ["all", "All"],
 ];
 let questFilter = "ongoing";
+const PIN_AT = [50, 34, 62, 44, 56, 38, 66]; /* notices hang straight; only where the pin went in varies */
 function renderQuests() {
   $("#v-quests").innerHTML = `
   <section class="section" id="tarokka"><div class="mist red" style="top:0" aria-hidden="true"></div><div class="wrap" style="position:relative">
     ${head("Quests · The reading", `The Tarokka <i>reading</i>`, `<p>Madam Eva's reading from Session 5. Break a seal to turn a card, and tap Reseal to turn it back.</p>`)}
-    <p class="jumps"><a class="link" href="#quests" data-fortune="">Personal fortunes ↓</a><a class="link" href="#quests" data-fortune="list">Quests ↓</a><a class="link" href="#quests" data-fortune="loose">Loose ends ↓</a></p>
+    <p class="jumps"><a class="link" href="#quests" data-fortune="list">Quest board ↓</a><a class="link" href="#quests" data-fortune="loose">Loose ends ↓</a></p>
     <div class="grid g-210 deal${reduced ? "" : " undealt"}">${D.tarokka.map(tarotCard).join("")}</div>
-    <div class="subhead in" id="fortunes"><h3>Personal <i>fortunes</i></h3></div>
-    <p class="fortune-note">Madam Eva gave each player a personal fortune in Session 5. Each one stays under wax until its player breaks the seal.</p>
-    <div class="grid g-240 deal${reduced ? "" : " undealt"}">${PCS.map(fortuneCard).join("")}</div>
   </div></section>
-  <div id="questList"></div>
-  <section class="section light"><div class="wrap">
-    <div class="subhead in" id="loose" style="margin-top:0"><h3>Loose <i>ends</i></h3></div>
-    <p class="fortune-note" style="color:var(--ink-muted)">Things the party left unresolved. Some may turn into quests.</p>
-    <div class="board"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline class="string" pathLength="1" points="12,18 38,30 64,16 88,32 74,74 46,66 20,78 38,30" fill="none" stroke="var(--a)" stroke-width="1.4" vector-effect="non-scaling-stroke"/></svg>
-      <ol class="grid g-240">${D.threads.map((t, i) => `<li class="note in" style="--tilt:${[-2, 1.5, -1, 2, -1.5, 1, -2.5][i % 7]}deg"><span class="label">Loose end ${i + 1}</span><p>${esc(t)}</p></li>`).join("")}</ol>
-    </div>
-  </div></section>`;
+  <div id="questList"></div>`;
   renderQuestList();
+}
+/* one notice pinned to the board */
+function questNotice(q, i, done) {
+  const no = String(D.quests.indexOf(q) + 1).padStart(2, "0");
+  const kind = /main/i.test(q.t) ? "main" : /side/i.test(q.t) ? "side" : "town";
+  return `<li class="qnote notice ${kind}${done ? " done" : ""} in" style="--pin:${PIN_AT[i % 7]}%">
+    <div class="np parch">
+      <span class="np-top"><span class="label np-kind">${esc(q.t)}${kind === "town" ? " notice" : " quest"}</span><span class="label np-no">Nº ${no}</span></span>
+      <button type="button" class="qn" data-qnote aria-expanded="false"><span class="qt">${esc(q.n)}</span></button>
+      <p class="qd">${esc(q.p)}</p>
+      ${done ? `<span class="stamp red stamp-view">COMPLETED</span>` : `<span class="np-foot label"><i class="np-dot" aria-hidden="true"></i>Open</span>`}
+    </div>
+  </li>`;
 }
 function renderQuestList() {
   const on = D.quests.filter((q) => q.st !== "done"),
     done = D.quests.filter((q) => q.st === "done");
   const showOn = questFilter !== "done",
     showDone = questFilter !== "ongoing";
+  const notices = (list, isDone) =>
+    `<ol class="qb-grid${isDone ? " qb-done" : ""}">${list.map((q, i) => questNotice(q, i, isDone)).join("")}</ol>`;
   $("#questList").innerHTML = `
-  <section class="section light" id="list"><div class="wrap">
-    ${head("Quests", `${questFilter === "done" ? "Completed" : "Ongoing"} <i>quests</i>`, `<p>What the party has promised to do, and what it has done.</p>`)}
-    <div class="stickybar light-bar"><div class="filters" role="group" aria-label="Show">${Q_FILTERS.map(([k, l]) => `<button type="button" data-qf="${k}" aria-pressed="${k === questFilter}">${l}</button>`).join("")}</div><span class="label" style="color:var(--ink-muted)">${on.length} ongoing · ${done.length} completed</span></div>
-    ${showOn ? `<ol class="grid g-240" style="margin:0;padding:0;gap:calc(40 * var(--u)) calc(28 * var(--u))">${on.map((q, i) => `<li class="note in qnote" style="--tilt:${[-2, 1.5, -1, 2, -1.5, 1, -2.5][i % 7]}deg"><button type="button" class="qn" data-qnote aria-expanded="false"><span class="label">Ongoing · ${esc(q.t)}</span><span class="qt">${esc(q.n)}</span></button><p class="qd">${esc(q.p)}</p></li>`).join("") || `<p class="empty">Nothing ongoing.</p>`}</ol>` : ""}
-    ${showOn && showDone ? `<div class="subhead in"><h3>Completed <i>quests</i></h3></div>` : ""}
-    ${showDone ? `<div class="grid g-210" style="margin-top:${showOn ? 40 : 0}px">${done.map((q, i) => `<div class="card quest in" style="--tilt:${tilt(i + 3)}deg"><div class="shade"></div><article class="parch"><span class="label" style="color:var(--ink-muted)">${esc(q.t)} quest</span><span class="t">${esc(q.n)}</span><p>${esc(q.p)}</p><span class="stamp red stamp-view" aria-hidden="true">COMPLETED</span></article></div>`).join("")}</div>` : ""}
+  <section class="section light qboard-sec" id="list"><div class="wrap">
+    ${head("Quests · The board", `The quest <i>board</i>`, `<p>Every job the party has taken on. ${matchMedia("(max-width:760px)").matches ? "Tap a notice to read it." : "Finished work is stamped and struck off."}</p>`)}
+    <div class="stickybar light-bar"><div class="filters" role="group" aria-label="Show">${Q_FILTERS.map(([k, l]) => `<button type="button" data-qf="${k}" aria-pressed="${k === questFilter}">${l}</button>`).join("")}</div></div>
+    <div class="qboard">
+      <span class="qb-nail" aria-hidden="true"></span><span class="qb-nail" aria-hidden="true"></span><span class="qb-nail" aria-hidden="true"></span><span class="qb-nail" aria-hidden="true"></span>
+      <header class="qb-plaque">
+        <span class="label qb-where">Posted for the party · after Session ${esc(LAST)}</span>
+        <span class="qb-tally"><span><b>${on.length}</b>Open</span><span><b>${done.length}</b>Done</span></span>
+      </header>
+      ${showOn ? (on.length ? notices(on, false) : `<p class="empty">Nothing open. Enjoy it while it lasts.</p>`) : ""}
+      ${showOn && showDone ? `<h3 class="qb-sub"><span>Struck off</span></h3>` : ""}
+      ${showDone ? (done.length ? notices(done, true) : `<p class="empty">Nothing finished yet.</p>`) : ""}
+      <div class="qb-loose" id="loose">
+        <h3 class="qb-sub"><span>Loose ends</span><span class="label">Unresolved. Some may become quests.</span></h3>
+        <div class="board"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline class="string" pathLength="1" points="12,18 38,30 64,16 88,32 74,74 46,66 20,78 38,30" fill="none" stroke="var(--a)" stroke-width="1.4" vector-effect="non-scaling-stroke"/></svg>
+          <ol class="grid g-240">${D.threads.map((t, i) => `<li class="scrap in" style="--pin:${PIN_AT[(i + 3) % 7]}%"><div class="sp"><span class="label">Loose end ${i + 1}</span><p>${esc(t)}</p></div></li>`).join("")}</ol>
+        </div>
+      </div>
+    </div>
   </div></section>`;
   SX.scan();
 }
