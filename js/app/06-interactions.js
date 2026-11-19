@@ -241,7 +241,13 @@ document.addEventListener("click", (e) => {
     const li = qn.closest(".qnote"),
       on = li.classList.toggle("open");
     qn.setAttribute("aria-expanded", String(on));
-    Sound.tick();
+    /* the paper gives a little tug on its pin each time it is folded or unfolded */
+    li.classList.remove("tug");
+    void li.offsetWidth;
+    li.classList.add("tug");
+    clearTimeout(li._tug);
+    li._tug = setTimeout(() => li.classList.remove("tug"), 700);
+    (on ? Sound.unfold : Sound.fold)();
     return;
   }
   const nf = t.closest("[data-nf]");

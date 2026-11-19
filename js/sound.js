@@ -335,6 +335,17 @@ const Sound = (() => {
     hiss(0.17, { f0: 900, f1: 520, Q: 0.9, gain: 0.2, attack: 0.012, flutter: true, wet: 0.3 });
     tone(120, 70, 0.16, { gain: 0.16, wet: 0.3 });
   });
+  /* a quest notice unfolding: a soft, crunchy rustle of paper, then a low pat as it falls flat */
+  const unfold = play(() => {
+    grains(14, 0.22, { f: 500, fr: 700, g: 0.12, gr: 0.08, len: 0.012, lr: 0.02, wet: 0.2 });
+    hiss(0.2, { type: "lowpass", f0: 1400, f1: 500, gain: 0.1, attack: 0.03, flutter: true, wet: 0.25 });
+    tone(110, 72, 0.1, { gain: 0.1, delay: 0.24, wet: 0.25 });
+  });
+  /* folding it back up: a shorter rustle */
+  const fold = play(() => {
+    grains(8, 0.12, { f: 600, fr: 600, g: 0.1, gr: 0.06, wet: 0.15 });
+    tone(130, 95, 0.06, { gain: 0.07, delay: 0.12, wet: 0.2 });
+  });
   /* a die on a table: hard little knocks, closer together as it settles */
   const dieHit = play((g = 1, dl = 0) => {
     const f = 1500 + Math.random() * 900;
@@ -463,6 +474,8 @@ const Sound = (() => {
     cardRiffle,
     cardSnap,
     cardBurst,
+    unfold,
+    fold,
     dieHit,
     dice,
     drum,
