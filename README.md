@@ -23,7 +23,7 @@ unmet NPCs, or quests the party hasn't started.
 
 - **Tabs:** Home, Sessions, NPCs, Locations (interactive map + list), Quests.
 - **Home** is the players' landing page: title card, then the players (tap a card for their file), then the latest session.
-- **Scroll motion:** pinned scenes (the Home title card holds while the page slides up over it;), sticky filter bars on NPCs and Quests, cards rising into place, and a reading bar under the header. The Tarokka cards are dealt onto the table when Quests opens. Hovering a player card flips their portrait over in front of it. A small scroll engine in `app.js` (SX) drives it in every browser and only measures what is on screen.
+- **Scroll motion:** pinned scenes (the Home title card holds while the page slides up over it;), sticky filter bars on NPCs and Quests, cards rising into place, and a reading bar under the header. The Tarokka cards are dealt onto the table when Quests opens. Hovering a player card flips their portrait over in front of it. A small scroll engine in `app.js` (SX) drives it in every browser and only measures what is on screen. On touch screens (iPad, phones) nothing follows the finger: each card is revealed once as it comes on screen and the motion plays on a timer, pinned scenes are off, and the film grain and portrait sway hold still, so text never wobbles while scrolling.
 - **Screen sizes:** every size in `css/` is written in design pixels (`var(--u)`). Up to 1920×1080 one design pixel is one pixel; on bigger screens (1440p, 4K) it grows, so the whole page keeps the same proportions instead of sitting small in the middle.
 - **Colors:** primary (ink black), secondary (parchment beige) and accent (blood red) are
   `--p`, `--s` and `--a` at the top of `css/01-base.css`. Change those three to restyle everything.
@@ -36,7 +36,7 @@ unmet NPCs, or quests the party hasn't started.
 - **Quest board:** the Quests tab hangs a dark notice board under the Tarokka reading. Each quest is a
   pinned parchment notice (numbered in `data.js` order; a quest whose `t` is `Main` gets a red masthead,
   `Side` is plain, anything else is a town notice). Completed quests are struck through and stamped. The
-  board's header shows the open and done counts in big numbers.
+  board's header shows the open and done counts in big numbers. Each notice shows only its name and a +; tapping or clicking it folds the rest of the paper down.
 - **Loose ends** (`threads` in `data.js`) are scraps pinned to the bottom of the quest board, tied with red string.
 - **Stamps** come from fields you already fill in: NPC `side` / `fate` (ALLY, UNCERTAIN, HOSTILE,
   DECEASED, MISSING), place `s` (VISITED · SESSION 11 or NOT VISITED) and quest `st` (COMPLETED).

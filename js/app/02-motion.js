@@ -5,6 +5,11 @@
    variables (--sxe, --sxp, --sxq; see SCROLL MOTION in css/01-base.css). Only
    elements on or near the screen are measured, once per frame, and
    only while the page is actually scrolling. Works in every browser.
+   Touch screens (tablets, phones) get a calmer version: each element is
+   revealed once, the first time it comes on screen, and CSS transitions play
+   the motion on a clock (see .sx-once in css/01-base.css). Tracking the finger
+   frame by frame made cards wobble on iPad, where scroll events arrive late and
+   the springy press animation fought the scroll motion.
    ===================================================================== */
 const SX = (() => {
   const SEL = ".in,.mist,.thread-host,.mapframe";
@@ -14,6 +19,7 @@ const SX = (() => {
     io = null;
   const clamp = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
   const wide = window.matchMedia ? matchMedia("(min-width:1100px)") : { matches: true };
+  const once = !!(window.matchMedia && matchMedia("(hover: none)").matches);
   function set(el, k, v) {
     const t = v.toFixed(3);
     if (el["_" + k] !== t) {
@@ -32,15 +38,16 @@ const SX = (() => {
   function read(el, vh) {
     const r = el.getBoundingClientRect();
     if (!r.height && !r.width) return null;
+    const q = clamp((vh * 0.75 - r.top) / Math.max(1, r.height));
+    if (once) {
+      /* revealed once and left alone after that; the mist stays put */
+      if (!el._sxin && r.top < vh * 0.9) el._sxin = 1;
+      return [el, el._sxin ? 1 : 0, 0.5, q];
+    }
     const e = clamp((vh - r.top) / (vh * 0.55));
     const ee = 1 - Math.pow(1 - e, 3);
     /* snap the last sliver to exactly 1 so nothing is left at 99.9% scale (soft text on phones) */
-    return [
-      el,
-      ee > 0.99 ? 1 : ee,
-      clamp((vh - r.top) / (vh + r.height)),
-      clamp((vh * 0.75 - r.top) / Math.max(1, r.height)),
-    ];
+    return [el, ee > 0.99 ? 1 : ee, clamp((vh - r.top) / (vh + r.height)), q];
   }
   function write(m) {
     if (!m) return;
@@ -80,7 +87,7 @@ const SX = (() => {
   }
   function pinRead(p, vh, hdr) {
     const type = p.dataset.pin,
-      active = !reduced && wide.matches;
+      active = !reduced && !once && wide.matches;
     if (!active) return { p, active };
     const stage = p.querySelector(".sstage"),
       sh = stage.offsetHeight,
@@ -166,6 +173,7 @@ const SX = (() => {
   if (wide.addEventListener) wide.addEventListener("change", kick);
   if (!reduced) {
     rootEl.classList.add("sx");
+    if (once) rootEl.classList.add("sx-once");
     addEventListener("scroll", kick, { passive: true });
   }
   return { scan, kick };

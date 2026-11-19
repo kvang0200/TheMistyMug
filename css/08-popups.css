@@ -100,6 +100,12 @@
   transform: rotate(-1.5deg);
   animation: sway 7s ease-in-out infinite alternate;
 }
+@media (hover: none) {
+  /* no slow sway on tablets and phones: the portrait just hangs at its tilt */
+  .sheet .photo .frame {
+    animation: none;
+  }
+}
 .sheet .photo .frame .sil {
   position: absolute;
   inset: 0;
