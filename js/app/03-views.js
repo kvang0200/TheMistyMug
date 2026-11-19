@@ -286,7 +286,7 @@ function renderQuestList() {
     `<ol class="qb-grid${isDone ? " qb-done" : ""}">${list.map((q, i) => questNotice(q, i, isDone)).join("")}</ol>`;
   $("#questList").innerHTML = `
   <section class="section light qboard-sec" id="list"><div class="wrap">
-    ${head("Quests · The board", `The quest <i>board</i>`, `<p>Every job the party has taken on. ${matchMedia("(max-width:760px)").matches ? "Tap a notice to read it." : "Finished work is stamped and struck off."}</p>`)}
+    ${head("Quests · The board", `The quest <i>board</i>`, `<p>Every job the party has taken on. Tap a notice to unfold it.</p>`)}
     <div class="stickybar light-bar"><div class="filters" role="group" aria-label="Show">${Q_FILTERS.map(([k, l]) => `<button type="button" data-qf="${k}" aria-pressed="${k === questFilter}">${l}</button>`).join("")}</div></div>
     <div class="qboard">
       <span class="qb-nail" aria-hidden="true"></span><span class="qb-nail" aria-hidden="true"></span><span class="qb-nail" aria-hidden="true"></span><span class="qb-nail" aria-hidden="true"></span>

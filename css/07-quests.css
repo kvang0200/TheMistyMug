@@ -411,7 +411,6 @@
 .np {
   display: flex;
   flex-direction: column;
-  min-height: calc(230 * var(--u));
   padding: calc(26 * var(--u)) calc(24 * var(--u)) calc(20 * var(--u));
   transition: translate 0.3s cubic-bezier(0.2, 1.6, 0.4, 1);
 }
@@ -508,7 +507,6 @@
   filter: drop-shadow(0 calc(10 * var(--u)) calc(12 * var(--u)) rgba(0, 0, 0, 0.5));
 }
 .notice.done .np {
-  min-height: calc(190 * var(--u));
   padding-bottom: calc(58 * var(--u));
 }
 .notice.done .np > :not(.stamp) {
@@ -584,6 +582,75 @@
   line-height: 1.45;
 }
 
+/* Every notice shows its name with a +; tapping or clicking folds the rest of the
+   paper down from under the title, and the + turns to an x. */
+.notice .qn {
+  position: relative;
+  padding-right: calc(36 * var(--u));
+}
+.notice .qn::after {
+  content: "+";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  margin-top: calc(-14 * var(--u));
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: calc(28 * var(--u));
+  line-height: 1;
+  color: var(--a);
+  transition: rotate 0.25s cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+.notice.open .qn::after {
+  rotate: 45deg;
+}
+.notice .qd-fold {
+  display: grid;
+  grid-template-rows: 0fr;
+  perspective: calc(700 * var(--u));
+}
+.notice.open .qd-fold {
+  grid-template-rows: 1fr;
+}
+.notice .qd-in {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  transform-origin: 50% 0;
+  transform: rotateX(-90deg);
+  opacity: 0;
+}
+.notice.open .qd-in {
+  transform: none;
+  opacity: 1;
+}
+/* the crease: a fold line, and shade that lifts as the paper flattens */
+.notice .qd-in::before,
+.notice .qd-in::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+.notice .qd-in::before {
+  top: 0;
+  height: calc(1 * var(--u));
+  background: var(--ink-rule);
+}
+.notice .qd-in::after {
+  inset: 0;
+  background: linear-gradient(rgba(40, 20, 10, 0.45), rgba(40, 20, 10, 0.1));
+  opacity: 1;
+}
+.notice.open .qd-in::after {
+  opacity: 0;
+}
+.notice .qd {
+  margin: 0;
+  padding-top: calc(14 * var(--u));
+}
+
 @media (max-width: 760px) {
   /* fewer words: section intros, meta lines and helper notes go */
   .head p,
@@ -656,79 +723,14 @@
     padding: calc(12 * var(--u)) calc(18 * var(--u)) calc(10 * var(--u));
   }
   .notice .qn {
-    position: relative;
     margin-top: calc(12 * var(--u));
-    padding-right: calc(34 * var(--u));
-  }
-  .notice .qt,
-  .notice.done .qt {
-    font-size: calc(23 * var(--u));
-  }
-  .notice .qn::after {
-    content: "+";
-    position: absolute;
-    right: 0;
-    top: 50%;
-    margin-top: calc(-14 * var(--u));
-    font-family: var(--sans);
-    font-weight: 400;
-    font-size: calc(28 * var(--u));
-    line-height: 1;
-    color: var(--a);
-    transition: rotate 0.25s cubic-bezier(0.2, 1.6, 0.4, 1);
-  }
-  .notice.open .qn::after {
-    rotate: 45deg;
   }
   .np-foot {
     display: none;
   }
-  /* the rest of the notice is folded up under the title; a tap folds it down */
-  .notice .qd-fold {
-    display: grid;
-    grid-template-rows: 0fr;
-    perspective: calc(700 * var(--u));
-  }
-  .notice.open .qd-fold {
-    grid-template-rows: 1fr;
-  }
-  .notice .qd-in {
-    position: relative;
-    min-height: 0;
-    overflow: hidden;
-    transform-origin: 50% 0;
-    transform: rotateX(-90deg);
-    opacity: 0;
-  }
-  .notice.open .qd-in {
-    transform: none;
-    opacity: 1;
-  }
-  /* the crease: a fold line, and shade that lifts as the paper flattens */
-  .notice .qd-in::before,
-  .notice .qd-in::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    pointer-events: none;
-  }
-  .notice .qd-in::before {
-    top: 0;
-    height: calc(1 * var(--u));
-    background: var(--ink-rule);
-  }
-  .notice .qd-in::after {
-    inset: 0;
-    background: linear-gradient(rgba(40, 20, 10, 0.45), rgba(40, 20, 10, 0.1));
-    opacity: 1;
-  }
-  .notice.open .qd-in::after {
-    opacity: 0;
-  }
-  .notice .qd {
-    margin: 0;
-    padding-top: calc(14 * var(--u));
+  .notice .qt,
+  .notice.done .qt {
+    font-size: calc(23 * var(--u));
   }
   .notice.done .stamp {
     font-size: calc(11 * var(--u));
@@ -744,7 +746,7 @@
   }
 }
 
-@media (prefers-reduced-motion: no-preference) and (max-width: 760px) {
+@media (prefers-reduced-motion: no-preference) {
   .notice .qd-fold {
     transition: grid-template-rows 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
   }

@@ -36,7 +36,7 @@ unmet NPCs, or quests the party hasn't started.
 - **Quest board:** the Quests tab hangs a dark notice board under the Tarokka reading. Each quest is a
   pinned parchment notice (numbered in `data.js` order; a quest whose `t` is `Main` gets a red masthead,
   `Side` is plain, anything else is a town notice). Completed quests are struck through and stamped. The
-  board's header shows the open and done counts in big numbers. On phones a notice shows only its name; tapping it folds the rest of the paper down.
+  board's header shows the open and done counts in big numbers. Each notice shows only its name and a +; tapping or clicking it folds the rest of the paper down.
 - **Loose ends** (`threads` in `data.js`) are scraps pinned to the bottom of the quest board, tied with red string.
 - **Stamps** come from fields you already fill in: NPC `side` / `fate` (ALLY, UNCERTAIN, HOSTILE,
   DECEASED, MISSING), place `s` (VISITED · SESSION 11 or NOT VISITED) and quest `st` (COMPLETED).
