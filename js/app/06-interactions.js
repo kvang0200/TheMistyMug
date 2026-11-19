@@ -141,7 +141,7 @@ function resealBox(box) {
   );
   setTimeout(() => box.classList.remove("rewax"), 1600);
 }
-/* jump to the Tarokka reading or a player's fortune on the Quests tab */
+/* jump to the Tarokka reading, the quest board or the loose ends on the Quests tab */
 function jumpTo(id) {
   closeSheet();
   go("quests", () => {
@@ -149,7 +149,7 @@ function jumpTo(id) {
     if (!el) return;
     el.scrollIntoView({
       behavior: reduced ? "auto" : "smooth",
-      block: id.startsWith("fortune-") ? "center" : "start",
+      block: "start",
     });
   });
 }
@@ -200,7 +200,7 @@ document.addEventListener("click", (e) => {
   if (fl) {
     e.preventDefault();
     const f = fl.dataset.fortune;
-    jumpTo(["tarokka", "loose", "list"].includes(f) ? f : f ? "fortune-" + f : "fortunes");
+    jumpTo(["tarokka", "loose", "list"].includes(f) ? f : "list");
     return;
   }
   const dec = t.closest("[data-declass]");

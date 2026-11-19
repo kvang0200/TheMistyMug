@@ -226,7 +226,7 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitPhotos)
    (Phone browsers, Safari especially, don't reliably apply :active to a tap.) */
 (() => {
   const PRESS =
-    "a.card,button.card,.note,.seal-row,.chips>*,.filters button,.btn,.nav a,.sealed-btn";
+    "a.card,button.card,.notice,.scrap,.seal-row,.chips>*,.filters button,.btn,.nav a,.sealed-btn";
   let held = null,
     t = 0;
   const up = () => {

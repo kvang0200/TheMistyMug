@@ -23,7 +23,7 @@ unmet NPCs, or quests the party hasn't started.
 
 - **Tabs:** Home, Sessions, NPCs, Locations (interactive map + list), Quests.
 - **Home** is the players' landing page: title card, then the players (tap a card for their file), then the latest session.
-- **Scroll motion:** pinned scenes (the Home title card holds while the page slides up over it;), sticky filter bars on NPCs and Quests, cards rising into place, and a reading bar under the header. The Tarokka and personal fortune cards are dealt onto the table when Quests opens. Hovering a player card flips their portrait over in front of it. A small scroll engine in `app.js` (SX) drives it in every browser and only measures what is on screen.
+- **Scroll motion:** pinned scenes (the Home title card holds while the page slides up over it;), sticky filter bars on NPCs and Quests, cards rising into place, and a reading bar under the header. The Tarokka cards are dealt onto the table when Quests opens. Hovering a player card flips their portrait over in front of it. A small scroll engine in `app.js` (SX) drives it in every browser and only measures what is on screen.
 - **Screen sizes:** every size in `css/` is written in design pixels (`var(--u)`). Up to 1920×1080 one design pixel is one pixel; on bigger screens (1440p, 4K) it grows, so the whole page keeps the same proportions instead of sitting small in the middle.
 - **Colors:** primary (ink black), secondary (parchment beige) and accent (blood red) are
   `--p`, `--s` and `--a` at the top of `css/01-base.css`. Change those three to restyle everything.
@@ -32,8 +32,12 @@ unmet NPCs, or quests the party hasn't started.
   Reseal button that turns it back over. Each device remembers which seals it has broken, so a
   player on a new device sees them sealed again.
 - **Sealed fortunes:** each player's personal fortune (from `visions`) sits under a
-  wax seal in the player's pop-up file and on the Quests tab (breaking one breaks both). Tap the seal again to reseal it.
-- **Loose ends** (`threads` in `data.js`) are pinned on the Quests tab, under the quest list.
+  wax seal in the player's pop-up file. Tap the seal again to reseal it.
+- **Quest board:** the Quests tab hangs a dark notice board under the Tarokka reading. Each quest is a
+  pinned parchment notice (numbered in `data.js` order; a quest whose `t` is `Main` gets a red masthead,
+  `Side` is plain, anything else is a town notice). Completed quests are struck through and stamped. The
+  board's header shows the open and done counts in big numbers.
+- **Loose ends** (`threads` in `data.js`) are scraps pinned to the bottom of the quest board, tied with red string.
 - **Stamps** come from fields you already fill in: NPC `side` / `fate` (ALLY, UNCERTAIN, HOSTILE,
   DECEASED, MISSING), place `s` (VISITED · SESSION 11 or NOT VISITED) and quest `st` (COMPLETED).
 - **Redactions:** in the latest session's summary, wrap words in `[[double brackets]]` to black
@@ -55,7 +59,7 @@ No build step. Edit a file, commit, and Pages republishes in a minute or two.
 | `04-sessions.css` | Sessions: chronicle bands, redactions, sticky list heading |
 | `05-npcs.css` | NPCs: card wall, group headings, filter bar |
 | `06-locations.css` | Locations: interactive map and list |
-| `07-quests.css` | Quests: Tarokka reading, personal fortunes, quest list, loose ends |
+| `07-quests.css` | Quests: Tarokka reading, the quest board and its loose ends, plus the wax-sealed fortune boxes used in player pop-ups |
 | `08-popups.css` | NPC, player and place pop-ups, with their entrance and exit effects |
 | `09-character-sheet.css` | NPC character sheets and the dice tray |
 
