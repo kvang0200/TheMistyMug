@@ -272,7 +272,7 @@ function questNotice(q, i, done) {
     <div class="np parch">
       <span class="np-top"><span class="label np-kind">${esc(q.t)}${kind === "town" ? " notice" : " quest"}</span><span class="label np-no">Nº ${no}</span></span>
       <button type="button" class="qn" data-qnote aria-expanded="false"><span class="qt">${esc(q.n)}</span></button>
-      <p class="qd">${esc(q.p)}</p>
+      <div class="qd-fold"><div class="qd-in"><p class="qd">${esc(q.p)}</p></div></div>
       ${done ? `<span class="stamp red stamp-view">COMPLETED</span>` : `<span class="np-foot label"><i class="np-dot" aria-hidden="true"></i>Open</span>`}
     </div>
   </li>`;

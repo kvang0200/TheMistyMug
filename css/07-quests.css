@@ -680,13 +680,55 @@
   .notice.open .qn::after {
     rotate: 45deg;
   }
-  .notice .qd,
   .np-foot {
     display: none;
   }
-  .notice.open .qd {
-    display: block;
-    animation: fadeIn 0.3s ease both;
+  /* the rest of the notice is folded up under the title; a tap folds it down */
+  .notice .qd-fold {
+    display: grid;
+    grid-template-rows: 0fr;
+    perspective: calc(700 * var(--u));
+  }
+  .notice.open .qd-fold {
+    grid-template-rows: 1fr;
+  }
+  .notice .qd-in {
+    position: relative;
+    min-height: 0;
+    overflow: hidden;
+    transform-origin: 50% 0;
+    transform: rotateX(-90deg);
+    opacity: 0;
+  }
+  .notice.open .qd-in {
+    transform: none;
+    opacity: 1;
+  }
+  /* the crease: a fold line, and shade that lifts as the paper flattens */
+  .notice .qd-in::before,
+  .notice .qd-in::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+  }
+  .notice .qd-in::before {
+    top: 0;
+    height: calc(1 * var(--u));
+    background: var(--ink-rule);
+  }
+  .notice .qd-in::after {
+    inset: 0;
+    background: linear-gradient(rgba(40, 20, 10, 0.45), rgba(40, 20, 10, 0.1));
+    opacity: 1;
+  }
+  .notice.open .qd-in::after {
+    opacity: 0;
+  }
+  .notice .qd {
+    margin: 0;
+    padding-top: calc(14 * var(--u));
   }
   .notice.done .stamp {
     font-size: calc(11 * var(--u));
@@ -700,4 +742,36 @@
   .sp p {
     font-size: calc(16 * var(--u));
   }
+}
+
+@media (prefers-reduced-motion: no-preference) and (max-width: 760px) {
+  .notice .qd-fold {
+    transition: grid-template-rows 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .notice .qd-in {
+    transition:
+      transform 0.6s cubic-bezier(0.25, 1.35, 0.45, 1),
+      opacity 0.2s ease;
+  }
+  .notice .qd-in::after {
+    transition: opacity 0.6s ease 0.1s;
+  }
+  /* folding back up: the paper lifts first, then the space closes */
+  .notice:not(.open) .qd-in {
+    transition:
+      transform 0.35s cubic-bezier(0.5, 0, 0.75, 0),
+      opacity 0.2s ease 0.2s;
+  }
+  .notice:not(.open) .qd-fold {
+    transition: grid-template-rows 0.4s cubic-bezier(0.6, 0, 0.3, 1) 0.1s;
+  }
+}
+
+/* touch screens: the pins press in and the tally slash draws on a clock (see .sx-once) */
+.sx-once .notice::before,
+.sx-once .scrap::before {
+  transition: scale 0.4s cubic-bezier(0.3, 1.8, 0.5, 1) 0.3s;
+}
+.sx-once .qb-tally > span:first-child b::after {
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s;
 }

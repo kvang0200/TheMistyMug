@@ -1158,6 +1158,44 @@ button.card {
     --rise: calc(50 * var(--u));
   }
 }
+/* Touch screens: SX reveals each element once (--sxe jumps from 0 to 1) and these
+   transitions play the motion on a clock, so nothing tracks the finger and nothing
+   wobbles while scrolling. The press spring (transform, scale) is kept in the list. */
+.sx-once .in {
+  transition:
+    opacity 0.5s ease,
+    translate 0.7s cubic-bezier(0.2, 0.8, 0.2, 1),
+    rotate 0.7s cubic-bezier(0.2, 0.8, 0.2, 1),
+    scale 0.45s cubic-bezier(0.3, 1.5, 0.5, 1),
+    transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1),
+    filter 0.2s;
+}
+.sx-once .head::after {
+  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.sx-once .head > *,
+.sx-once .subhead h3 {
+  transition: opacity 0.6s ease;
+}
+.sx-once .stamp-view {
+  transition:
+    opacity 0.2s ease 0.35s,
+    scale 0.35s cubic-bezier(0.5, 0, 0.75, 0) 0.35s;
+}
+.sx-once .mapframe {
+  transition:
+    clip-path 0.9s cubic-bezier(0.2, 0.8, 0.2, 1),
+    scale 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.sx-once .thread-host::before {
+  transition: transform 0.25s linear;
+}
+@media (hover: none) {
+  /* the film grain sits over the text; on tablets its jumping reads as shimmer */
+  .grain {
+    animation: none;
+  }
+}
 
 .seal-sub {
   font-family: var(--mono);
