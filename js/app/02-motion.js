@@ -9,7 +9,11 @@
    revealed once, the first time it comes on screen, and CSS transitions play
    the motion on a clock (see .sx-once in css/01-base.css). Tracking the finger
    frame by frame made cards wobble on iPad, where scroll events arrive late and
-   the springy press animation fought the scroll motion.
+   the springy press animation fought the scroll motion. The Home title card
+   still holds while the players slide up over it (that part is the browser's
+   own sticky scrolling), but on touch its text only fades and darkens instead
+   of moving, and the screen height is read once per orientation so Safari's
+   toolbar sliding in and out doesn't resize the scene mid-scroll.
    ===================================================================== */
 const SX = (() => {
   const SEL = ".in,.mist,.thread-host,.mapframe";
@@ -20,6 +24,17 @@ const SX = (() => {
   const clamp = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
   const wide = window.matchMedia ? matchMedia("(min-width:1100px)") : { matches: true };
   const once = !!(window.matchMedia && matchMedia("(hover: none)").matches);
+  /* touch: a screen height that only changes when the width does (rotation), not when the toolbar moves */
+  let vhW = 0,
+    vhH = 0;
+  const viewH = () => {
+    if (!once) return innerHeight;
+    if (innerWidth !== vhW) {
+      vhW = innerWidth;
+      vhH = innerHeight;
+    }
+    return vhH;
+  };
   function set(el, k, v) {
     const t = v.toFixed(3);
     if (el["_" + k] !== t) {
@@ -87,7 +102,7 @@ const SX = (() => {
   }
   function pinRead(p, vh, hdr) {
     const type = p.dataset.pin,
-      active = !reduced && !once && wide.matches;
+      active = !reduced && wide.matches;
     if (!active) return { p, active };
     const stage = p.querySelector(".sstage"),
       sh = stage.offsetHeight,
@@ -123,7 +138,7 @@ const SX = (() => {
 
   function frame() {
     raf = 0;
-    const vh = innerHeight,
+    const vh = viewH(),
       y = scrollY,
       H = rootEl.scrollHeight - vh,
       hdr = $("#hdr").offsetHeight;
