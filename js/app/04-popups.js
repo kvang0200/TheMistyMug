@@ -95,18 +95,8 @@ function openSheet({ tab, photo, kicker, name, epi, body, stamp, fx }) {
   const c = modal.querySelector("[data-close]");
   if (c) c.focus({ preventScroll: true });
 }
-/* the cute exit: the file hops away and leaves a little poof of dust (see .fx-out in css/10-cute.css) */
-const EXIT_FX = `<div class="fx-out" aria-hidden="true"><i class="poof-ring"></i>${[
-  [-30, -26, 64],
-  [26, -30, 52],
-  [34, 8, 70],
-  [-36, 12, 56],
-  [-8, 32, 48],
-  [12, -40, 40],
-  [6, 30, 60],
-]
-  .map(([x, y, s]) => `<i class="puff" style="--x:${x}vmin;--y:${y}vmin;--sz:${s}"></i>`)
-  .join("")}</div>`;
+/* the Persona-style exit: two bands slash across and shards fly (see EXITS in css/08-popups.css) */
+const EXIT_FX = `<div class="fx-out" aria-hidden="true"><i class="o-line"></i><i class="o-red"></i><i class="o-blk"></i><i class="o-sh" style="--x:-34vw;--y:-30vh;--r:-200deg"></i><i class="o-sh s2" style="--x:30vw;--y:-22vh;--r:160deg"></i><i class="o-sh s3" style="--x:22vw;--y:30vh;--r:-120deg"></i></div>`;
 function closeSheet() {
   if (!modal.classList.contains("on") || modal.classList.contains("out")) return;
   closeCS(true);
@@ -125,7 +115,7 @@ function closeSheet() {
     modal.classList.add("out");
     clearTimeout(closeT);
     closeT = setTimeout(done, 720);
-    fxTimers.push(setTimeout(() => Sound.pop(), 140));
+    fxTimers.push(setTimeout(() => Sound.slash(0.26), 110));
     if (modal.dataset.fx === "gate") {
       Sound.chains(0.22, 0.7);
       fxTimers.push(setTimeout(() => Sound.clang(), 250));

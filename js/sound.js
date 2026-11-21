@@ -335,15 +335,6 @@ const Sound = (() => {
     hiss(0.17, { f0: 900, f1: 520, Q: 0.9, gain: 0.2, attack: 0.012, flutter: true, wet: 0.3 });
     tone(120, 70, 0.16, { gain: 0.16, wet: 0.3 });
   });
-  /* page change: a soft bubble "bloop" as the red bubble swallows the page, then a tiny pop */
-  const bloop = play(() => {
-    tone(260, 560, 0.12, { gain: 0.16, wet: 0.25 });
-    tone(140, 90, 0.1, { gain: 0.08, wet: 0.2 });
-  });
-  const pop = play(() => {
-    tone(620, 980, 0.06, { gain: 0.1, wet: 0.25 });
-    grains(5, 0.05, { f: 1800, fr: 900, g: 0.05, gr: 0.03, wet: 0.2 });
-  });
   /* a quest notice unfolding: a soft, crunchy rustle of paper, then a low pat as it falls flat */
   const unfold = play(() => {
     grains(14, 0.22, { f: 500, fr: 700, g: 0.12, gr: 0.08, len: 0.012, lr: 0.02, wet: 0.2 });
@@ -484,8 +475,6 @@ const Sound = (() => {
     cardSnap,
     cardBurst,
     unfold,
-    bloop,
-    pop,
     fold,
     dieHit,
     dice,

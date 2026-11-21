@@ -283,66 +283,25 @@ function go(v, after) {
   }
 }
 let pendingAfter = null;
-/* the cute page change: a red bubble grows from where you tapped, swallows the page,
-   then shrinks to a dot in the middle and pops (see .cut in css/10-cute.css) */
-const Iris = (() => {
-  const c = $("#cut");
-  let x = 50,
-    y = 50,
-    t1 = 0,
-    t2 = 0;
-  addEventListener(
-    "pointerdown",
-    (e) => {
-      x = (e.clientX / innerWidth) * 100;
-      y = (e.clientY / innerHeight) * 100;
-    },
-    { passive: true, capture: true }
-  );
-  return {
-    run(swap) {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      c.style.setProperty("--cx", x.toFixed(1) + "%");
-      c.style.setProperty("--cy", y.toFixed(1) + "%");
-      c.className = "cut";
-      void c.offsetWidth;
-      c.className = "cut close";
-      Sound.bloop();
-      t1 = setTimeout(() => {
-        swap();
-        c.className = "cut open";
-        t2 = setTimeout(() => {
-          c.className = "cut";
-          x = y = 50;
-        }, 600);
-        setTimeout(() => Sound.pop(), 400);
-      }, 240);
-    },
-  };
-})();
 function show(v, fx = true, after) {
   v = OLD[v] || v;
   if (!VIEWS.includes(v)) v = "home";
   const changed = v !== current;
-  const settle = () => {
-    requestAnimationFrame(() => {
-      SX.scan();
-      if (changed) Deal.prep();
-      if (v === "home") fitPhotos();
-    });
-    if (after) requestAnimationFrame(() => requestAnimationFrame(after));
-  };
-  if (!changed) return settle();
-  current = v;
-  $$("#nav a").forEach((a) =>
-    a.toggleAttribute("aria-current", a.getAttribute("href") === "#" + v)
-  );
-  $$("#nav a[aria-current]").forEach((a) => a.setAttribute("aria-current", "page"));
-  const swap = () => {
-    if (current !== v) return;
+  if (changed) {
+    current = v;
     VIEWS.forEach((k) => $("#v-" + k).classList.toggle("on", k === v));
-    /* the new page's first section hops up and settles */
+    $$("#nav a").forEach((a) =>
+      a.toggleAttribute("aria-current", a.getAttribute("href") === "#" + v)
+    );
+    $$("#nav a[aria-current]").forEach((a) => a.setAttribute("aria-current", "page"));
+    if (fx && !reduced) {
+      const c = $("#cut");
+      c.classList.remove("go");
+      void c.offsetWidth;
+      c.classList.add("go");
+    }
+    if (fx) Sound.page();
+    /* the new page's first section rises and inks in, like the landing page */
     if (fx && !reduced && v !== "home") {
       $$(".entering").forEach((x) => x.classList.remove("entering"));
       const view = $("#v-" + v),
@@ -361,13 +320,13 @@ function show(v, fx = true, after) {
     }
     scrollTo({ top: 0, behavior: "auto" });
     if (v === "locations" && mapMode === "map") enterMap();
-    settle();
-  };
-  if (fx && !reduced) Iris.run(swap);
-  else {
-    if (fx) Sound.page();
-    swap();
   }
+  requestAnimationFrame(() => {
+    SX.scan();
+    if (changed) Deal.prep();
+    if (v === "home") fitPhotos();
+  });
+  if (after) requestAnimationFrame(() => requestAnimationFrame(after));
 }
 addEventListener("hashchange", () => {
   const a = pendingAfter;
