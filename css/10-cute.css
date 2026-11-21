@@ -1,0 +1,381 @@
+/* Cute motion: the site keeps its noir look, but things move like little chibi toys.
+   Squash and stretch, springy overshoot, soft hops and bubbly pops. Nothing tilts.
+   Everything cute lives in this one file (plus the iris and jelly hooks in
+   js/app/06-interactions.js and js/app/08-start.js), so it can be tuned or removed
+   on its own. It loads last, so the keyframes here replace the older ones by name. */
+
+/* ---------- page transitions: a red bubble swallows the page and pops ----------
+   Tapping a tab grows a red circle from where you tapped, a little ink bat bounces
+   in the middle, then the circle shrinks back to a dot in the centre, bounces once
+   and pops, showing the new page. */
+@property --iris {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+.cut {
+  inset: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: auto;
+  margin: 0;
+  transform: none;
+  visibility: hidden;
+  clip-path: circle(var(--iris) at var(--cx, 50%) var(--cy, 50%));
+}
+.cut.close,
+.cut.open {
+  visibility: visible;
+}
+.cut.close {
+  animation: irisClose 0.24s cubic-bezier(0.55, 0, 0.8, 0.4) both;
+}
+.cut.open {
+  --cx: 50%;
+  --cy: 50%;
+  animation: irisOpen 0.56s cubic-bezier(0.3, 0, 0.3, 1) both;
+}
+@keyframes irisClose {
+  from {
+    --iris: 0%;
+  }
+  to {
+    --iris: 150%;
+  }
+}
+@keyframes irisOpen {
+  0% {
+    --iris: 150%;
+  }
+  62% {
+    --iris: 2.2%;
+  }
+  76% {
+    --iris: 3.4%;
+  }
+  100% {
+    --iris: 0%;
+  }
+}
+.cut-bat {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(110 * var(--u));
+  margin: calc(-36 * var(--u)) 0 0 calc(-55 * var(--u));
+  fill: var(--p);
+  scale: 0;
+}
+.cut.close .cut-bat {
+  animation: batPop 0.34s cubic-bezier(0.3, 1.6, 0.5, 1) 0.06s both;
+}
+.cut.open .cut-bat {
+  animation: batSquish 0.26s ease-in both;
+}
+@keyframes batPop {
+  0% {
+    scale: 0;
+  }
+  60% {
+    scale: 1.15 0.85;
+  }
+  80% {
+    scale: 0.94 1.08;
+  }
+  100% {
+    scale: 1;
+  }
+}
+@keyframes batSquish {
+  0% {
+    scale: 1;
+  }
+  40% {
+    scale: 1.2 0.7;
+  }
+  100% {
+    scale: 0;
+  }
+}
+
+/* the red bar under the current tab boings into place */
+.nav a[aria-current="page"] i {
+  animation: navBoing 0.55s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+@keyframes navBoing {
+  0% {
+    transform: skewX(-18deg) scale(0, 1);
+  }
+  45% {
+    transform: skewX(-18deg) scale(1.18, 0.7);
+  }
+  70% {
+    transform: skewX(-18deg) scale(0.94, 1.2);
+  }
+  100% {
+    transform: skewX(-18deg) scale(1, 1);
+  }
+}
+
+/* ---------- a new page's first section hops up and settles ---------- */
+@keyframes enterUp {
+  0% {
+    opacity: 0;
+    translate: 0 calc(40 * var(--u));
+    scale: 0.97 1.05;
+  }
+  55% {
+    opacity: 1;
+    translate: 0 calc(-8 * var(--u));
+    scale: 1.015 0.985;
+  }
+  78% {
+    translate: 0 calc(2 * var(--u));
+    scale: 0.995 1.005;
+  }
+  100% {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+/* ---------- tapping a card: it squishes down, then wobbles back like jelly ---------- */
+.boing {
+  animation: jelly 0.5s cubic-bezier(0.3, 0.9, 0.4, 1);
+}
+@keyframes jelly {
+  0% {
+    scale: 0.95;
+  }
+  30% {
+    scale: 1.05 0.94;
+  }
+  55% {
+    scale: 0.97 1.03;
+  }
+  75% {
+    scale: 1.01 0.99;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
+/* ---------- pop-ups: they bounce in and squish on landing, then hop away ---------- */
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: translateY(calc(40 * var(--u))) scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(calc(-10 * var(--u))) scale(1.06, 0.93);
+  }
+  68% {
+    transform: translateY(0) scale(0.97, 1.04);
+  }
+  84% {
+    transform: scale(1.01, 0.99);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes smashIn {
+  0% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(0.94, 1.06);
+  }
+  65% {
+    transform: scale(1.04, 0.96);
+  }
+  82% {
+    transform: scale(0.99, 1.01);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes riseIn {
+  0% {
+    opacity: 0;
+    transform: translateY(45%) scale(0.92, 1.06);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(-3%) scale(1.03, 0.96);
+  }
+  75% {
+    transform: translateY(0.6%) scale(0.99, 1.01);
+  }
+  100% {
+    transform: none;
+  }
+}
+/* leaving: a quick crouch, then a hop up and away as it shrinks */
+@keyframes outToss {
+  0% {
+    transform: none;
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(calc(10 * var(--u))) scale(1.06, 0.92);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-40vh) scale(0.2, 0.3);
+  }
+}
+@keyframes outCut {
+  0% {
+    transform: none;
+  }
+  25% {
+    opacity: 1;
+    transform: translateX(calc(16 * var(--u))) scale(0.94, 1.04);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-60vw) scale(0.3, 0.22);
+  }
+}
+@keyframes outDrop {
+  0% {
+    transform: none;
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(calc(-16 * var(--u))) scale(0.96, 1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(60vh) scale(0.4, 0.25);
+  }
+}
+
+/* ---------- stamps land with a squish instead of spinning in ---------- */
+@keyframes stampIn {
+  0% {
+    opacity: 0;
+    transform: scale(2.2) rotate(-12deg);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(0.84, 1.14) rotate(-12deg);
+  }
+  65% {
+    transform: scale(1.12, 0.88) rotate(-12deg);
+  }
+  82% {
+    transform: scale(0.97, 1.03) rotate(-12deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(-12deg);
+  }
+}
+
+/* ---------- quest notices: the tug on the pin squishes like a soft little toy ---------- */
+@keyframes tug {
+  0% {
+    translate: 0 0;
+    scale: 1;
+  }
+  28% {
+    translate: 0 calc(8 * var(--u));
+    scale: 1.03 0.95;
+  }
+  55% {
+    translate: 0 calc(-4 * var(--u));
+    scale: 0.98 1.03;
+  }
+  78% {
+    translate: 0 calc(1 * var(--u));
+    scale: 1.005 0.995;
+  }
+  100% {
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+/* the back-to-top button hops in */
+#toTop.on {
+  animation: hopIn 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+@keyframes hopIn {
+  0% {
+    scale: 0;
+  }
+  60% {
+    scale: 1.15 0.88;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
+/* ---------- closing a pop-up: a soft poof of dust where the file was ---------- */
+.fx-out .poof-ring {
+  left: 50%;
+  top: 50%;
+  width: 40vmin;
+  height: 40vmin;
+  margin: -20vmin 0 0 -20vmin;
+  border-radius: 50%;
+  border: calc(4 * var(--u)) solid var(--s);
+  scale: 0;
+  opacity: 0.8;
+  animation: poofRing 0.45s cubic-bezier(0.2, 0.8, 0.3, 1) 0.14s both;
+}
+.fx-out .puff {
+  left: 50%;
+  top: 50%;
+  width: calc(var(--sz) * var(--u));
+  height: calc(var(--sz) * var(--u));
+  margin: calc(var(--sz) * var(--u) / -2) 0 0 calc(var(--sz) * var(--u) / -2);
+  border-radius: 50%;
+  background: var(--s);
+  box-shadow: inset calc(-6 * var(--u)) calc(-6 * var(--u)) 0 color-mix(in srgb, var(--p) 18%, transparent);
+  scale: 0;
+  animation: puff 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) 0.12s both;
+}
+.fx-out .puff:nth-child(odd) {
+  animation-delay: 0.18s;
+}
+.fx-out .puff:nth-child(3n) {
+  background: var(--a);
+}
+@keyframes puff {
+  0% {
+    translate: 0 0;
+    scale: 0.2;
+    opacity: 1;
+  }
+  55% {
+    translate: var(--x) var(--y);
+    scale: 1.1;
+    opacity: 1;
+  }
+  100% {
+    translate: calc(var(--x) * 1.25) calc(var(--y) * 1.25 - 4vmin);
+    scale: 0;
+    opacity: 0;
+  }
+}
+@keyframes poofRing {
+  0% {
+    scale: 0.2;
+    opacity: 0.9;
+  }
+  100% {
+    scale: 1.3;
+    opacity: 0;
+  }
+}

@@ -62,6 +62,7 @@ No build step. Edit a file, commit, and Pages republishes in a minute or two.
 | `07-quests.css` | Quests: Tarokka reading, the quest board and its loose ends, plus the wax-sealed fortune boxes used in player pop-ups |
 | `08-popups.css` | NPC, player and place pop-ups, with their entrance and exit effects |
 | `09-character-sheet.css` | NPC character sheets and the dice tray |
+| `10-cute.css` | Cute motion: the bubble page change, jelly taps, squishy pop-ups and stamps, the poof on close. Loads last; remove it to go back to the plain noir motion |
 
 Each file keeps its own phone rules next to the rules they change. **Phones are 760px and
 narrower** everywhere (`@media (max-width: 760px)`; desktop-only rules use `min-width: 761px`).

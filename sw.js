@@ -20,6 +20,7 @@ const CORE = [
   "css/07-quests.css",
   "css/08-popups.css",
   "css/09-character-sheet.css",
+  "css/10-cute.css",
   "js/data.js",
   "js/sound.js",
   "js/app/01-core.js",

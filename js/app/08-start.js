@@ -228,18 +228,38 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitPhotos)
   const PRESS =
     "a.card,button.card,.notice,.scrap,.seal-row,.chips>*,.filters button,.btn,.nav a,.sealed-btn";
   let held = null,
-    t = 0;
-  const up = () => {
+    t = 0,
+    lastTouch = 0;
+  /* letting go: the card wobbles back like jelly (.boing in css/10-cute.css) */
+  const boing = (el) => {
+    if (reduced || !el) return;
+    el.classList.remove("boing");
+    void el.offsetWidth;
+    el.classList.add("boing");
+    el.addEventListener("animationend", () => el.classList.remove("boing"), { once: true });
+  };
+  const up = (release) => {
     clearTimeout(t);
     if (held) {
       held.classList.remove("pressing");
+      if (release === true) boing(held);
       held = null;
     }
   };
   addEventListener(
+    "mouseup",
+    (e) => {
+      /* phones fire a mouseup after every tap; the touch handler already boings those */
+      if (e.button === 0 && Date.now() - lastTouch > 800)
+        boing(e.target.closest && e.target.closest(PRESS));
+    },
+    { passive: true }
+  );
+  addEventListener(
     "touchstart",
     (e) => {
       up();
+      lastTouch = Date.now();
       const el = e.target.closest && e.target.closest(PRESS);
       if (el) {
         held = el;
@@ -253,12 +273,12 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitPhotos)
     "touchend",
     () => {
       clearTimeout(t);
-      t = setTimeout(up, 140);
+      t = setTimeout(() => up(true), 140);
     },
     { passive: true }
   );
-  addEventListener("touchcancel", up, { passive: true });
-  addEventListener("touchmove", up, { passive: true });
+  addEventListener("touchcancel", () => up(), { passive: true });
+  addEventListener("touchmove", () => up(), { passive: true });
 })();
 $("#footNote").textContent = "Kept for the players · Updated after Session " + LAST;
 let introSeen = false;
